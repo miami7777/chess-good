@@ -1,0 +1,59 @@
+﻿@using CG.Domain.Entities
+@model List<Course>
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+}
+<!-- Courses Section -->
+<section id="courses" class="courses section">
+
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+        <h2>@(headers.settingsHeaders.TryGetValue("TitleCourses", out string TitleCourses) ? TitleCourses : "")</h2>
+        <p>@(headers.settingsHeaders.TryGetValue("CategoryCourses", out string CategoryCourses) ? CategoryCourses : "")</p>
+    </div><!-- End Section Title -->
+
+    <div class="container">
+        <div class="row">
+        @{            
+            
+            @foreach (var item in Model)
+                {
+                    var previewFile = item.CourseFiles.FirstOrDefault(x => x.TypeCourseFiles == CG.Domain.Enum.TypeCourseFiles.Preview);
+                    <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
+                        <div class="course-item">
+                            <img src="@(Url.Action("DownloadThumb", "Course", new { id = previewFile?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))" class="img-fluid" style="min-height:230px;max-height:230px" alt="...">
+                        <div class="course-content">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <p class="category">@item.DirectoryCategory.Name</p>
+                                    @if (item.TypeCourse == CG.Domain.Enum.TypeCourse.Private)
+                                    {
+                                        <p class="price">@item.Price.ToString() @item.Currency</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="price">Бесплатно</p>
+                                    }
+                                </div>
+
+                            <h3><a href="@Url.Action("Index", "Course", new { id = item.Id })">@item.Name</a></h3>
+                                <p class="description">@(item.Description.Length > 180 ? item.Description.Substring(0, 180) + "..." : item.Description)</p>
+                                <div class="trainer d-flex justify-content-between align-items-center">
+                                <div class="trainer-profile d-flex align-items-center">
+                                    <img src="~/assets/assets/img/trainers/@item.Trainer.TrainerPhoto" class="img-fluid" alt="">
+                                    <a href="" class="trainer-link">@item.Trainer.GetFio()</a>
+                                </div>
+                                <div class="trainer-rank d-flex align-items-center">
+                                    <i class="bi bi-person user-icon"></i>&nbsp;@item.Views.ToString()
+                                    &nbsp;&nbsp;
+                                    <i class="bi bi-heart heart-icon"></i>&nbsp;@item.Likes.ToString()
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div> <!-- End Course Item-->
+            }
+        }
+        </div>
+    </div>
+
+</section><!-- /Courses Section -->

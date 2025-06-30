@@ -1,0 +1,77 @@
+﻿@using CG.Areas.adm.Models
+@using CG.Domain
+@using CG.Domain.Entities
+@using CG.Domain.Enum
+@using CG.Helpers
+@using CG.Models
+
+@{
+    ViewData["Title"] = "Добавление статуса";
+    Layout = "_Layout_Admin";
+}
+@model DirectoryStatusCourses
+@await Html.PartialAsync("BreadcrumbsPartial")
+<div class="content mt-3">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <strong>Добавить статус</strong>
+            </div>
+
+            @using (Html.BeginForm("AddStatus", "Home", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+            {
+                <div class="card-body card-block">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.Name, "Название", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Название", @name = "description" } })
+                        </div>
+                    </div>
+                    @Html.HiddenFor(model => model.Id)
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.Description, "Описание", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", @placeholder = "Описание", @name = "description" } })
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.ListOrder, "Порядок", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.ListOrder, new { htmlAttributes = new { @class = "form-control", @name = "listOrder" } })
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.EngName, "EngName", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.EngName, new { htmlAttributes = new { @class = "form-control", @name = "engName" } })
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.RusName, "RusName", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.RusName, new { htmlAttributes = new { @class = "form-control", @name = "rusName" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fa fa-dot-circle-o"></i> Сохранить
+                    </button>
+                    <button type="reset" class="btn btn-danger btn-sm">
+                        <i class="fa fa-ban"></i> Сбросить
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

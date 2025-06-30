@@ -1,0 +1,20 @@
+﻿@using CG.Domain.Entities
+@using CG.Helpers
+@using CG.Models.Enum
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    string headerAbout = headers.settingsHeaders.TryGetValue("HeaderAbout", out string HeaderAbout) ? HeaderAbout : "";
+    string descriptionAbout = headers.settingsHeaders.TryGetValue("DescriptionAbout", out string DescriptionAbout) ? DescriptionAbout : "";
+    ViewBag.Title = headerAbout; 
+    ViewBag.Description = descriptionAbout;
+    var myCounts = ViewData["MyCounts"] != null ? (Dictionary<string, int>)ViewData["MyCounts"] : new Dictionary<string, int>();
+    var allReviews = ViewData["AllReviews"] != null ? (List<Reviews>)ViewData["AllReviews"] : new List<Reviews>();   
+}
+<main class="main">
+    @await Html.PartialAsync("PageTitle")   
+    @await Html.PartialAsync("LandingAboutPartial",PrefixTypeBlock.About)
+    @await Html.PartialAsync("LandingCountsPartial",myCounts)
+    @await Html.PartialAsync("LandingTestimonialsPartial", allReviews)
+</main>
+
+@await Html.PartialAsync("LandingFooterPartial")

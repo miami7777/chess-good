@@ -1,0 +1,48 @@
+﻿@using CG.Domain
+@using CG.Domain.Entities
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    ViewBag.Title = headers.settingsHeaders.TryGetValue("HeaderPricing", out string HeaderPricing) ? HeaderPricing : "";
+    ViewBag.Description = headers.settingsHeaders.TryGetValue("DescriptionPricing", out string DescriptionPricing) ? DescriptionPricing : "";
+    var allTariffs = ViewData["AllTariffs"] != null ? (List<Tariffs>)ViewData["AllTariffs"] : new List<Tariffs>();
+    var allServices = ViewData["AllServices"] != null ? (List<Service>)ViewData["AllServices"] : new List<Service>();
+}
+<main class="main">
+    @await Html.PartialAsync("PageTitle")
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing section">
+
+        <div class="container">
+
+            <div class="row gy-3">
+                @{
+                    foreach (var item in allTariffs)
+                    {
+                        <div class="col-xl-3 col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                            <div class="pricing-item @(item.IsFeatured ? "featured" : "")">
+                               @if (item.IsAdvanced) {
+                                <span class="advanced">Продвинутый</span>
+                               }
+                                <h3>@item.Name</h3>
+                                <h4><sup>RUB</sup>@(item.PriceMonth.HasValue ? item.PriceMonth.Value : 0)<span></span></h4>
+                                <ul>
+                                    @foreach (var service in allServices)
+                                    {
+                                         <li class="@(!item.ServicesIds.Contains(service.Id.ToString()) ? "na" : "")">@service.Name</li>
+                                    } 
+                                </ul>
+                                <div class="btn-wrap">
+                                    <a href="#" class="btn-buy">Оформить</a>
+                                </div>
+                            </div>
+                        </div><!-- End Pricing Item -->
+                    }
+                }
+            </div>
+
+        </div>
+
+    </section><!-- /Pricing Section -->
+
+</main>
+@await Html.PartialAsync("LandingFooterPartial")

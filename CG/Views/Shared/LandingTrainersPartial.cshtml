@@ -1,0 +1,90 @@
+﻿@using CG.Domain
+@using CG.Domain.Enum
+@using CG.Helpers
+@using CG.Models.Enum
+@model (List<ApplicationUser>,PrefixTypeBlock)
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    List<ChessTitle> noTitul = new List<ChessTitle>
+    {
+      ChessTitle.Category1,
+      ChessTitle.Category2,
+      ChessTitle.Category3,
+      ChessTitle.CategoryYoung3,
+      ChessTitle.CategoryYoung2,
+      ChessTitle.CategoryYoung1,
+      ChessTitle.None
+    };
+}
+  <!-- Trainers Index Section -->
+        @if (Model.Item2 == PrefixTypeBlock.Trainers)
+        {
+            <section id="trainers" class="section trainers">
+                <div class="container">
+            <div class="row gy-5">
+                @{
+                    foreach (var item in Model.Item1)
+                    {
+                        <div class="col-lg-4 col-md-6 member" data-aos="fade-up" data-aos-delay="100">
+                            <div class="member-img">
+                                <img src="~/assets/assets/img/team/@item.Profile" class="img-fluid" alt="">
+                                <div class="social">
+                                    <a href="#"><i class="bi bi-twitter-x"></i></a>
+                                    <a href="#"><i class="bi bi-facebook"></i></a>
+                                    <a href="#"><i class="bi bi-instagram"></i></a>
+                                    <a href="#"><i class="bi bi-linkedin"></i></a>
+                                </div>
+                            </div>
+                            <div class="member-info text-center">
+                                <h4>@item.GetFio()</h4>
+                                <span>@(item.ChessTitle.HasValue && !noTitul.Contains((ChessTitle)item.ChessTitle) ? item.ChessTitle : "")</span>
+                                <p>@($"{(item.ChessTitle.HasValue && !noTitul.Contains((ChessTitle)item.ChessTitle) ? EnumHelper.GetDescriptionEnum(item.ChessTitle) : (headers.settingsHeaders.TryGetValue("TrainersTitle", out string TrainersTitle) ? TrainersTitle : ""))} {item.Trophy}")</p>
+                            </div>
+                        </div>
+
+                        <!-- End Team Member -->
+                    }
+                }
+            </div>
+        </div>
+        </section>
+        }
+        else if (Model.Item2 == PrefixTypeBlock.None)
+        {
+    <section id="trainers-index" class="section trainers-index">
+
+        <div class="container">
+            <div class="row">
+                @{
+                    foreach (var item in Model.Item1)
+                    {
+                        <div class="col-lg-4 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="100">
+                            <div class="member">
+                                <img src="~/assets/assets/img/trainers/@item.PreviewTrainerPhoto" class="img-fluid" alt="">
+                                <div class="member-content">
+                                    <h4>@item.GetFio()</h4>
+                                    <span>@item.City</span>
+                                    <p>
+                                        @($"{(item.ChessTitle.HasValue && !noTitul.Contains((ChessTitle)item.ChessTitle) ? item.ChessTitle : "")} {(item.ChessTitle.HasValue && !noTitul.Contains((ChessTitle)item.ChessTitle) ? EnumHelper.GetDescriptionEnum(item.ChessTitle) : (headers.settingsHeaders.TryGetValue("TrainersTitle", out string TrainersTitle) ? TrainersTitle : ""))} {item.Trophy}")
+                                    </p>
+                                    <div class="social">
+                                        <a href=""><i class="bi bi-twitter-x"></i></a>
+                                        <a href=""><i class="bi bi-facebook"></i></a>
+                                        <a href=""><i class="bi bi-instagram"></i></a>
+                                        <a href=""><i class="bi bi-linkedin"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- End Team Member -->
+                    }
+                }
+
+        </div>
+        </div>
+        </section>
+        }
+    <!-- /Trainers Index Section -->
+
+  
+
+   

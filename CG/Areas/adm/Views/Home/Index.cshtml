@@ -1,0 +1,267 @@
+﻿@using CG.Domain
+@using CG.Domain.Entities
+@using CG.Domain.Enum
+@using CG.Helpers
+@model ApplicationUser
+@{
+    Layout = "_Layout_admin";
+    ViewData["Title"] = "Панель управления";
+    var myCourses = ViewData["MyCourses"] != null ? (List<Course>)ViewData["MyCourses"] : new List<Course>();
+    var myWebinars = ViewData["MyWebinars"] != null ? (List<Webinar>)ViewData["MyWebinars"] : new List<Webinar>();
+}
+
+@await Html.PartialAsync("BreadcrumbsPartial")
+<div class="content mt-3">
+    <div class="section-courses col-sm-12">
+        <div class="section-title card-title">
+            <strong class="title">Активные анонсы</strong>
+        </div>
+            @foreach (var item in myCourses)
+        {
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-white bg-flat-color-@item.DirectoryStatusCourses.Id.ToString()">
+                <div class="card-header">
+                        <strong class="card-title">Анонс</strong>  <strong class="float-right">@item.DirectoryStatusCourses.Name</strong>
+                </div>
+                <div class="card-body pb-0">
+                    <div class="dropdown float-right">
+                        <button class="btn bg-transparent dropdown-toggle theme-toggle text-light" type="button" id="dropdownMenuButton1" data-toggle="dropdown">
+                            <i class="fa fa-cog"></i>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <div class="dropdown-menu-content right_t konk">
+                                    <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/course/Card/@item.Id">Карточка</a>
+                                    <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/course/Index/@item.Id">Детали</a>
+                                    <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/course/EditCourse/@item.Id">Редактировать</a>
+                                    <a class="dropdown-item" href="javascript:void(0)" onclick="DeleteCourse(@item.Id)">Удалить</a>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="mb-0">
+                       @item.Name                    
+                    </h4>
+                    <p class="text-light">
+                        Участников
+                    <span class="count">@item.Purchases</span>
+                    </p> 
+                    <div class="chart-wrapper px-0" style="height:100px;" height="100">
+                        <canvas id="widgetChart1_@item.Id"></canvas>
+                    </div>
+
+                </div>
+                <div class="card-footer">
+                        <div class="stars">
+                        @for (var i = 1; i <= 5; i++)
+                        {
+                            if (5 >= i)
+                            {
+                                <i class="fa fa-star" style="color:#ffc107"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-star-o"></i>
+                            }
+                        }                
+                            <button type="button" class="btn btn-info m-l-10 m-b-10 float-right">
+                                Отзывы
+                            <span class="badge badge-light">1</span>
+                        </button> 
+                    </div>
+                </div>
+            </div>
+        </div>    
+        }
+    </div>
+    <div class="section-webinars col-sm-12">
+        <div class="section-title card-title">
+                <strong class="title">Активные турниры</strong>
+            </div>
+            @foreach (var item in myWebinars)
+        {
+            <div class="col-sm-6 col-lg-3">
+                <div class="card text-white bg-flat-color-@item.DirectoryStatusCourses.Id.ToString()">
+                    <div class="card-header">
+                        <strong class="card-title">Турнир</strong>  <strong class="float-right">@item.DirectoryStatusCourses.Name</strong>
+                    </div>
+                    <div class="card-body pb-0">
+                        <div class="dropdown float-right">
+                            <button class="btn bg-transparent dropdown-toggle theme-toggle text-light" type="button" id="dropdownMenuButton1" data-toggle="dropdown">
+                                <i class="fa fa-cog"></i>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <div class="dropdown-menu-content right_t konk">
+                                    <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/Card/@item.Id">Карточка</a>
+                                    <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/Index/@item.Id">Детали</a>
+                                    <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/EditWebinar/@item.Id">Редактировать</a>
+                                    <a class="dropdown-item" href="#">Удалить</a>
+                                </div>
+                            </div>
+                        </div>
+                        <h4 class="mb-0">
+                            @item.Name
+                        </h4>
+                        <p class="text-light">
+                            Просмотров
+                            <span class="count">@item.Purchases</span>
+                        </p>
+                        <div class="chart-wrapper px-0" style="height:100px;" height="100">
+                            <canvas id="widgetChart1_@item.Id"></canvas>
+                        </div>
+
+                    </div>
+                    <div class="card-footer">
+                        <div class="stars">
+                            @for (var i = 1; i <= 5; i++)
+                            {
+                                if (5 >= i)
+                                {
+                                    <i class="fa fa-star" style="color:#ffc107"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-star-o"></i>
+                                }
+                            }
+                            <button type="button" class="btn btn-info m-l-10 m-b-10 float-right">
+                                Отзывы
+                                <span class="badge badge-light">1</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div> <!-- .content -->
+<script>
+        $(".info_k").click(function () {
+        var el = $(this).siblings('.info_lonk');
+        if (el.length > 0) {
+            if (el[0].classList.contains('open')) {
+                el.removeClass('open');
+            }
+            else {
+                el.addClass('open');
+            }
+        }
+    });
+</script>
+<script>    
+    function DeleteCourse(id) {
+
+        $.ajax({
+            url: '/DeleteCourse/' + id,
+            type: 'DELETE',
+            success: function (result) {
+                if (result) {
+                    window.location.href = '@(Url.Action("Index", "Home", null, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))';
+                }
+            }
+        });
+    }
+</script>
+<style>
+    .konk .info_k .ico {
+        background: url(../img/konk_ul.svg) right no-repeat;
+        display: inline-block;
+        width: 9px;
+        height: 6px;
+        float: none;
+        vertical-align: middle;
+        transition: .3s
+    }
+
+    .konk .info_k.open .ico {
+        -moz-transform: rotate(-180deg);
+        -o-transform: rotate(-180deg);
+        -webkit-transform: rotate(-180deg);
+        transform: rotate(-180deg)
+    }
+
+    .konk .info_lonk {
+        position: absolute;
+        background: #F0F0F0;
+        border-radius: 7px;
+        padding: 15px 10px;
+        width: 180px;
+        -webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,0.15);
+        -moz-box-shadow: 3px 3px 3px 0 rgba(0,0,0,0.15);
+        box-shadow: 3px 3px 3px 0 rgba(0,0,0,0.15);
+        display: none;
+        left: 55px;
+        z-index: 2
+    }
+
+        .konk .info_lonk.open {
+            display: block
+        }
+
+        .konk .info_lonk .item {
+            font-size: 15px;
+            color: #000;
+            display: block;
+            margin-bottom: 12px;
+            padding-left: 25px;
+            line-height: 18px;
+            cursor: pointer
+        }
+
+            .konk .info_lonk .item:last-child {
+                margin-bottom: 0
+            }
+
+            .konk .info_lonk .item.active {
+                background: url(../img/check_new.svg) left 4px no-repeat
+            }
+
+            .konk .info_lonk .item span {
+                font-size: 12px;
+                color: #757575;
+                display: block
+            }
+
+    .konk a {
+        color: #1792CF;
+        text-decoration: none;
+        font-size: 13px
+    }
+
+        .konk a .ico {
+            background: url(../img/konk_ul.svg) right no-repeat;
+            display: inline-block;
+            width: 9px;
+            height: 6px;
+            vertical-align: middle;
+            transition: .3s;
+            margin-left: 5px
+        }
+
+        .konk a.open .ico {
+            -moz-transform: rotate(-180deg);
+            -o-transform: rotate(-180deg);
+            -webkit-transform: rotate(-180deg);
+            transform: rotate(-180deg)
+        }
+
+    .konk .info_lonk.open {
+        display: block
+    }
+
+    .konk .info_lonk .item {
+        font-size: 15px;
+        color: #000;
+        display: block;
+        margin-bottom: 12px;
+        padding-left: 25px;
+        line-height: 18px;
+        cursor: pointer
+    }
+
+        .konk .info_lonk .item:last-child {
+            margin-bottom: 0
+        }
+
+        .konk .info_lonk .item.active {
+            background: url(../img/check_new.svg) left 4px no-repeat
+        }
+</style>

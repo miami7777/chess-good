@@ -1,0 +1,76 @@
+﻿@using CG.Domain.Entities
+@using CG.Areas.adm.Models
+@using CG.Domain
+@using CG.Domain.Entities
+@using CG.Domain.Enum
+@using CG.Helpers
+@using CG.Models
+
+@{
+    ViewData["Title"] = "Добавление контроля";
+    Layout = "_Layout_Admin";
+}
+@model ClockTournament
+@await Html.PartialAsync("BreadcrumbsPartial")
+<div class="content mt-3">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <strong>Новый контроль</strong>
+            </div>
+
+            @using (Html.BeginForm("SaveClockTournament", "Home", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+            {
+                <div class="card-body card-block">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.Name, "Название", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите название контроля", @name = "name" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body card-block">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.Description, "Описание", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите описание", @name = "name" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body card-block">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.Limit, "Время", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.Limit, new { htmlAttributes = new { @class = "form-control", @placeholder = "Время в минутах", @name = "name" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body card-block">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.Increment, "Добавление", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.Increment, new { htmlAttributes = new { @class = "form-control", @placeholder = "Добавление за ход в секундах", @name = "name" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fa fa-dot-circle-o"></i> Сохранить
+                    </button>
+                    <button type="reset" class="btn btn-danger btn-sm">
+                        <i class="fa fa-ban"></i> Сбросить
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

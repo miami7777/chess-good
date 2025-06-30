@@ -1,0 +1,74 @@
+﻿@using CG.Domain
+@using CG.Domain.Entities
+@using CG.Domain.Enum
+@using CG.Helpers
+@model List<ApplicationUser>
+@{
+    Layout = "_Layout_admin";
+    ViewData["Title"] = "Пользователи";
+}
+<link rel="stylesheet" href="~/vendors/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/vendors/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css">
+@await Html.PartialAsync("BreadcrumbsPartial")
+<div class="content mt-3">
+    <div class="animated fadeIn">
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <strong class="card-title">Пользователи</strong>
+                    </div>
+                    <div class="card-body">
+                        <table id="bootstrap-data-table-export" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Имя пользователя</th>
+                                    <th>Email</th>
+                                    <th>ФИО</th>
+                                    <th>Титул</th>
+                                    <th>Дата рождения</th>  
+                                    <th>Роль</th>
+                                    <th>Профиль Lichess</th> 
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    var listRolesIds = item?.UserRoles?.Select(x => x.RoleId)?.ToList() ?? new List<string?>();
+                                    var listRoles = new List<string>();
+                                    foreach (string roleId in listRolesIds)
+                                    {
+                                        Int32.TryParse(roleId, out int value);
+                                        if (Enum.IsDefined(typeof(Role), value-1))
+                                            listRoles.Add(((Role)value-1).ToString());
+                                    }
+                                    
+                                    var roles = String.Join(",", listRoles);
+                                    <tr>
+                                        <td>@item.UserName</td>
+                                        <td>@item.Email</td>
+                                        <td>@item.GetFio()</td>
+                                        <td>@item.ChessTitle</td>
+                                        <td>@item.DateBirthday</td>
+                                        <td>@roles</td>
+                                        <td>@item.LichessUserId</td>
+                                        <td>
+                                            <a href="~/editUser/@item.Id.ToString()" class="btn btn-outline-primary"><i class="fa fa-pencil"></i></a>
+                                            <a href="~/EditUserRoles/@item.Id.ToString()" class="btn btn-outline-primary"><i class="fa fa-plus"></i></a>
+                                        </td>
+                                    </tr>  
+                                }
+                            </tbody>
+                        </table>
+                        <button id="addUser" type="button" class="btn btn-outline-primary" onclick="AddUsers();"><i class="fa fa-star"></i>&nbsp; Добавить пользователя</button>
+                        <button id="deleteUser" type="button" class="btn btn-outline-dangear"><i class="fa fa-times"></i>&nbsp; Удалить пользователя</button>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div><!-- .animated -->
+</div><!-- .content -->

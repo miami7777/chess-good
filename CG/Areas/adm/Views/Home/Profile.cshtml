@@ -1,0 +1,281 @@
+﻿@using CG.Domain
+@using CG.Domain.Enum
+@using CG.Helpers
+@using CG.Models
+@model UserViewModel
+@{
+    Layout = "_Layout_admin";
+    ViewData["Title"] = "Мой профиль";
+    var avatar = Model.Avatar ?? "default.jpg";
+    List<ChessTitle> noTitul = new List<ChessTitle>
+    {
+      ChessTitle.Category1,
+      ChessTitle.Category2,
+      ChessTitle.Category3,
+      ChessTitle.CategoryYoung3,
+      ChessTitle.CategoryYoung2,
+      ChessTitle.CategoryYoung1,
+      ChessTitle.None
+    };
+    List<ChessTitle> fideOrgTitul = new List<ChessTitle>
+    {
+      ChessTitle.DI,
+      ChessTitle.FI,
+      ChessTitle.FIO,
+      ChessTitle.FST,
+      ChessTitle.FT,
+      ChessTitle.АФ,
+      ChessTitle.ИА
+    };
+}
+@await Html.PartialAsync("BreadcrumbsPartial")
+
+<div class="col-xl-3 col-lg-6">
+    <section class="card">
+        <div class="twt-feed blue-bg">
+            @if (!noTitul.Contains(Model.ChessTitle))
+            {
+                <div class="corner-ribon black-ribon">
+                    <i class="fa fa-chess">@Model.ChessTitle</i>
+                </div>
+            }
+            <div class="fa fa-chess wtt-mark">@Model.ChessTitle</div>
+
+            <div class="media">
+                <a href="#">
+                    <img class="align-self-center rounded-circle mr-3" style="width:85px; height:85px;" alt="" src="~/assets/assets/img/avatar/@avatar">
+                </a>
+                <div class="media-body">
+                    <h2 class="text-white display-6">@Model.FIO</h2>
+                    <p class="text-light"></p>
+                </div>
+            </div>
+        </div>
+        <div class="weather-category twt-category">
+            <ul>
+                <li class="active">
+                    <h5>@(Model?.Perfs?.Blitz?.Games ?? 0)</h5>
+                    Сыграно партий
+                </li>
+                <li>
+                    <h5>@(Model?.Perfs?.Blitz?.Games ?? 0)</h5>
+                    Сыграно турниров
+                </li>
+                <li>
+                    <h5>@Model.Lessons</h5>
+                    Решено задач
+                </li>                
+            </ul>
+        </div> 
+        @if (Model.ChessTitle != ChessTitle.None)
+            {
+                <div class="location text-sm-center">@(EnumHelper.GetDescriptionEnum(Model.ChessTitle))</div>
+            }
+        @if (Model.ProfileLichess != null)
+        {
+            var linkProfile = $"https://lichess.org/@/{@Model.ProfileLichess}";
+            <div class="location text-sm-center"><a href="@linkProfile">@Model.ProfileLichess</a></div>
+        }
+        <div class="text-sm-center">@(Model.EmailConfirmed ? "Аккаунт подтверждён" : "Аккаунт не подтверждён")</div>
+        <div class="location text-sm-center">@Model.Age</div>
+        <div class="stars location text-sm-center">
+            @for (var i = 1; i <= 5; i++)
+            {
+                if (Model.Rating >= i)
+                {
+                    <i class="fa fa-star" style="color:#ffc107"></i>
+                }
+                else
+                {
+                    <i class="fa fa-star-o"></i>
+                }
+            }
+        </div>
+        <div class="location text-sm-left">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <a href="#"> <i class="fa fa-home"></i> На сайте <span class="badge badge-primary pull-right">@(UserHelper.GetPrefixAge(Model.Stag))</span></a>
+                </li>
+                @if (Model.ChessTitle != ChessTitle.None)
+                 {
+                    <li class="list-group-item">
+                        <a href="#"> <i class="fa fa-tasks"></i> Звание получено <span class="badge badge-danger pull-right">@Model.YearReceiveTitle год</span></a>
+                    </li>
+                }
+                <li class="list-group-item">
+                    <a href="#"> <i class="fa fa-bell-o"></i> Турниров <span class="badge badge-success pull-right">@Model.StudentsCount</span></a>
+                </li>               
+            </ul>
+        </div>
+        <footer class="twt-footer">            
+            <a href="#"><i class="fa fa-map-marker"></i></a>
+            @Model.Region , @Model.City
+            <span class="pull-right">
+                @if (Model.LichessData == null)
+                    {
+                    <button id="linkLichessProfile" type="button" class="btn btn-outline-primary mb-2" onclick="LinkLichess();"><i class="fa fa-star"></i>&nbsp; Связать аккаунт с Lichess аккаунтом</button>
+                }
+                else
+                {
+                    <button id="removelinkLichessProfile" type="button" class="btn btn-outline-primary mb-2" onclick="RemoveLinkLichess();"><i class="fa fa-star"></i>&nbsp; Отвязать Lichess аккаунт</button>
+                }                
+                <button id="editProfile" type="button" class="btn btn-outline-primary"><i class="fa fa-star"></i>&nbsp; Редактировать</button>
+            </span>             
+        </footer>
+    </section>    
+</div>
+@if (Model.Perfs != null)
+{
+    <section class="rating-data">
+        <div class="content mt-3">
+            <div class="animated fadeIn">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="stat-widget-one">
+                                    <div class="stat-icon dib"><i class="ti-angle-double-right text-success border-success"></i></div>
+                                    <div class="stat-content dib">
+                                        <div class="stat-text">Пуля</div>
+                                        <div class="stat-digit">@(Model?.Perfs?.Bullet?.Rating.ToString() ?? "")</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="stat-widget-one">
+                                    <div class="stat-icon dib"><i class="ti-arrow-right text-primary border-primary"></i></div>
+                                    <div class="stat-content dib">
+                                        <div class="stat-text">Блиц</div>
+                                        <div class="stat-digit">@(Model?.Perfs?.Blitz?.Rating.ToString() ?? "")</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="stat-widget-one">
+                                    <div class="stat-icon dib"><i class="ti-exchange-vertical text-warning border-warning"></i></div>
+                                    <div class="stat-content dib">
+                                        <div class="stat-text">Рапид</div>
+                                        <div class="stat-digit">@(Model?.Perfs?.Rapid?.Rating.ToString() ?? "")</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="stat-widget-one">
+                                    <div class="stat-icon dib"><i class="ti-angle-right text-danger border-danger"></i></div>
+                                    <div class="stat-content dib">
+                                        <div class="stat-text">Классика</div>
+                                        <div class="stat-digit">@(Model?.Perfs?.Classical?.Rating.ToString() ?? "")</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>           
+        </div>       
+    </section>
+    <section class="rating-inc-data">
+        <div class="content mt-3">
+            <div class="animated fadeIn">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="stat-widget-one">
+                                    <div class="stat-icon dib"><i class="ti-angle-double-right text-success border-success"></i></div>
+                                    <div class="stat-content dib">
+                                        <div class="stat-text">Пуля c добавлением</div>
+                                        <div class="stat-digit">@(Model?.Perfs?.BulletInc?.Rating.ToString() ?? "")</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="stat-widget-one">
+                                    <div class="stat-icon dib"><i class="ti-arrow-right text-primary border-primary"></i></div>
+                                    <div class="stat-content dib">
+                                        <div class="stat-text">Блиц с добавлением</div>
+                                        <div class="stat-digit">@(Model?.Perfs?.BlitzInc?.Rating.ToString() ?? "")</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="stat-widget-one">
+                                    <div class="stat-icon dib"><i class="ti-exchange-vertical text-warning border-warning"></i></div>
+                                    <div class="stat-content dib">
+                                        <div class="stat-text">Рапид с добавлением</div>
+                                        <div class="stat-digit">@(Model?.Perfs?.RapidInc?.Rating.ToString() ?? "")</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="stat-widget-one">
+                                    <div class="stat-icon dib"><i class="ti-angle-right text-danger border-danger"></i></div>
+                                    <div class="stat-content dib">
+                                        <div class="stat-text">Классика с добавлением</div>
+                                        <div class="stat-digit">@(Model?.Perfs?.ClassicalInc?.Rating.ToString() ?? "")</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>           
+        </div>
+    </section>
+    @if (Model != null && Model.Roles != null && Model.Roles.Contains("Организатор"))
+    {
+        <a id="orgTournament" href="~/auth/GetOrgTournament">Хочу организовывать турниры</a>
+    }
+    @if (Model != null && !Model.EmailConfirmed)
+    {
+        <a id="confirmEmail" href="~/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/account/setEmail">Подтвердить аккаунт</a>
+    }
+    @if (Model != null && Model.EmailConfirmed)
+    {
+        <a id="resetPassword" href="~/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/account/forget">Сменить пароль</a>
+    }
+}
+<script>
+    $(document).ready(function () {
+        $('#editProfile').on('click',
+            function () {
+                window.location.href = '@(Url.Action("EditProfile", "Home", null, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))';
+            });
+    });
+    function LinkLichess() {        
+        window.location.href = '@(Url.Action("LinkLichessAccessToken", "Auth", new { prefix = "_user" }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))';
+    }
+    function RemoveLinkLichess() {
+        window.location.href = '@(Url.Action("RemoveLinkLichess", "Auth", null, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))';
+    }    
+</script>

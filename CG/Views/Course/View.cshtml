@@ -1,0 +1,129 @@
+﻿@using CG.Domain.Entities
+@using CG.Domain.Enum
+@using CG.Models
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    ViewBag.Title = headers.settingsHeaders.TryGetValue("ViewCourse", out string ViewCourse) ? ViewCourse : "";
+    ViewBag.Description = Model.Description.Length > 180 ? Model.Description.Substring(0, 180) + "..." : Model.Description;
+    
+}
+@model Course
+<main class="main">
+    @await Html.PartialAsync("PageTitle")
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+    @foreach (var item in Model.CourseDetails)
+    {
+        var fileContentChapter = Model.CourseFiles.Where(x => x.TypeCourseFiles == TypeCourseFiles.ContentChapter && x.Id == item.Chapters.ChapterVideoId).FirstOrDefault();
+        <div id="chapter_@item.Chapters.Id">
+                <h3>@item.Chapters.Name</h3>
+                    <p class="fst-italic">@item.Chapters.Header</p>
+                <p>
+                    @item.Chapters.Description
+                </p>
+            @if (fileContentChapter != null)
+            {
+                <video width="600" height="400" controls preload="auto">
+                    <source src="@(Url.Action("DownloadVideo", "Course", new { id = fileContentChapter?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))" type="video/webm">
+                Your browser does not support the video tag.
+            </video>
+                            <p>Рейтинг на основе оценок пользователей</p>
+                            <div class="stars">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                </div>
+            }
+        </div>
+        }     
+        </div>
+        </div>
+        <section class="review-course">
+                <div class="review-course-wrap">
+                    <div class="review-course-item">
+                        <img src="~/assets/assets/img/testimonials/testimonials-1.jpg" )" class="review-course-img" alt="">
+                        <h3>Марк</h3>
+                        <h4>Ученик</h4>
+                        <div class="stars">
+                            @for (var i = 1; i <= 5; i++)
+                            {
+                                if (5 >= i)
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star"></i>
+                                }
+                            }
+                        </div>
+                        <p>
+                            <i class="bi bi-quote quote-icon-left"></i>
+                            <span>
+                                Класный урок
+                            </span>
+                            <i class="bi bi-quote quote-icon-right"></i>
+                        </p>
+                    </div>
+                    <div class="review-course-wrap">
+                        <div class="review-course-item">
+                            <img src="~/assets/assets/img/testimonials/testimonials-2.jpg" )" class="review-course-img" alt="">
+                            <h3>Марк</h3>
+                            <h4>Ученик</h4>
+                            <div class="stars">
+                                @for (var i = 1; i <= 5; i++)
+                                {
+                                    if (5 >= i)
+                                    {
+                                        <i class="bi bi-star-fill"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star"></i>
+                                    }
+                                }
+                            </div>
+                            <p>
+                                <i class="bi bi-quote quote-icon-left"></i>
+                                <span>
+                                    Класный урок
+                                </span>
+                                <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-course-wrap">
+                    <div class="review-course-item">
+                        <img src="~/assets/assets/img/testimonials/testimonials-4.jpg" )" class="review-course-img" alt="">
+                        <h3>Марк</h3>
+                        <h4>Ученик</h4>
+                        <div class="stars">
+                            @for (var i = 1; i <= 5; i++)
+                            {
+                                if (5 >= i)
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star"></i>
+                                }
+                            }
+                        </div>
+                        <p>
+                            <i class="bi bi-quote quote-icon-left"></i>
+                            <span>
+                                Класный урок
+                            </span>
+                            <i class="bi bi-quote quote-icon-right"></i>
+                        </p>
+                    </div>
+                </div>
+        </section>        
+    
+    </div>
+</main>

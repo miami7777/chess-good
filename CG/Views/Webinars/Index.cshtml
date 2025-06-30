@@ -1,0 +1,45 @@
+﻿@using CG.Domain
+@using CG.Domain.Entities
+@using CG.Models
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    ViewBag.Title = headers.settingsHeaders.TryGetValue("HeaderWebinars", out string HeaderWebinars) ? HeaderWebinars : "";
+    ViewBag.Description = headers.settingsHeaders.TryGetValue("DescriptionWebinars", out string DescriptionWebinars) ? DescriptionWebinars : "";
+    var allWebinars = ViewData["AllWebinars"] != null ? (List<Webinar>)ViewData["AllWebinars"] : new List<Webinar>();
+}
+<main class="main">
+    @await Html.PartialAsync("PageTitle")    
+    <!-- Events Section -->
+    <section id="events" class="events section">
+
+        <div class="container" data-aos="fade-up">
+
+            <div class="row">
+                @{
+                    foreach (var item in allWebinars)
+                    {
+                        var previewFile = item.WebinarFiles.FirstOrDefault(x => x.TypeWebinarFiles == CG.Domain.Enum.TypeWebinarFiles.Preview);
+                        <div class="col-md-6 d-flex align-items-stretch">
+                            <div class="card">
+                                <div class="card-img">
+                                    <img src="@(Url.Action("DownloadThumb", "Webinar", new { id = previewFile?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))"  alt="...">
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="">@item.Name</a></h5>
+                                    <p class="fst-italic text-center">@item.StartTimeWebinar.ToString("dddd,d MMMM HH:mm")</p>
+                                    <p class="card-text">@item.Description</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                </div>
+
+        </div>
+
+    </section><!-- /Events Section -->
+
+</main>
+
+@await Html.PartialAsync("LandingFooterPartial")
+

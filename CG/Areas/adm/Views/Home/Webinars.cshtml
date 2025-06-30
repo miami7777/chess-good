@@ -1,0 +1,88 @@
+﻿@using CG.Domain.Entities
+
+@{
+    Layout = "_Layout_admin";
+    ViewData["Title"] = "Турниры";
+}
+@model List<Webinar>
+@await Html.PartialAsync("BreadcrumbsPartial")
+<div class="content mt-3">
+    <div class="section-title">
+        <strong class="title">Мои турниры</strong>
+    </div>
+    @foreach (var item in Model)
+    {
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-white bg-flat-color-@item.DirectoryStatusCourses.Id.ToString()">
+                <div class="card-header">
+                    <strong class="card-title">Турнир</strong>  <strong class="float-right">@item.DirectoryStatusCourses.Name</strong>
+                </div>
+                <div class="card-body pb-0">
+                    <div class="dropdown float-right">
+                        <button class="btn bg-transparent dropdown-toggle theme-toggle text-light" type="button" id="dropdownMenuButton1" data-toggle="dropdown">
+                            <i class="fa fa-cog"></i>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <div class="dropdown-menu-content">
+                                <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/Card/@item.Id">Карточка</a>
+                                <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/Index/@item.Id">Детали</a>
+                                <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/EditWebinar/@item.Id">Редактировать</a>                             
+                                <a class="dropdown-item" href="#">Удалить</a>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="mb-0">
+                        @item.Name
+                    </h4>
+                    <p class="text-light">
+                        Просмотров
+                        <span class="count">@item.Purchases</span>
+                    </p>
+                    <div class="chart-wrapper px-0" style="height:100px;" height="100">
+                        <canvas id="widgetChart1"></canvas>
+                    </div>
+
+                </div>
+                <div class="card-footer">
+                    <div class="stars">
+                        @for (var i = 1; i <= 5; i++)
+                        {
+                            if (5 >= i)
+                            {
+                                <i class="fa fa-star" style="color:#ffc107"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-star-o"></i>
+                            }
+                        }
+                        <button type="button" class="btn btn-info m-l-10 m-b-10 float-right">
+                            Отзывы
+                            <span class="badge badge-light">1</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div> <!-- .content -->
+<footer class="footer">
+    <div class="card">
+        <div class="card-header">
+            @* <strong>Button with Icons </strong>
+            <small>Use <code>&lt;i&gt;</code></small> *@
+        </div>
+        <div class="card-body">
+            <button id="addWebinar" type="button" class="btn btn-outline-primary"><i class="fa fa-star"></i>&nbsp; Добавить турнир</button>
+        </div>
+    </div><!-- /# card -->
+</footer>
+<script>
+    $(document).ready(function () {
+        $('#addWebinar').on('click',
+            function () {
+                window.location.href = '@(Url.Action("CreateWebinar", "Webinar", null, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))';
+            });
+    });
+</script>

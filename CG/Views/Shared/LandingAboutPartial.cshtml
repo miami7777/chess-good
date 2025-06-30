@@ -1,0 +1,44 @@
+﻿@model PrefixTypeBlock
+@using CG.Helpers
+@using CG.Models.Enum
+@using System.Globalization
+@{
+    var culture = CultureInfo.CurrentCulture;
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    var prefix = Model;
+}
+<!-- About Section -->
+<section id="about" class="about section">
+
+    <div class="container">
+
+        <div class="row gy-4">
+
+            <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
+                <img src="~/assets/assets/img/about.jpg" class="img-fluid" alt="">
+            </div>
+
+            <div class="col-lg-6 order-2 order-lg-1 content" data-aos="fade-up" data-aos-delay="200">
+                <h3>@(headers.settingsHeaders.TryGetValue("Title"+prefix, out string TitleAdvantage) ? TitleAdvantage : "")</h3>
+                <p class="fst-italic">
+                    @(headers.settingsHeaders.TryGetValue("Description"+prefix, out string DescriptionAdvantage) ? DescriptionAdvantage : "")
+                </p>
+                <ul>
+                    <li><i class="bi bi-check-circle"></i> <span>@(headers.settingsHeaders.TryGetValue("Adv1About", out string Adv1About) ? Adv1About : "")</span></li>
+                    <li><i class="bi bi-check-circle"></i> <span>@(headers.settingsHeaders.TryGetValue("Adv2About", out string Adv2About) ? Adv2About : "")</span></li>
+                    <li><i class="bi bi-check-circle"></i> <span>@(headers.settingsHeaders.TryGetValue("Adv3About", out string Adv3About) ? Adv3About : "")</span></li>
+                    <li><i class="bi bi-check-circle"></i> <span>@(headers.settingsHeaders.TryGetValue("Adv4About", out string Adv4About) ? Adv4About : "")</span></li>
+                    <li><i class="bi bi-check-circle"></i> <span>@(headers.settingsHeaders.TryGetValue("Adv5About", out string Adv5About) ? Adv5About : "")</span></li>
+                </ul>
+                <a href="~/adm/@culture.Name.ToString()" class="read-more"><span>@(headers.settingsHeaders.TryGetValue("Button" + prefix, out string ButtonAdvantage) ? ButtonAdvantage : "")</span><i class="bi bi-arrow-right"></i></a>
+            </div>
+
+        </div>
+
+    </div>
+
+</section><!-- /About Section -->
+
+  
+
+   

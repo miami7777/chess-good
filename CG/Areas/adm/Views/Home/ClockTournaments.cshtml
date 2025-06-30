@@ -1,0 +1,77 @@
+﻿@using CG.Domain
+@using CG.Domain.Entities
+@using CG.Domain.Enum
+@using CG.Helpers
+@model List<ClockTournament>
+@{
+    Layout = "_Layout_admin";
+    ViewData["Title"] = "Контроли";
+}
+<link rel="stylesheet" href="~/vendors/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/vendors/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css">
+@await Html.PartialAsync("BreadcrumbsPartial")
+<div class="content mt-3">
+    <div class="animated fadeIn">
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <strong class="card-title">Контроли</strong>
+                    </div>
+                    <div class="card-body">
+                        <table id="bootstrap-data-table-export" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Описание</th>
+                                    <th>Лимит</th>
+                                    <th>Добавление</th>                                    
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.Name</td>
+                                        <td>@item.Description</td>
+                                        <td>@item.Limit</td>
+                                        <td>@item.Increment</td>                                        
+                                        <td>
+                                            <a href="~/editClock/@item.Id.ToString()" class="btn btn-outline-primary"><i class="fa fa-pencil"></i></a>
+                                            <a href="javascript:void(0)" class="btn btn-outline-danger" onclick="DeleteClock(@item.Id)"><i class="fa fa-trash-o"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <button id="addClock" type="button" class="btn btn-outline-primary"><i class="fa fa-star"></i>&nbsp; Добавить контроль</button>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div><!-- .animated -->
+</div><!-- .content -->
+<script>
+    $(document).ready(function () {
+        $('#addClock').on('click',
+            function () {
+                window.location.href = '@(Url.Action("AddClock", "Home", null, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))';
+            });
+    });
+    function DeleteClock(id) {
+
+        $.ajax({
+            url: '/DeleteClock/' + id,
+            type: 'DELETE',
+            success: function (result) {
+                if (result) {
+                    window.location.href = '@(Url.Action("ClockTournaments", "Home", null, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))';
+                }
+            }
+        });
+    }
+</script>

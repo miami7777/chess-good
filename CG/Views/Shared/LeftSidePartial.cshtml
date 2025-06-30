@@ -1,0 +1,111 @@
+﻿@using System.Globalization
+@{
+    var role = "User";
+    if (User.IsInRole("admin")) role = "Админ";
+    else if (User.IsInRole("organizer")) role = "Организатор"; 
+    var culture = CultureInfo.CurrentCulture;
+}
+<aside id="left-panel" class="left-panel">
+    <nav class="navbar navbar-expand-sm navbar-default">
+
+        <div class="navbar-header">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fa fa-bars"></i>
+            </button>
+            <a class="navbar-brand" href="./">ChessGood<br />@{@role}</a>
+            <a class="navbar-brand hidden" href="./adm/@culture.Name.ToString()">@{@role.Substring(0,1)}</a>
+        </div>
+
+        <div id="main-menu" class="main-menu collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="~/adm/@culture.Name.ToString()"> <i class="menu-icon fa fa-dashboard"></i>Панель управления</a>
+                    <a href="~/adm/@culture.Name.ToString()/home/profile"> <i class="menu-icon fa fa-dashboard"></i>Мой профиль</a>
+                </li>                
+                    @if (User.IsInRole("admin"))
+                    {
+                        <h3 class="menu-title">Административная часть</h3><!-- /.menu-title -->
+                        <li class="menu-item-has-children dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-laptop"></i>Настройки</a>
+                            <ul class="sub-menu children dropdown-menu">
+                            <li><i class="fa fa-puzzle-piece"></i><a href="~/adm/@culture.Name.ToString()/home/headers">Заголовки</a></li>
+                                <li><i class="fa fa-id-badge"></i><a href="ui-badges.html">Меню</a></li>
+                                <li><i class="fa fa-bars"></i><a href="ui-tabs.html">Кнопки</a></li>
+                                <li><i class="fa fa-share-square-o"></i><a href="ui-social-buttons.html">Контактные данные</a></li>
+                            <li><i class="fa fa-id-card-o"></i><a href="~/adm/@culture.Name.ToString()/home/statuses">Статусы</a></li>
+                            <li><i class="fa fa-exclamation-triangle"></i><a href="~/adm/@culture.Name.ToString()/home/users">Пользователи</a></li>
+                            <li><i class="fa fa-exclamation-triangle"></i><a href="~/adm/@culture.Name.ToString()/home/roles">Роли</a></li>
+                            <li><i class="fa fa-spinner"></i><a href="~/adm/@culture.Name.ToString()/home/clocktournaments">Контроли времени</a></li>
+                                <li><i class="fa fa-fire"></i><a href="ui-modals.html">Вопросы</a></li>
+                                <li><i class="fa fa-book"></i><a href="ui-switches.html">Контакты</a></li>
+                            <li><i class="fa fa-th"></i><a href="~/adm/@culture.Name.ToString()/home/categories">Категории</a></li>
+                                <li><i class="fa fa-file-word-o"></i><a href="ui-typgraphy.html">Услуги</a></li>                        
+                            </ul>
+                        </li>
+                        <li class="menu-item-has-children dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-table"></i>Анонсы</a>
+                            <ul class="sub-menu children dropdown-menu">                                
+                                <li><i class="fa fa-table"></i><a href="tables-data.html">Продажи</a></li>
+                                <li><i class="fa fa-table"></i><a href="tables-basic.html">Статистика</a></li>
+                                <li><i class="fa fa-table"></i><a href="tables-data.html">Заказы</a></li>
+                            <li><i class="fa fa-table"></i><a href="tables-data.html">Параметры</a></li>
+                            <li><i class="fa fa-table"></i><a href="tables-data.html">Конструктор</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item-has-children dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-table"></i>Турниры</a>
+                            <ul class="sub-menu children dropdown-menu">                                
+                                <li><i class="fa fa-table"></i><a href="tables-data.html">Расписание</a></li>
+                                <li><i class="fa fa-table"></i><a href="tables-data.html">Продажи</a></li>
+                                <li><i class="fa fa-table"></i><a href="tables-basic.html">Статистика</a></li>
+                                <li><i class="fa fa-table"></i><a href="tables-data.html">Заказы</a></li>
+                            <li><i class="fa fa-table"></i><a href="tables-data.html">Параметры</a></li>
+                            <li><i class="fa fa-table"></i><a href="tables-data.html">Конструктор</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item-has-children dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-th"></i>Интеграция</a>
+                            <ul class="sub-menu children dropdown-menu">
+                                <li><i class="menu-icon fa fa-th"></i><a href="forms-basic.html">Lichess</a></li>
+                                <li><i class="menu-icon fa fa-th"></i><a href="forms-advanced.html">Сервис видеоконференций</a></li>
+                            </ul>
+                        </li>
+                    }
+                @if (User.IsInRole("organizer") || User.IsInRole("admin"))
+                {
+                    <h3 class="menu-title">Организаторская</h3><!-- /.menu-title -->
+
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Анонсы</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="fa fa-table"></i><a href="~/adm/@culture.Name.ToString()/home/courses">Архив</a></li> 
+                        </ul>
+                    </li>
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Стримы</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="fa fa-table"></i><a href="~/adm/@culture.Name.ToString()/home/webinars">Архив</a></li>
+                        </ul>
+                    </li>
+                }
+                @if (User.IsInRole("user") || User.IsInRole("admin"))
+                {
+                    <h3 class="menu-title">Пользовательская</h3><!-- /.menu-title -->
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Анонсы</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="fa fa-table"></i><a href="tables-basic.html">Архив</a></li>
+                          
+                        </ul>
+                    </li>
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Стримы</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="fa fa-table"></i><a href="tables-basic.html">Архив</a></li>
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </nav>
+</aside><!-- /#left-panel -->

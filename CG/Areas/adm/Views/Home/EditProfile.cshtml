@@ -1,0 +1,124 @@
+﻿@using CG.Areas.adm.Models
+@using CG.Domain
+@using CG.Domain.Entities
+@using CG.Domain.Enum
+@using CG.Helpers
+@using CG.Models
+
+@{
+    ViewData["Title"] = "Редактирование профиля";
+    Layout = "_Layout_Admin";   
+}
+@model UserViewModel
+@await Html.PartialAsync("BreadcrumbsPartial")
+<div class="content mt-3">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <strong>Основные данные</strong> профиля
+            </div>
+            
+                @using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+                {
+                    <div class="card-body card-block">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.UserName, "Имя пользователя", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <p class="form-control-static">@Model.UserName</p>
+                        </div>
+                    </div>
+                    @if (Model.EmailConfirmed)
+                    {
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                @Html.LabelFor(model => model.Email, "Email", htmlAttributes: new { @class = "form-control-label" })
+                            </div>
+                            <div class="col-12 col-md-9">
+                                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Ваш email", @name = "email" } })
+                            </div>
+                        </div>
+                    }
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.Name, "Имя", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Ваше имя", @name = "name" } })
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.Surname, "Фамилия", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.Surname, new { htmlAttributes = new { @class = "form-control", @placeholder = "Ваша фамилия", @name = "surname" } })
+                        </div>
+                    </div>                   
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.DateBirthday, "Дата рождения", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                @Html.EditorFor(model => model.DateBirthday, new { type = "text", htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <small class="form-text text-muted">ex. 99/99/9999</small>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.Sex, "Пол", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.DropDownListFor(model => model.Sex, Html.GetEnumSelectList(typeof(Sex)), htmlAttributes: new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.Stag, "Стаж", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.Stag, new { type = "number", htmlAttributes = new { @class = "form-control", @min = "0", @placeholder = "0" } })
+                            <small class="form-text text-muted">Введите ваш стаж</small>
+                        </div>
+                    </div>                                        
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.Country, "Страна", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.Country, new { htmlAttributes = new { @class = "form-control", @placeholder = "", @name = "country" } })
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.Region, "Регион", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.Region, new { htmlAttributes = new { @class = "form-control", @placeholder = "", @name = "region" } })
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.LabelFor(model => model.City, "Город", htmlAttributes: new { @class = "form-control-label" })
+                        </div>
+                        <div class="col-12 col-md-9">
+                            @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "", @name = "city" } })
+                        </div>
+                    </div>
+                </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fa fa-dot-circle-o"></i> Сохранить
+                        </button>
+                        <button type="reset" class="btn btn-danger btn-sm">
+                            <i class="fa fa-ban"></i> Сбросить
+                        </button>
+                    </div>
+                }            
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+﻿@using System.Globalization
+@{
+    var culture = CultureInfo.CurrentCulture;
+    var CurrentlyOpenedLink = new Uri(String.Format("{0}://{1}{2}{3}", Context.Request.Scheme, Context.Request.Host, Context.Request.Path, Context.Request.QueryString));
+    var bodyClass = CurrentlyOpenedLink.AbsolutePath.ToLower() == "/" + culture.Name.ToString() + "/account/login" || CurrentlyOpenedLink.AbsolutePath.ToLower() == "/"  + culture.Name.ToString() + "/account/register" ? "bg-dark" : "";
+}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en">
+<!--<![endif]-->
+
+<head>
+    @await Html.PartialAsync("MetatagsPartial")   
+    @{
+        if (CurrentlyOpenedLink.AbsolutePath.ToLower() == "/" + culture.Name.ToString() + "/chess/index" ||
+        CurrentlyOpenedLink.AbsolutePath.ToLower().Contains("/chess/game"))
+        {
+            @await Html.PartialAsync("ChessCssPartial")
+        }
+        else if (CurrentlyOpenedLink.AbsolutePath.ToLower() != "/" + culture.Name.ToString() + "/account/login" && CurrentlyOpenedLink.AbsolutePath.ToLower() != "/" + culture.Name.ToString() + "account/register")
+        {
+            @await Html.PartialAsync("LandingCssPartial")
+        }
+        else
+        {
+            @await Html.PartialAsync("CssPartial")
+        }
+    }
+</head>
+
+<body class="@bodyClass">
+    @{
+        if (CurrentlyOpenedLink.AbsolutePath.ToLower() == "/" + culture.Name.ToString() + "/chess/index" ||
+        CurrentlyOpenedLink.AbsolutePath.ToLower().Contains("/chess/game"))
+        {
+            @await Html.PartialAsync("LandingHeaderPartial")
+        }
+        else if (CurrentlyOpenedLink.AbsolutePath.ToLower() != "/" + culture.Name.ToString() + "/account/login" && CurrentlyOpenedLink.AbsolutePath.ToLower() != "/" + culture.Name.ToString() + "/account/register")
+        @await Html.PartialAsync("LandingHeaderPartial")
+    }    
+    @RenderBody()
+    @{
+        if (CurrentlyOpenedLink.AbsolutePath.ToLower() == "/" + culture.Name.ToString() + "/chess/index" ||
+        CurrentlyOpenedLink.AbsolutePath.ToLower().Contains("/chess/game"))
+        {
+            @await Html.PartialAsync("ChessScriptsPartial")
+        }
+        else
+        if (CurrentlyOpenedLink.AbsolutePath.ToLower() != "/" + culture.Name.ToString() + "/account/login" && CurrentlyOpenedLink.AbsolutePath.ToLower() != "/" + culture.Name.ToString() + "/account/register")
+        {            
+            @await Html.PartialAsync("LandingScriptsPartial")
+        }
+        else
+        {
+            @await Html.PartialAsync("ScriptsPartial")
+        }        
+    }    
+</body>
+
+</html>

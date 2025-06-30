@@ -1,0 +1,43 @@
+﻿@using CG.Domain.Entities
+@using CG.Domain.Enum
+@using CG.Models
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    ViewBag.Title = headers.settingsHeaders.TryGetValue("ViewCourse", out string ViewCourse) ? ViewCourse : "";
+    ViewBag.Description = Model.Description.Length > 180 ? Model.Description.Substring(0, 180) + "..." : Model.Description;
+    bool isAvailable = false; // нужно проверять есть ли доступ к турниру у пользователя
+  
+}
+@model Course
+<main class="main">
+    @await Html.PartialAsync("PageTitle")
+    <div class="container">
+        @if (!isAvailable) {
+            <div>
+                У вас нет доступа к турниру!
+            </div>
+            return;
+        }
+        else {        
+        foreach (var item in Model.CourseDetails)
+        {
+            var fileContentChapter = Model.CourseFiles.Where(x => x.TypeCourseFiles == TypeCourseFiles.ContentChapter && x.Id == item.Chapters.ChapterVideoId).FirstOrDefault();
+            <div class="" id="chapter_@item.Chapters.Id">
+                <h3>@item.Chapters.Name</h3>
+                <p class="fst-italic">@item.Chapters.Header</p>
+                <p>
+                    @item.Chapters.Description
+                </p>
+                @if (fileContentChapter != null)
+                {
+                    <video width="600" height="400" controls preload="auto">
+                        <source src="@(Url.Action("DownloadVideo", "Course", new { id = fileContentChapter?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))" type="video/webm">
+                        Your browser does not support the video tag.
+                    </video>                       
+                }
+                   
+            </div>                    
+            }
+        }
+    </div>
+</main>
