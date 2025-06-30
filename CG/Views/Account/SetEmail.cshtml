@@ -1,0 +1,27 @@
+﻿@using System.Globalization
+@using CG.Models
+@{
+    var culture = CultureInfo.CurrentCulture;
+}
+@model  ForgetViewModel
+<div class="sufee-login d-flex align-content-center flex-wrap">
+    <div class="container">
+        <div class="login-content">
+            <div class="login-logo">
+                <a href="/@culture.Name.ToString()">
+                    @* <img class="align-content" src="images/logo.png" alt=""> *@
+                    <h1>ChessGood</h1>
+                </a>
+            </div>
+            <div class="login-form">                
+                <form asp-area="" asp-controller="Account" asp-action="SetEmail" method="POST">                    
+                    <div class="form-group">
+                        <label asp-for="Email">Email</label>
+                        <input asp-for="Email" type="text" class="form-control" placeholder="Email">
+                    </div>                    
+                    <button type="submit" class="btn btn-primary btn-flat m-b-30 m-t-30">OK</button>                                       
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+﻿@using System.Globalization
+@using CG.Domain.Entities
+@using CG.Models
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    ViewBag.Title = headers.settingsHeaders.TryGetValue("HeaderCourses", out string HeaderCourses) ? HeaderCourses : "";
+    ViewBag.Description = headers.settingsHeaders.TryGetValue("DescriptionCourses", out string DescriptionCourses) ? DescriptionCourses : "";
+    var allCourses = ViewData["AllCourse"] != null ? (List<Course>)ViewData["AllCourse"] : new List<Course>();
+    var culture = CultureInfo.CurrentCulture;
+}
+<main class="main">
+
+    @await Html.PartialAsync("PageTitle")
+    @await Html.PartialAsync("LandingCoursesPartial", allCourses)
+
+</main>
+@await Html.PartialAsync("LandingFooterPartial")

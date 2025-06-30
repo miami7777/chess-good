@@ -1,0 +1,8 @@
+{
+  "requires": true,
+  "lockfileVersion": 1,
+  "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
+    "stockfish": "^16.0.0"
+  }
+}

@@ -1,0 +1,94 @@
+﻿@using System.Globalization
+@using CG.Helpers
+@using CG.Models.Enum
+@{
+    string headerFooter = SettingsHelper.GetSettingsValue("Headers", "headerFooter");
+    string cityFooter = SettingsHelper.GetSettingsValue("Contacts", "cityFooter");
+    string regionFooter = SettingsHelper.GetSettingsValue("Contacts", "regionFooter");
+    string adressFooter = SettingsHelper.GetSettingsValue("Contacts", "adressFooter");
+    string phoneFooter = SettingsHelper.GetSettingsValue("Contacts", "phoneFooter");
+    string emailFooter = SettingsHelper.GetSettingsValue("Contacts", "emailFooter");
+    string subscribersFooter = SettingsHelper.GetSettingsValue("Footer", "subscribersFooter");
+    string subdescFooter = SettingsHelper.GetSettingsValue("Footer", "subdescFooter");
+    string buttonFooter = SettingsHelper.GetSettingsValue("Buttons", "buttonFooter");
+    var culture = CultureInfo.CurrentCulture;
+}
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+}
+<footer id="footer" class="footer position-relative light-background">
+
+    <div class="container footer-top">
+        <div class="row gy-4">
+            <div class="col-lg-4 col-md-6 footer-about">
+                <a href="/@culture.Name.ToString()" class="logo d-flex align-items-center">
+                    <span class="sitename">@(headers.settingsHeaders.TryGetValue("TitleFooter", out string HeaderFooter) ? HeaderFooter : "")</span>
+                </a>
+                <div class="footer-contact pt-3">
+                    <p>@BaseConfiguration.City, @BaseConfiguration.Region</p>
+                    <p>@BaseConfiguration.Adress</p>
+                     <p><strong>@(headers.settingsHeaders.TryGetValue("EmailContact", out string EmailContact) ? EmailContact : ""):</strong> <span>@BaseConfiguration.Email</span></p>
+                </div>
+                <div class="social-links d-flex mt-4">
+                    <a href=""><i class="bi bi-twitter-x"></i></a>
+                    <a href=""><i class="bi bi-facebook"></i></a>
+                    <a href=""><i class="bi bi-instagram"></i></a>
+                    <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-3 footer-links">
+                <h4>@(headers.settingsHeaders.TryGetValue("TitleFooterMenu", out string TitleFooterMenu) ? TitleFooterMenu : "")</h4>
+                <ul>
+                    <li><a href="/@culture.Name.ToString()">Главная</a></li>
+                    @foreach (var opt in headers.footer_menu)
+                    {
+                        Enum.TryParse(opt, out FooterMenu footermenu);
+                        <li><a href="~/@culture.Name.ToString()/@EnumHelper.GetDescriptionEnum(footermenu)">@(headers.settingsHeaders.TryGetValue("Footer" + opt, out string value) ? value : "")</a></li>
+                    }                    
+                </ul>
+            </div>
+
+            <div class="col-lg-2 col-md-3 footer-links">
+                <h4>@(headers.settingsHeaders.TryGetValue("TitleServiceMenu", out string TitleServiceMenu) ? TitleServiceMenu : "")</h4>
+                <ul>
+                    @foreach (var opt in headers.service_menu)
+                    {
+                        Enum.TryParse(opt, out ServiceMenu footermenu);
+                        <li><a href="~/@culture.Name.ToString()/@EnumHelper.GetDescriptionEnum(footermenu)">@(headers.settingsHeaders.TryGetValue("ServiceMenu" + opt, out string ServiceMenu) ? ServiceMenu : "")</a></li>
+                    }
+                </ul>
+            </div>
+
+            <div class="col-lg-4 col-md-12 footer-newsletter">
+                <h4>@subscribersFooter@* Наша рассылка *@</h4>
+                <p>@subdescFooter@* Подпишись на нашу рассылку чтобы получать новости о нашей школе и предоставляемых услугах! *@</p>
+                <form action="" method="post" class="php-email-form">
+                    <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="@(headers.settingsHeaders.TryGetValue("ButtonSubscriber", out string ButtonSubscriber) ? ButtonSubscriber : "")"></div>
+                    <div class="loading">Загрузка</div>
+                    <div class="error-message"></div>
+                    <div class="sent-message">@(headers.settingsHeaders.TryGetValue("SendMessage", out string SendMessage) ? SendMessage : "")@* Вы подписались на получение последних новостей о школе. Спасибо! *@</div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+        <p>© <span>Copyright</span> <strong class="px-1 sitename">@(headers.settingsHeaders.TryGetValue("TitleFooter", out string TitleFooter) ? TitleFooter : "")</strong> <span>Все права защищены</span></p>
+        <div class="credits">            
+            Designed by <a href="">BootstrapMade</a>
+        </div>
+    </div>
+
+</footer>
+
+<!-- Scroll Top -->
+<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+<!-- Preloader -->
+<div id="preloader"></div>
+
+  
+
+   

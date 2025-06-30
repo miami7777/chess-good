@@ -1,0 +1,110 @@
+﻿@using CG.Domain.Entities
+@using CG.Models
+@model Course
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Просмотр курса";
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    var classNavChapterActive = "active show";
+    var classChapterActive = "active show";
+}
+<main class="main"> 
+
+    <!-- Courses Course Details Section -->
+    <section id="courses-course-details" class="courses-course-details section">
+
+        <div class="container" data-aos="fade-up">
+
+            <div class="row">
+                <div class="col-lg-8">
+                    @{
+                        var previewFile = Model.CourseFiles.FirstOrDefault(x => x.TypeCourseFiles == CG.Domain.Enum.TypeCourseFiles.PreviewDetails);
+                    }
+                    <img src="@(Url.Action("DownloadThumb", "Course", new { id = previewFile?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))" class="img-fluid" style="min-height:300px" alt="">
+
+                    <h3>@Model.Name</h3>
+                    <p>
+                        @Model.Description
+                    </p>
+                </div>
+                <div class="col-lg-4">
+
+                    <div class="course-info d-flex justify-content-between align-items-center">
+                        <h5>@(headers.settingsHeaders.TryGetValue("Trainer", out string Trainer) ? Trainer : "")</h5>
+                        <p><a href="#">@(Model.Trainer?.GetFio() ?? "")</a></p>
+                    </div>
+
+                    <div class="course-info d-flex justify-content-between align-items-center">
+                        <h5>@(headers.settingsHeaders.TryGetValue("Price", out string Price) ? Price : "")</h5>
+                        <p>@Model.Price.ToString() @Model.Currency.ToString()</p>
+                    </div>
+
+                    <div class="course-info d-flex justify-content-between align-items-center">
+                        <h5>@(headers.settingsHeaders.TryGetValue("Purchases", out string Purchases) ? Purchases : "")</h5>
+                        <p>@Model.Purchases.ToString()</p>
+                    </div>
+
+                    <div class="course-info d-flex justify-content-between align-items-center">
+                        <h5>@(headers.settingsHeaders.TryGetValue("Duration", out string Duration) ? Duration : "")</h5>
+                        <p>@Model.Duration.ToString()</p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </section><!-- /Courses Course Details Section -->
+    <!-- Tabs Section -->
+    <section id="tabs" class="tabs section">
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="row">
+                <div class="col-lg-3">
+                    <ul class="nav nav-tabs flex-column">
+                        @{
+                            int navIndex = 1;
+                            foreach (var item in Model.CourseDetails)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @classNavChapterActive" data-bs-toggle="tab" href="#tab-@navIndex">@item.Chapters.NavigationTitle</a>
+                                </li>
+                                @(classNavChapterActive = "")
+                                ;
+                                navIndex = navIndex + 1;
+                            }
+                        }
+                    </ul>
+                </div>
+                <div class="col-lg-9 mt-4 mt-lg-0">
+                    <div class="tab-content">
+                        @{
+                            int index = 1;
+                            foreach (var chapter in Model.CourseDetails)
+                            {
+                                <div class="tab-pane @classChapterActive" id="tab-@index">
+                                    <div class="row">
+                                        <div class="col-lg-8 details order-2 order-lg-1">
+                                            <h3>@chapter.Chapters.Name</h3>
+                                            <p class="fst-italic">@chapter.Chapters.Header </p>
+                                            <p> @chapter.Chapters.Description</p>
+                                        </div>
+                                        <div class="col-lg-4 text-center order-1 order-lg-2">
+                                            <img src="@(Url.Action("DownloadThumb", "Course", new { id = chapter.Chapters.ChapterPreviewId ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))" alt="" class="img-fluid">
+                                        </div>
+                                    </div>
+                                </div>
+                                @(classChapterActive = "")
+                                index = index + 1;
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section><!-- /Tabs Section -->
+
+</main>

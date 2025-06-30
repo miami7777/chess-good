@@ -1,0 +1,16 @@
+﻿@using CG.Domain
+@using CG.Domain.Entities
+@using CG.Helpers
+@using CG.Models.Enum
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    ViewBag.Title = headers.settingsHeaders.TryGetValue("HeaderTrainers", out string HeaderTrainers) ? HeaderTrainers : "";
+    ViewBag.Description = headers.settingsHeaders.TryGetValue("DescriptionTrainers", out string DescriptionTrainers) ? DescriptionTrainers : ""; //"Тренера нашей шахматной школы онлайн, имеют многолетнюю практику и опыт, они смогут подобрать индивидуальную программу для обучения шахматам и достижения максимально возможных результатов.";
+    var allTrainers = ViewData["AllTrainers"] != null ? (List<ApplicationUser>)ViewData["AllTrainers"] : new List<ApplicationUser>();
+}
+<main class="main">
+    @await Html.PartialAsync("PageTitle") 
+    @await Html.PartialAsync("LandingTrainersPartial", (allTrainers,PrefixTypeBlock.Trainers))
+</main>
+
+@await Html.PartialAsync("LandingFooterPartial")

@@ -1,0 +1,12 @@
+﻿@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    ViewBag.Title = headers.settingsHeaders.TryGetValue("HeaderContact", out string HeaderContact) ? HeaderContact : ""; 
+    ViewBag.Description = headers.settingsHeaders.TryGetValue("DescriptionContact", out string DescriptionContact) ? DescriptionContact : "";
+}
+<main class="main">
+    @await Html.PartialAsync("PageTitle")    
+    @await Html.PartialAsync("LandingContactPartial")
+
+</main>
+
+@await Html.PartialAsync("LandingFooterPartial")

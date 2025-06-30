@@ -1,0 +1,21 @@
+﻿@using System.Globalization
+@using CG.Models
+@{
+    var culture = CultureInfo.CurrentCulture;
+}
+<main style="min-height: 100vh;
+  margin: 0;">
+    <div class="page-title aos-init aos-animate" data-aos="fade">
+        <div class="heading">
+            <div class="container">
+                <div class="row d-flex justify-content-center text-center">
+                    <div class="col-lg-8">
+                        <h3>Поздравляем ваш аккаунт подтвержден!</h3>
+                        <p class="mb-0"> <a href="~/@culture.Name.ToString()/account/login?returnUrl=/adm" style="color:red"> Войти</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+@await Html.PartialAsync("LandingFooterPartial")

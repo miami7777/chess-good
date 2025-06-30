@@ -1,0 +1,15 @@
+﻿@using CG.Domain.Entities
+@using CG.Models
+@model Course
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Карточка курса";
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    var classNavChapterActive = "active show";
+    var classChapterActive = "active show";
+}
+<main class="main">
+
+    @await Html.PartialAsync("LandingCoursesPartial", new List<Course>{Model})
+
+</main>

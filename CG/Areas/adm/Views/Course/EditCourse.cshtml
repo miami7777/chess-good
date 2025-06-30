@@ -1,0 +1,995 @@
+﻿@using CG.Areas.adm.Models
+@using CG.Domain
+@using CG.Domain.Entities
+@using CG.Domain.Enum
+@using CG.Helpers
+
+@{
+    ViewData["Title"] = "Редактирование курса";
+    Layout = "_Layout_Course";
+    CoursePreview coursePreview = new CoursePreview();
+    var courseDetails = String.Join(",",Model.CourseDetails.Select(x => x.ChapterId.ToString()));
+    var statusList = ViewData["StatusCourse"] != null ? (List<DirectoryStatusCourses>)ViewData["StatusCourse"] : new List<DirectoryStatusCourses>(); 
+    var visiblePrivate = Model.TypeCourse == TypeCourse.Private ? "block" : "none";
+}
+@model Course
+@await Html.PartialAsync("BreadcrumbsPartial")
+
+<div class="content mt-3">
+    <div class="animated fadeIn">
+
+
+        <div class="row">
+            <div class="col-lg-6">                              
+                <div class="card">
+                    <div class="card-header">
+                        <strong>Основные данные </strong> курса
+                    </div>
+                    @using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal", onsubmit = "return courseFormSubmit(this);" }))
+                    {
+                        @Html.HiddenFor(model => model.StatusId)
+                        @Html.HiddenFor(model => model.TrainerId)
+                        @Html.HiddenFor(model => model.Price)
+                        <div class="card-body card-block">
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    @Html.LabelFor(model => model.TrainerId, "Ведущий", htmlAttributes: new { @class = "form-control-label" })
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <p class="form-control-static">@(ViewData["user"] != null ? ((ApplicationUser)ViewData["user"]).GetFio() : "")</p>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    @Html.LabelFor(model => model.Name, "Название", htmlAttributes: new { @class = "form-control-label" })
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите название курса", @name = "name_course" } })
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    @Html.LabelFor(model => model.Description, "Описание", htmlAttributes: new { @class = "form-control-label" })
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @placeholder = "Описание...", @name = "description_course", @rows = "9" })
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    @Html.LabelFor(model => model.CategoryId, "Категория", htmlAttributes: new { @class = "form-control-label" })
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    @Html.DropDownListFor(model => model.CategoryId, ViewData["Categories"] as SelectList, htmlAttributes: new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    @Html.LabelFor(model => model.Duration, "Длительность", htmlAttributes: new { @class = "form-control-label" })
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    @Html.EditorFor(model => model.Duration, new {  type = "number", htmlAttributes = new { @class = "form-control", @min = "0", @placeholder = "0" } })
+                                    <small class="form-text text-muted">Введите длительность курса</small>
+                                </div>
+                            </div>
+                            
+                            <div class="private_data" style="display:@visiblePrivate">
+                                <div class="row form-group">
+                                    <div class="col col-md-3">
+                                        @Html.Label("priceEdit", "Цена", htmlAttributes: new { @class = "form-control-label" })
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        @Html.Editor("priceEdit", new { htmlAttributes = new { @class = "form-control", @type= "number", @min = "0", @placeholder = "0,00",@step = "0.01" } })
+                                        <small class="form-text text-muted">Введите цену курса</small>
+                                    </div>
+                                </div>
+                                <div class="row form-group">
+                                    <div class="col col-md-3">
+                                        @Html.LabelFor(model => model.Currency, "Валюта", htmlAttributes: new { @class = "form-control-label" })
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        @Html.DropDownListFor(model => model.Currency, Html.GetEnumSelectList(typeof(Currency)), htmlAttributes: new { @class = "form-control" })
+                                    </div>
+                                </div>   
+                            </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fa fa-dot-circle-o"></i> Сохранить
+                        </button>
+                        <button type="reset" class="btn btn-danger btn-sm">
+                            <i class="fa fa-ban"></i> Сбросить
+                        </button>
+                    </div>
+                    }
+                </div>              
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>Превью </strong> курса
+                    </div>
+                    <div class="card-body card-block">
+                        @{
+                        var filePreview = Model.CourseFiles.Where(x => x.TypeCourseFiles == TypeCourseFiles.Preview).FirstOrDefault();                        
+                        var img = "background: url(" + (Url.Action("DownloadThumb", "Course", new { id = filePreview?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"])) + ")no-repeat; background-size:cover;height:140px;width:250px);";                        
+                        }
+                        @if (filePreview != null)
+                        {
+                                                        <div class="row form-group">                                    
+                                                            <div class="col-12 col-md-4">
+                                                                <div id="preview_course" class="file" style="@(img)">
+                                                                    <a href="#" id="selectFileUniversalPreview" class="file_up btn btn-outline-primary btn-sm">
+                                                                        <span>Изменить превью</span>
+                                                                    </a>
+                                                                </div>                                       
+                                                            </div>
+                                                            <div class="col-12 col-md-4">                                                    
+                                                                <div class="card-body">
+                                                                    <div class="right_t konk">
+                                                                        <div class="lbl req-field">Тип курса:</div>
+
+                                                                    <a href="javascript:void(0)" class="info_k info_k_undo_click" id="typeCourse">
+                                                                                @EnumHelper.GetDescriptionEnum((TypeCourse)Model.TypeCourse)
+                                                                            <div class="ico"></div>
+                                                                        </a>
+
+                                                                        <div class="dropdown-menu-content info_lonk">
+                                                                            @foreach (var item in Enum.GetValues(typeof(TypeCourse)))
+                                                                            {
+                                                                            <a id="divkind@(item)" class="dropdown-item item" onclick="changeCourseKind(this,'@item')">
+                                                                                @EnumHelper.GetDescriptionEnum((TypeCourse)item)
+                                                                            </a>
+                                                                            }
+                                                                        </div>                                                
+                                                                    </div>
+                                                                <div class="right_t konk">
+                                                                    <div class="lbl req-field">Статус курса:</div>
+
+                                                                    <a href="javascript:void(0)" class="info_k info_k_undo_click" id="statusCourse">
+                                                                        @(Model.DirectoryStatusCourses?.Name ?? "Выбрать")
+                                                                        <div class="ico"></div>
+                                                                    </a>
+
+                                                                    <div class="info_lonk">
+                                                                        @foreach (var item in statusList)
+                                                                        {
+                                                                        <div id="divkind@(item.Id)" class="item" onclick="changeStatusCourse(this,'@item.Id')">
+                                                                            @item.Name
+                                                                        </div>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                    <div class="clear"></div>
+                                                                    <label id="spOfferKindLabel" class="customerror" style="display: none;">Ошибка</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>                                            
+                        }                                     
+                        @using (Html.BeginForm("SavePreview", "Course", FormMethod.Post, new { enctype = "multipart/form-data", id = "fileuploadPreview", @class = "form-horizontal" }))
+                        {
+                            @Html.HiddenFor(model => model.Id)
+                            @Html.Hidden("preview", "")
+                            <div class="file_uploadPreview">                               
+
+                                <input id="GUIDUniversalPreview" name="GUID" type="hidden" value='@Model.Id.ToString()'>
+                                <input id="universal_field_idPreview" name="courseId" type="hidden" value=''>
+                                <input id="errorUniversalPreview" name="error" type="hidden" value="0">
+
+                                <input id="fileExtUniversalPreview" name="fileExt" type="hidden" value="">
+                                <input id="sizeUniversalPreview" name="size" type="hidden" value="">                                
+                                <div class="row form-group">
+                                    <div class="col col-md-3">
+                                        @* <label for="uploadedFileUniversal" class=" form-control-label">Добавить превью</label> *@
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        <input id="filePathUniversalPreview" name="filePath" type="text" class="form-control" style="display:none"  placeholder="Введите путь к файлу">
+                                        
+                                        <input id="uploadedFileUniversalPreview" type="file" style="display: none;" class="form-control" accept="true">
+                                    </div>
+                                </div>
+                                
+                                <label id="downloadFileErrorUniversalPreview" class="customerror" style="display: none;"></label>
+                                <label id="downloadFilesSizeErrorUniversalPreview" class="customerror" style="display: none;">Размеры картинки не подходят! Попробуйте выбрать другое изображение.</label>
+                                <label id="downloadFileExceptionErrorUniversalPreview" class="customerror" style="display: none;"></label>
+                                <label id="downloadFileFormatErrorUniversalPreview" class="customerror" style="display: none;"></label>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="OffersFilesDivUniversalPreview">
+                            </div>
+                            <div class="btn-group">
+                                <button id="addFileUniversalPreview" class="btn btn-primary btn-sm" type="button">Сохранить</button>
+                                <button class="btn btn-danger btn-sm" type="reset" onclick="location.reload()">Отмена</button>
+                            </div>
+                        }       
+                    
+                </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <strong>Превью на детальной странице </strong> курса
+                    </div>
+                    <div class="card-body card-block">
+                        @{
+                            var filePreviewDetails = Model.CourseFiles.Where(x => x.TypeCourseFiles == TypeCourseFiles.PreviewDetails).FirstOrDefault();
+                            var imgDetails = "background: url(" + (Url.Action("DownloadThumb", "Course", new { id = filePreviewDetails?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"])) + ")no-repeat; background-size:cover;height:140px;width:250px);";
+                        }
+                        @{
+                            if (filePreviewDetails != null)
+                            {
+                                <div class="row form-group">
+                                    <div class="col-12 col-md-4">
+                                        <div id="preview_details_course" class="file" style="@(imgDetails)">
+                                            <a href="#" id="selectFileUniversalPreviewDetails" class="file_up btn btn-outline-primary btn-sm">
+                                                <span>Изменить превью</span>
+                                            </a>
+                                        </div>
+                                    </div>                                        
+                                </div>
+                            }
+                        }                    
+                   
+                        @using (Html.BeginForm("SavePreviewDetails", "Course", FormMethod.Post, new { enctype = "multipart/form-data", id = "fileuploadPreviewDetails", @class = "form-horizontal" }))
+                        {
+                            @Html.HiddenFor(model => model.Id)
+                            @Html.Hidden("previewDetails", "")
+                            <div class="file_upload">
+
+                                <input id="GUIDUniversalPreviewDetails" name="GUID" type="hidden" value='@Model.Id.ToString()'>
+                                <input id="universal_field_idPreviewDetails" name="courseId" type="hidden" value=''>
+                                <input id="errorUniversalPreviewDetails" name="error" type="hidden" value="0">
+
+                                <input id="fileExtUniversalPreviewDetails" name="fileExt" type="hidden" value="">
+                                <input id="sizeUniversalPreviewDetails" name="size" type="hidden" value="">
+                                <div class="row form-group">
+                                    <div class="col col-md-3">
+                                        @* <label for="uploadedFileUniversal" class=" form-control-label">Добавить превью</label> *@
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        <input id="filePathUniversalPreviewDetails" name="filePath" type="text" class="form-control" style="display: none;" placeholder="Введите путь к файлу">
+                                       
+                                        <input id="uploadedFileUniversalPreviewDetails" type="file" style="display: none;" class="form-control" accept="true">
+                                    </div>
+                                </div>
+
+                                <label id="downloadFileErrorUniversalPreviewDetails" class="customerror" style="display: none;"></label>
+                                <label id="downloadFilesSizeErrorUniversalPreviewDetails" class="customerror" style="display: none;">Размеры картинки не подходят! Попробуйте выбрать другое изображение.</label>
+                                <label id="downloadFileExceptionErrorUniversalPreviewDetails" class="customerror" style="display: none;"></label>
+                                <label id="downloadFileFormatErrorUniversalPreviewDetails" class="customerror" style="display: none;"></label>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="OffersFilesDivUniversalPreviewDetails">
+                            </div>
+                            <div class="btn-group">
+                                <button id="addFileUniversalPreviewDetails" class="btn btn-primary btn-sm" type="button">Добавить</button>
+                                <button class="btn btn-danger btn-sm" type="reset" onclick="location.reload()">Отмена</button>
+                            </div>
+                        }                        
+                    </div> 
+            <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Программа курса</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="default-tab">
+                            <nav>
+                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                    @{
+                                        var active = "active";
+                                    }
+                                    @foreach(var chapter in Model.CourseDetails) {
+                                        <a class="nav-item nav-link tab @active" id="nav-@chapter.Chapters.Id-tab" data-toggle="tab" data-chapter="@chapter.Chapters.Id" href="#nav-@chapter.Chapters.Id" role="tab" aria-controls="nav-@chapter.Chapters.Id" aria-selected="@(!String.IsNullOrEmpty(active))">@chapter.Chapters.NavigationTitle</a>
+                                        @(active = "");
+                                    }                                    
+                                </div>
+                            </nav>
+                            
+                            <div class="tab-content pl-3 pt-2" id="nav-tabContent">
+                                @{
+                                    active = "active";
+                                    var show = "show";
+                                }
+                                    @foreach(var chapter in Model.CourseDetails) {
+                                    <div class="tab-pane fade @show @active" id="nav-@chapter.Chapters.Id" role="tabpanel" aria-labelledby="nav-@chapter.Chapters.Id-tab">
+                                    <h3>@chapter.Chapters.Name</h3>
+                                        <p class="fst-italic">@chapter.Chapters.Header</p>
+                                    <p>
+                                        @chapter.Chapters.Description
+                                    </p>
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <strong>Превью </strong> раздела
+                                            </div>
+                                            <div class="card-body card-block">
+                                                @{
+                                                var filePreviewChapter = Model.CourseFiles.Where(x => x.TypeCourseFiles == TypeCourseFiles.PreviewChapter && x.Id == chapter.Chapters.ChapterPreviewId).FirstOrDefault();
+                                                if (filePreviewChapter != null)
+                                                {                                                                                                               
+                                                                                <div class="row form-group">
+                                                                                    <div class="col col-md-3">
+                                                                                        Превью главы курса
+                                                                                    </div>
+                                                                                    <div class="col-12 col-md-9">
+                                                                                        <div class="file">
+                                                                                            <div>
+                                                                                                <img src="@(Url.Action("DownloadThumb", "Course", new { id = filePreviewChapter?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))" class="img-fluid" style="min-height:230px;max-height:230px" alt="...">
+                                                                                            </div>
+                                                                                            <div class="clear"></div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+
+                                                    }
+                                            }
+                                           
+                                                @using (Html.BeginForm("SavePreviewChapter", "Course", FormMethod.Post, new { enctype = "multipart/form-data", id = "fileuploadPreviewChapter_" + @chapter.ChapterId, @class = "form-horizontal" }))
+                                                {
+                                                    @Html.HiddenFor(model => model.Id)
+                                                    @Html.Hidden("previewChapter_"+chapter.ChapterId, "")
+                                                    <div class="file_uploadPreviewChapter_@chapter.ChapterId">
+
+                                                        <input id="GUIDUniversalPreviewChapter_@chapter.ChapterId"  name="GUID" type="hidden" value='@Model.Id.ToString()'>
+                                                        <input id="universal_field_idPreviewChapter_@chapter.ChapterId" name="courseId" type="hidden" value=''>
+                                                        <input id="errorUniversalPreviewChapter_@chapter.ChapterId" name="error" type="hidden" value="0">
+
+                                                        <input id="fileExtUniversalPreviewChapter_@chapter.ChapterId" name="fileExt" type="hidden" value="">
+                                                        <input id="sizeUniversalPreviewChapter_@chapter.ChapterId" name="size" type="hidden" value="">
+                                                        <div class="row form-group">
+                                                            <div class="col col-md-3">
+                                                                @* <label for="uploadedFileUniversal" class=" form-control-label">Добавить превью</label> *@
+                                                            </div>
+                                                            <div class="col-12 col-md-9">
+                                                                <input id="filePathUniversalPreviewChapter_@chapter.ChapterId" name="filePath" type="text" style="border:none" class="form-control" placeholder="Введите путь к файлу">
+                                                                <a href="#" id="selectFileUniversalPreviewChapter_@chapter.ChapterId" class="file_up btn btn-outline-primary btn-sm" prefix="PreviewChapter_@chapter.ChapterId">
+                                                                    <span>Обзор</span>
+                                                                </a>
+                                                                <input id="uploadedFileUniversalPreviewChapter_@chapter.ChapterId" type="file" style="display: none;" class="form-control" accept="true">
+                                                            </div>
+                                                        </div>
+
+                                                        <label id="downloadFileErrorUniversalPreviewChapter_@chapter.ChapterId" class="customerror" style="display: none;"></label>
+                                                        <label id="downloadFilesSizeErrorUniversalPreviewChapter_@chapter.ChapterId" class="customerror" style="display: none;">Размеры картинки не те!</label>
+                                                        <label id="downloadFileExceptionErrorUniversalPreviewChapter_@chapter.ChapterId" class="customerror" style="display: none;"></label>
+                                                        <label id="downloadFileFormatErrorUniversalPreviewChapter_@chapter.ChapterId" class="customerror" style="display: none;"></label>
+                                                        <div class="clear"></div>
+                                                    </div>
+                                                    <div class="OffersFilesDivUniversalPreviewChapter_@chapter.ChapterId">
+                                                    </div>
+                                                    <div class="btn-group">
+                                                        <button id="addFileUniversalPreviewChapter_@chapter.ChapterId" class="btn btn-primary btn-sm" type="button">Добавить</button>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <strong>Содержание </strong> раздела
+                                                </div>
+                                                <div class="card-body card-block">
+                                                    @{
+                                                    var fileContentChapter = Model.CourseFiles.Where(x => x.TypeCourseFiles == TypeCourseFiles.ContentChapter && x.Id == chapter.Chapters.ChapterVideoId).FirstOrDefault();
+                                                    if (fileContentChapter != null)
+                                                    {                                                                                                        
+                                                                                    <div class="row form-group">
+                                                                                        <div class="col col-md-3">
+                                                                                            Видео курса
+                                                                                        </div>
+                                                                                        <div class="col-12 col-md-9">
+                                                                                            <div class="file">
+                                                                                                <div>
+                                                                                                    <video width="400" height="300" controls preload="auto">
+                                                                                                        <source src="@(Url.Action("DownloadVideo", "Course", new { id = fileContentChapter?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))" type="video/webm">
+                                                                                                        Your browser does not support the video tag.
+                                                                                                    </video>
+                                                                                                </div>
+                                                                                                <div class="clear"></div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                        }
+                                                }
+                                               
+                                                    @using (Html.BeginForm("SaveContentChapter", "Course", FormMethod.Post, new { enctype = "multipart/form-data", id = "fileuploadContentChapter_" + @chapter.ChapterId, @class = "form-horizontal" }))
+                                                    {
+                                                        @Html.HiddenFor(model => model.Id)
+                                                        @Html.Hidden("contentChapter_" + chapter.ChapterId, "")
+                                                        <div class="file_uploadContentChapter_@chapter.ChapterId">
+
+                                                            <input id="GUIDUniversalContentChapter_@chapter.ChapterId" name="GUID" type="hidden" value='@Model.Id.ToString()'>
+                                                            <input id="universal_field_idContentChapter_@chapter.ChapterId" name="courseId" type="hidden" value=''>
+                                                            <input id="errorUniversalContentChapter_@chapter.ChapterId" name="error" type="hidden" value="0">
+
+                                                            <input id="fileExtUniversalContentChapter_@chapter.ChapterId" name="fileExt" type="hidden" value="">
+                                                            <input id="sizeUniversalContentChapter_@chapter.ChapterId" name="size" type="hidden" value="">
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    @* <label for="uploadedFileUniversal" class=" form-control-label">Добавить превью</label> *@
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <input id="filePathUniversalContentChapter_@chapter.ChapterId" name="filePath" type="text" style="border:none" class="form-control" placeholder="Введите путь к файлу">
+                                                                    <a href="#" id="selectFileUniversalContentChapter_@chapter.ChapterId" class="file_up btn btn-outline-primary btn-sm" prefix="ContentChapter_@chapter.ChapterId">
+                                                                        <span>Обзор</span>
+                                                                    </a>
+                                                                    <input id="uploadedFileUniversalContentChapter_@chapter.ChapterId" type="file" style="display: none;" class="form-control" accept="true">
+                                                                </div>
+                                                            </div>
+
+                                                            <label id="downloadFileErrorUniversalContentChapter_@chapter.ChapterId" class="customerror" style="display: none;"></label>
+                                                            <label id="downloadFilesSizeErrorUniversalContentChapter_@chapter.ChapterId" class="customerror" style="display: none;"></label>
+                                                            <label id="downloadFileExceptionErrorUniversalContentChapter_@chapter.ChapterId" class="customerror" style="display: none;"></label>
+                                                            <label id="downloadFileFormatErrorUniversalContentChapter_@chapter.ChapterId" class="customerror" style="display: none;"></label>
+                                                            <div class="clear"></div>
+                                                        </div>
+                                                        <div class="OffersFilesDivUniversalContentChapter_@chapter.ChapterId">
+                                                        </div>
+                                                        <div class="btn-group">
+                                                            <button id="addFileUniversalContentChapter_@chapter.ChapterId" class="btn btn-second btn-large" type="button">Добавить</button>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                @*  @if (files[i].TypeCourseFiles == TypeCourseFiles.Video)
+                                            {
+                                            <div>
+                                            <video width="400" height="300" controls preload="auto">
+                                            <source src="@(Url.Action("DownloadVideo", "Course", new { id = files[i]?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))" type="video/webm">
+                                            Your browser does not support the video tag.
+                                            </video>
+                                            </div>
+                                            } *@
+                                                <div class="card-footer">
+                                                </div>
+                                            </div>
+
+
+
+                                            @*  @if (files[i].TypeCourseFiles == TypeCourseFiles.Video)
+                                        {
+                                        <div>
+                                        <video width="400" height="300" controls preload="auto">
+                                        <source src="@(Url.Action("DownloadVideo", "Course", new { id = files[i]?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))" type="video/webm">
+                                        Your browser does not support the video tag.
+                                        </video>
+                                        </div>
+                                        } *@
+                                            <div class="card-footer">
+                                            </div>
+                                        </div>
+                                </div>
+                                    @(active = "")
+                                    @(show = "")
+                                    
+                                } 
+                            </div>    
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-dot-circle-o"></i> Добавить раздел
+                        </button>
+                        <button id="editChapter" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal">
+                            <i class="fa fa-dot-circle-o"></i> Изменить раздел
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal">
+                            <i class="fa fa-dot-circle-o"></i> Удалить раздел
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="largeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="largeModalLabel">Добавить раздел</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+             @using (Html.BeginForm("AddChapter", "Course", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+            {
+                @Html.Hidden("courseId",Model.Id)
+                <div class="modal-body">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @Html.Label("nav_add_course", "Навигационное название", htmlAttributes: new { @class = "form-control-label" })                           
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <input type="text" id="nav_add_course" name="NavigationTitle" placeholder="Введите навигационное название раздела" class="form-control">
+                        </div>
+                    </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="name_add_course" class=" form-control-label">Заголовок</label></div>
+                            <div class="col-12 col-md-9"><input type="text" id="name_add_course" name="Name" placeholder="Введите заголовок раздела" class="form-control"></div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="header_add_course" class=" form-control-label">Название</label></div>
+                            <div class="col-12 col-md-9"><input type="text" id="header_add_course" name="Header" placeholder="Введите название раздела" class="form-control"></div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3"><label for="description_add_course" class=" form-control-label">Описание</label></div>
+                            <div class="col-12 col-md-9"><textarea name="Description" id="description_add_course" rows="9" placeholder="Описание..." class="form-control"></textarea></div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+            }            
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="largeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="largeModalLabel">Изменить раздел</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+             @using (Html.BeginForm("EditChapter", "Course", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+            {
+                @Html.Hidden("courseId", Model.Id)
+                @Html.Hidden("chapterId")
+                <div class="modal-body">
+                    <div class="row form-group">
+                        <div class="col col-md-3"><label for="edit_nav_course" class=" form-control-label">Навигационное название</label></div>
+                        <div class="col-12 col-md-9"><input type="text" id="edit_nav_course" name="NavigationTitle" placeholder="Введите навигационное название раздела" class="form-control"></div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3"><label for="edit_name_course" class=" form-control-label">Заголовок</label></div>
+                        <div class="col-12 col-md-9"><input type="text" id="edit_name_course" name="Name" placeholder="Введите заголовок раздела" class="form-control"></div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3"><label for="edit_header_course" class=" form-control-label">Название</label></div>
+                        <div class="col-12 col-md-9"><input type="text" id="edit_header_course" name="Header" placeholder="Введите название раздела" class="form-control"></div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3"><label for="description_edit_course" class=" form-control-label">Описание</label></div>
+                        <div class="col-12 col-md-9"><textarea name="Description" id="description_edit_course" rows="9" placeholder="Описание..." class="form-control"></textarea></div>
+                    </div>                    
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Изменить</button>
+                </div>
+            }            
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticModalLabel">Удалить раздел</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (Html.BeginForm("DeleteChapter", "Course", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+            {
+                @Html.Hidden("courseId", Model.Id)
+                @Html.Hidden("chapterDeleteId")
+                <div class="modal-body">
+                    <p>
+                        Вы собираетесь удалить раздел  <span id="warningDeleteChapter"></span>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Ок</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.tab').click(function () {
+            var chapterId = $(this).attr('data-chapter');            
+            GetDataChapter(chapterId);
+        });
+        
+        $('#priceEdit').val($('#Price').val().replace(',','.'));
+        function GetDataChapter(id) {
+            var courseId = @Model.Id;
+            var url = '@(Url.Action("GetChapter", "Course"))';
+            $.getJSON(url, { courseId: courseId, chapterId: id }, function (res) {                
+                if (res != null) {                    
+                    $('#chapterId').val(res.id);
+                    $('#chapterDeleteId').val(res.id);
+                    $('#edit_nav_course').val(res.navigationTitle);
+                    $('#edit_name_course').val(res.name);
+                    $('#edit_header_course').val(res.header);
+                    $('#description_edit_course').val(res.description);
+                    $('#warningDeleteChapter').html(res.navigationTitle);
+                }
+            });
+        }        
+    });
+   
+    function courseFormSubmit(form) {        
+        $('#Price').val($('#priceEdit').val().replace('.',','));
+        return true;
+    }
+    $('#selectFileUniversalPreview').click(function () {
+        $('#uploadedFileUniversalPreview').trigger('click');
+    });
+
+    $('#uploadedFileUniversalPreview').change(function () {       
+        var file = $('#uploadedFileUniversalPreview')[0].files[0];
+        if (file != null) {
+            var name = file.name;
+            var file = this.files[0];
+            var img = new Image();
+
+            img.onload = function () {
+                var sizes = {
+                    width: this.width,
+                    height: this.height
+                };               
+                $("#preview_course").css('background-image', 'url(' + this.src + ')');
+                // URL.revokeObjectURL(this.src);
+                
+                if ((sizes.width / sizes.height) > 1.75 && (sizes.width / sizes.height) < 1.85) {
+                    $("#filePathUniversalPreview").val(name);
+                    $("#downloadFilesSizeErrorUniversalPreview").hide();
+                    $('#addFileUniversalPreview').attr("disabled", false);
+                }
+                else {
+                    $("#filePathUniversalPreview").val(null);
+                    $('#uploadedFileUniversalPreview').val("");
+                    $("#downloadFilesSizeErrorUniversalPreview").show();
+                    $('#addFileUniversalPreview').attr("disabled", true);
+                }
+            }
+
+            var objectURL = URL.createObjectURL(file);
+            img.src = objectURL;            
+        }
+    });
+
+    $('#addFileUniversalPreview').click(function () {
+        ClearFileErrorUniversal('Preview');
+        UploadFileInSystem('Preview');
+    });
+    $('#selectFileUniversalPreviewDetails').click(function () {
+        $('#uploadedFileUniversalPreviewDetails').trigger('click');
+    });
+   
+    $('#uploadedFileUniversalPreviewDetails').change(function () {
+        var file = $('#uploadedFileUniversalPreviewDetails')[0].files[0];
+        if (file != null) {
+            var name = file.name;
+            var file = this.files[0];
+            var img = new Image();
+
+            img.onload = function () {
+                var sizes = {
+                    width: this.width,
+                    height: this.height
+                };
+                                    $("#preview_details_course").css('background-image', 'url(' + this.src + ')');
+                //URL.revokeObjectURL(this.src);
+
+                if ((sizes.width / sizes.height) > 1.4 && (sizes.width / sizes.height) < 2.2) {
+                    $("#filePathUniversalPreviewDetails").val(name);
+                    $("#downloadFilesSizeErrorUniversalPreviewDetails").hide();
+                                        $('#addFileUniversalPreviewDetails').attr("disabled", false);
+                }
+                else {
+                    $("#filePathUniversalPreviewDetails").val(null);
+                    $('#uploadedFileUniversalPreview').val("");
+                    $("#downloadFilesSizeErrorUniversalPreviewDetails").show();
+                                        $('#addFileUniversalPreviewDetails').attr("disabled", true);
+                }
+            }
+
+            var objectURL = URL.createObjectURL(file);
+            img.src = objectURL;
+        }        
+    });
+
+    $('#addFileUniversalPreviewDetails').click(function () {
+        ClearFileErrorUniversal('PreviewDetails');
+        UploadFileInSystem('PreviewDetails');
+    });   
+    var details = '@courseDetails';
+    var arrDetails = details.split(',');
+    
+    arrDetails.forEach(function(index){
+        console.log('index0', index);
+        $('#selectFileUniversalPreviewChapter_'+index).click(function () {
+           
+            $('#uploadedFileUniversalPreviewChapter_'+index).trigger('click');
+            
+        });
+         $('#uploadedFileUniversalPreviewChapter_'+index).change(function () {
+            
+                var file = $('#uploadedFileUniversalPreviewChapter_'+index)[0].files[0];
+            if (file != null) {
+                var name = file.name;
+                var file = this.files[0];
+                var img = new Image();
+
+                img.onload = function () {
+                    var sizes = {
+                        width: this.width,
+                        height: this.height
+                    };
+                    URL.revokeObjectURL(this.src);
+
+                    if ((sizes.width / sizes.height) == 1) {
+                        $("#filePathUniversalPreviewChapter_"+index).val(name);
+                        $("#downloadFilesSizeErrorUniversalPreviewChapter_"+index).hide();
+                    }
+                    else {
+                        $("#filePathUniversalPreviewChapter_"+index).val(null);
+                        $('#uploadedFileUniversalPreviewChapter_'+index).val("");
+                        $("#downloadFilesSizeErrorUniversalPreviewChapter_"+index).show();
+                    }
+                }
+
+                var objectURL = URL.createObjectURL(file);
+                img.src = objectURL;
+            }
+                        
+            });
+        $('#addFileUniversalPreviewChapter_' + index).click(function () {            
+            ClearFileErrorUniversal("PreviewChapter_"+index);
+            UploadFileInSystem("PreviewChapter",index);
+        });
+
+
+        $('#selectFileUniversalContentChapter_' + index).click(function () {           
+            $('#uploadedFileUniversalContentChapter_' + index).trigger('click');
+
+        });
+        $('#uploadedFileUniversalContentChapter_' + index).change(function () {            
+            var file = $('#uploadedFileUniversalContentChapter_' + index)[0].files[0];
+            if (file != null) {
+                $("#filePathUniversalContentChapter_" + index).val(file.name);
+            }
+        });
+        $('#addFileUniversalContentChapter_' + index).click(function () {
+            ClearFileErrorUniversal("ContentChapter_" + index);
+            UploadFileInSystem("ContentChapter", index);
+        });
+
+    })
+   
+
+    
+    function ClearFileErrorUniversal(prefix) {
+        $("#downloadFileErrorUniversal" + prefix).hide();
+        // $("#downloadFilesSizeErrorUniversal" + prefix).hide();
+        $("#downloadFileExceptionErrorUniversal" + prefix).hide();
+        $("#downloadFileFormatErrorUniversal" + prefix).hide();
+    }
+    function UploadFileInSystem(prefix,index) {
+        var str = ""
+        if (index)
+            str = "_" + index;
+        document.getElementById("errorUniversal" + prefix + str).value = "0";
+        var file = document.getElementById("uploadedFileUniversal" + prefix + str).files[0];
+        if (file != null) {
+            document.getElementById("fileExtUniversal" + prefix + str).value = file.name.split(".").pop();
+            document.getElementById("sizeUniversal" + prefix + str).value = file.size;
+            var fileExt = document.getElementById("fileExtUniversal" + prefix + str).value.toLowerCase();
+
+
+            var maxFileSize = $("#MaxFileSize").val() * 1024;
+            var maxTotalFilesSize = $("#MaxSumFileSize").val() * 1024;
+            var size = document.getElementById("sizeUniversal" + prefix + str).value;
+            if (size >= maxFileSize) {
+                $("#downloadFileErrorUniversal" + prefix + str).show();
+
+                document.getElementById("errorUniversal" + prefix + str).value = "1";
+            }
+
+            if (parseInt($("#totalFilesSize" + prefix + str).val()) + parseInt(size) > maxTotalFilesSize) {
+                $("#downloadFileFormatErrorUniversal" + prefix + str).show();
+
+                document.getElementById("errorUniversal" + prefix + str).value = "1";
+            }
+            var formData = new FormData();
+
+            formData.append("FileUpload" + prefix + str, file);
+            formData.append("CourseId", document.getElementById("GUIDUniversal" + prefix + str).value);
+            formData.append("typeCourseFiles", prefix);
+            formData.append("chapterId", index);
+            formData.append("error", document.getElementById("errorUniversal" + prefix + str).value);
+            $.ajax({
+                type: "POST",
+                url: "/adm/ru/Course/FileCourseUploadUniversal",
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    location.reload();
+                },
+                error: function (result) {
+
+                    if (result.status == 400 && result.responseText != '')
+                        alert(result.responseText);
+                }
+            });
+        }       
+    }
+    function changeCourseKind(el,type) {
+        let courseId = '@Model.Id';
+        var formData = new FormData();       
+       
+        formData.append("courseId", courseId);
+        formData.append("type", type);
+        $.ajax({
+            type: "POST",
+            url: "/adm/ru/Course/ChangeCourseKind",
+            data: formData,
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                $(el).closest('.info_lonk').removeClass('open');
+               $('#typeCourse').html(result.rusName);
+                
+                if (result.engName == 1)
+                    $('.private_data').show();
+                else {
+                    $('.private_data').hide();               
+                }
+            },
+            error: function (result) {
+
+                if (result.status == 400 && result.responseText != '')
+                    alert(result.responseText);
+            }
+        });
+    }
+    function changeStatusCourse(el, status) {
+        let courseId = '@Model.Id';
+        var formData = new FormData();       
+
+        formData.append("courseId", courseId);
+        formData.append("status", status);
+        $.ajax({
+            type: "POST",
+            url: "/adm/ru/Course/ChangeCourseStatus",
+            data: formData,
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                $(el).closest('.info_lonk').removeClass('open');
+                $('#statusCourse').html(result);               
+            
+            },
+            error: function (result) {
+
+                if (result.status == 400 && result.responseText != '')
+                    alert(result.responseText);
+            }
+        });
+    }
+    $(".info_k").click(function () {
+        var el = $(this).siblings('.info_lonk');        
+        if (el.length > 0) {
+            if (el[0].classList.contains('open')) {             
+                el.removeClass('open');
+            }
+            else {
+                el.addClass('open');
+            }
+        }
+    });
+</script>
+
+<style>
+    .konk .info_k .ico {
+        background: url(../img/konk_ul.svg) right no-repeat;
+        display: inline-block;
+        width: 9px;
+        height: 6px;
+        float: none;
+        vertical-align: middle;
+        transition: .3s
+    }
+
+    .konk .info_k.open .ico {
+        -moz-transform: rotate(-180deg);
+        -o-transform: rotate(-180deg);
+        -webkit-transform: rotate(-180deg);
+        transform: rotate(-180deg)
+    }
+
+    .konk .info_lonk {
+        position: absolute;
+        background: #F0F0F0;
+        border-radius: 7px;
+        padding: 15px 10px;
+        width: 180px;
+        -webkit-box-shadow: 3px 3px 3px 0 rgba(0,0,0,0.15);
+        -moz-box-shadow: 3px 3px 3px 0 rgba(0,0,0,0.15);
+        box-shadow: 3px 3px 3px 0 rgba(0,0,0,0.15);
+        display: none;
+        left: 55px;
+        z-index: 2
+    }
+
+         .konk .info_lonk.open {
+            display: block
+        }
+
+        .konk .info_lonk .item {
+            font-size: 15px;
+            color: #000;
+            display: block;
+            margin-bottom: 12px;
+            padding-left: 25px;
+            line-height: 18px;
+            cursor: pointer
+        }
+
+           .konk .info_lonk .item:last-child {
+                margin-bottom: 0
+            }
+
+           .konk .info_lonk .item.active {
+                background: url(../img/check_new.svg) left 4px no-repeat
+            }
+
+           .konk .info_lonk .item span {
+                font-size: 12px;
+                color: #757575;
+                display: block
+            }
+
+    .konk a {
+        color: #1792CF;
+        text-decoration: none;
+        font-size: 13px
+    }
+
+        .konk a .ico {
+            background: url(../img/konk_ul.svg) right no-repeat;
+            display: inline-block;
+            width: 9px;
+            height: 6px;
+            vertical-align: middle;
+            transition: .3s;
+            margin-left: 5px
+        }
+
+        .konk a.open .ico {
+            -moz-transform: rotate(-180deg);
+            -o-transform: rotate(-180deg);
+            -webkit-transform: rotate(-180deg);
+            transform: rotate(-180deg)
+        }
+
+    .konk .info_lonk.open {
+        display: block
+    }
+
+    .konk .info_lonk .item {
+        font-size: 15px;
+        color: #000;
+        display: block;
+        margin-bottom: 12px;
+        padding-left: 25px;
+        line-height: 18px;
+        cursor: pointer
+    }
+
+        .konk .info_lonk .item:last-child {
+            margin-bottom: 0
+        }
+
+        .konk .info_lonk .item.active {
+            background: url(../img/check_new.svg) left 4px no-repeat
+        }
+</style>

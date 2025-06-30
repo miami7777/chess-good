@@ -1,0 +1,455 @@
+﻿@using System.Globalization
+@using CG.Domain
+@using CG.Domain.Entities
+@using CG.Helpers
+@using CG.Models.Enum
+@model int;
+@{
+    var myCounts = ViewData["MyCounts"] != null ? (Dictionary<string, int>)ViewData["MyCounts"] : new Dictionary<string, int>();
+    var myCategory = ViewData["MyCategory"] != null ? (List<DirectoryCategory>)ViewData["MyCategory"] : new List<DirectoryCategory>();
+    var popularCourses = ViewData["PopularCourse"] != null ? (List<Course>)ViewData["PopularCourse"] : new List<Course>();
+    var popularTrainers = ViewData["PopularTrainers"] != null ? (List<ApplicationUser>)ViewData["PopularTrainers"] : new List<ApplicationUser>();
+    var culture = CultureInfo.CurrentCulture;
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    var user = ViewData["User"] != null ? (ApplicationUser)ViewData["User"] : null;
+    var userRating = user != null && @user?.Perfs?.Blitz.Rating != null ? @user?.Perfs?.Blitz.Rating.ToString() : "1500?";
+    var avatar = "default.jpg";
+    var game = Model;
+}
+<div class=" container-fluid container-xl wraper">
+    <div class="lobby">
+        <div id="join" style="display:flex;flex-direction:column">
+
+            @if (user == null)
+            {
+                <div style="display:flex">
+                    <input type="text" class="form-control" id="min_game" placeholder="мин." />
+                    <input type="text" class="form-control" id="sec_game" placeholder="сек." />
+                    <input type="text" class="form-control" id="add_sec" placeholder="доб." />
+                </div>
+                <div style="display:flex;align-items:baseline">
+                    <input type="text" class="form-control" id="usernameInput" placeholder="Введите ваше имя" />
+                    <input id="gameId" style="display:none" type="text" value="@game" readonly="readonly" />
+                    <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame()"><span>Найти соперника</span></a>
+
+                </div>
+                <div style="display:flex; align-items: flex-start">
+                    <label class="switch switch-3d switch-warning mr-3">
+                        <input type="checkbox" class="switch-input" disabled>
+                        <span class="switch-label"></span>
+                        <span class="switch-handle"></span>
+                    </label>
+                    <p id="isRating">Товарищеская</p>
+                </div>
+
+            }
+            else
+            {
+                       <div style="display:flex">
+                    <input type="text" class="form-control" id="min_game" placeholder="мин." />
+                    <input type="text" class="form-control" id="sec_game" placeholder="сек." />
+                    <input type="text" class="form-control" id="add_sec" placeholder="доб." />
+                </div>
+                <div style="display:flex;align-items:baseline">
+                    <input id="usernameInput" style="display:none" type="text" value="@user.UserName" readonly="readonly" />
+                    <input id="gameId" style="display:none" type="text" value="@game" readonly="readonly" />
+                    <div style="display:flex;align-items:baseline">
+                        <input id="userRating" style="display:none" type="text" value="@userRating" readonly="readonly" />
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame()"><span>Найти соперника</span></a>
+                    </div>
+                    <div style="display:flex; align-items: flex-start">
+
+                        <label class="switch switch-3d switch-warning mr-3">
+                            <input id="switchRating" type="checkbox" class="switch-input" onclick="SelectRatingGame()">
+                            <span class="switch-label"></span>
+                            <span class="switch-handle"></span>
+                        </label>
+                        <p id="isRating">Товарищеская</p>
+                    </div>
+
+                </div>
+            }
+            <audio id="audioMove" src="https://chess-good.ru/sounds/6a897efd83627af.mp3" preload="none"></audio>
+            <audio id="audioStart" src="https://chess-good.ru/sounds/2f63ff459178cf2.mp3" preload="none"></audio>
+            <audio id="audioTik" src="https://chess-good.ru/sounds/1650ec5222ba51a.mp3" preload="none"></audio>
+        </div>
+
+        <div id="playerInfo"></div>
+        <div class="zone">
+            <div style=" display:none">
+                <div class="buttonContainer">
+                    <div>
+                        <div class="levelLabel">
+                            <span>
+                                Level:
+                            </span>
+                        </div>
+                    </div>
+                    <select id="level">
+                        <option value="1">Level 1</option>
+                        <option value="2">Level 2</option>
+                        <option value="3">Level 3</option>
+                        <option value="4">Level 4</option>
+                        <option value="5">Level 5</option>
+                        <option value="6">Level 6</option>
+                        <option value="7">Level 7</option>
+                        <option value="8">Level 8</option>
+                        <option value="9">Level 9</option>
+                        <option value="10">Level 10</option>
+                    </select>
+                    <div>
+                        <button id="newGame">New Game</button>
+                    </div>
+                    <div>
+                        <button id="switchSides">Switch Sides</button>
+                    </div>
+                </div>
+            </div>
+            <div class="main-game">
+                <div class="container-game">
+                    <div id="gamePlayerTopInfo">
+                        <div class="gameInfo">
+                            <div class="clock_player2">
+                                <div class="player">
+                                    <div class="player_info icon icon__danger">
+                                        <div id="tooltip_player2" class="my_tooltip my_tooltip_player my_tooltip__player2">
+                                        </div>
+                                        <img id="player_foto1" class="align-self-center rounded-circle mr-3" style="width:30px; height:30px;" alt="" src="/assets/assets/img/avatar/@avatar">
+                                        <span id="player1_title" class="chess-title"></span>
+                                        <p id="player2" class="mr-1" style="text-wrap-mode:nowrap;margin:inherit;">Игрок2</p>
+                                        <i class="flag-icon flag-icon-ru"></i>
+                                        <span id="rating2" style="margin:5px;font-weight:600"></span>
+                                    </div>
+                                    <div class="time">
+                                        <span id="min_player2">03</span>:<span id="sec_player2">00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="board">
+                        <div class="chessBoard">
+                            <!--8th Rank-->
+                            <div class="square white">
+                                <div class="piece rook" color="black">
+                                    <img src="~/piece/Black-Rook.png" alt="Rook" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="piece knight" color="black">
+                                    <img src="~/piece/Black-Knight.png" alt="Knight" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="piece bishop" color="black">
+                                    <img src="~/piece/Black-Bishop.png" alt="Bishop" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="piece queen" color="black">
+                                    <img src="~/piece/Black-Queen.png" alt="Queen" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="piece king" color="black">
+                                    <img src="~/piece/Black-King.png" alt="King" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="piece bishop" color="black">
+                                    <img src="~/piece/Black-Bishop.png" alt="Bishop" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="piece knight" color="black">
+                                    <img src="~/piece/Black-Knight.png" alt="Knight" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="coordinate rank blackText">8</div>
+                                <div class="piece rook" color="black">
+                                    <img src="~/piece/Black-Rook.png" alt="Rook" />
+                                </div>
+                            </div>
+                            <!--7th Rank-->
+                            <div class="square black">
+                                <div class="piece pawn" color="black">
+                                    <img src="~/piece/Black-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="piece pawn" color="black">
+                                    <img src="~/piece/Black-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="piece pawn" color="black">
+                                    <img src="~/piece/Black-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="piece pawn" color="black">
+                                    <img src="~/piece/Black-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="piece pawn" color="black">
+                                    <img src="~/piece/Black-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="piece pawn" color="black">
+                                    <img src="~/piece/Black-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="piece pawn" color="black">
+                                    <img src="~/piece/Black-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="coordinate rank whiteText">7</div>
+                                <div class="piece pawn" color="black">
+                                    <img src="~/piece/Black-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <!--6th Rank-->
+                            <div class="square white"></div>
+                            <div class="square black"></div>
+                            <div class="square white"></div>
+                            <div class="square black"></div>
+                            <div class="square white"></div>
+                            <div class="square black"></div>
+                            <div class="square white"></div>
+                            <div class="square black">
+                                <div class="coordinate rank blackText">6</div>
+                            </div>
+                            <!--5th Rank-->
+                            <div class="square black"></div>
+                            <div class="square white"></div>
+                            <div class="square black"></div>
+                            <div class="square white"></div>
+                            <div class="square black"></div>
+                            <div class="square white"></div>
+                            <div class="square black"></div>
+                            <div class="square white">
+                                <div class="coordinate rank whiteText">5</div>
+                            </div>
+                            <!--4th Rank-->
+                            <div class="square white"></div>
+                            <div class="square black"></div>
+                            <div class="square white"></div>
+                            <div class="square black"></div>
+                            <div class="square white"></div>
+                            <div class="square black"></div>
+                            <div class="square white"></div>
+                            <div class="square black">
+                                <div class="coordinate rank blackText">4</div>
+                            </div>
+                            <!--3th Rank-->
+                            <div class="square black"></div>
+                            <div class="square white"></div>
+                            <div class="square black"></div>
+                            <div class="square white"></div>
+                            <div class="square black"></div>
+                            <div class="square white"></div>
+                            <div class="square black"></div>
+                            <div class="square white">
+                                <div class="coordinate rank whiteText">3</div>
+                            </div>
+                            <!--2th Rank-->
+                            <div class="square white">
+                                <div class="piece pawn" color="white">
+                                    <img src="~/piece/White-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="piece pawn" color="white">
+                                    <img src="~/piece/White-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="piece pawn" color="white">
+                                    <img src="~/piece/White-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="piece pawn" color="white">
+                                    <img src="~/piece/White-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="piece pawn" color="white">
+                                    <img src="~/piece/White-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="piece pawn" color="white">
+                                    <img src="~/piece/White-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="piece pawn" color="white">
+                                    <img src="~/piece/White-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="coordinate rank blackText">2</div>
+                                <div class="piece pawn" color="white">
+                                    <img src="~/piece/White-Pawn.png" alt="Pawn" />
+                                </div>
+                            </div>
+                            <!--1th Rank-->
+                            <div class="square black">
+                                <div class="coordinate blackText">a</div>
+                                <div class="piece rook" color="white">
+                                    <img src="~/piece/White-Rook.png" alt="Rook" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="coordinate whiteText">b</div>
+                                <div class="piece knight" color="white">
+                                    <img src="~/piece/White-Knight.png" alt="Knight" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="coordinate blackText">c</div>
+                                <div class="piece bishop" color="white">
+                                    <img src="~/piece/White-Bishop.png" alt="Bishop" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="coordinate whiteText">d</div>
+                                <div class="piece queen" color="white">
+                                    <img src="~/piece/White-Queen.png" alt="Queen" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="coordinate blackText">e</div>
+                                <div class="piece king" color="white">
+                                    <img src="~/piece/White-King.png" alt="King" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="coordinate whiteText">f</div>
+                                <div class="piece bishop" color="white">
+                                    <img src="~/piece/White-Bishop.png" alt="Bishop" />
+                                </div>
+                            </div>
+                            <div class="square black">
+                                <div class="coordinate blackText">g</div>
+                                <div class="piece knight" color="white">
+                                    <img src="~/piece/White-Knight.png" alt="Knight" />
+                                </div>
+                            </div>
+                            <div class="square white">
+                                <div class="coordinate whiteText">h</div>
+                                <div class="coordinate rank whiteText">1</div>
+                                <div class="piece rook" color="white">
+                                    <img src="~/piece/White-Rook.png" alt="Rook" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div id="gamePlayerBottomInfo">
+                        <div class="gameInfo">
+                            <div class="clock_player1">
+                                <div class="player">
+                                    <div class="player_info icon icon__danger">
+                                        <div id="tooltip_player1" class="my_tooltip my_tooltip_player my_tooltip__player1">
+                                        </div>
+                                        <img id="player_foto2" class="align-self-center rounded-circle mr-3" style="width:30px; height:30px;" alt="" src="/assets/assets/img/avatar/@avatar">
+                                        <span id="player2_title" class="chess-title"></span>
+                                        <p id="player1" class="mr-1" style="text-wrap-mode:nowrap;margin:inherit;">Игрок1</p>
+                                        <i class="flag-icon flag-icon-us"></i>
+                                        <span id="rating1" style="margin:5px; font-weight:600"></span>
+                                    </div>
+                                    <div class="time">
+                                        <span id="min_player1">03</span>:<span id="sec_player1">00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="evalBar" style="display:none">
+                        <div class="blackBar" style="height:50%"></div>
+                        <div class="zero"></div>
+                        <div class="evalNum">0.5</div>
+                    </div>
+                </div>
+                <div class="eval-game">
+                    <table id="topLines" style="display:none">
+                        <thead>
+                            <tr>
+                                <th id="eval"></th>
+                                <th id="evalText"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="eval1"></td>
+                                <td id="line1"></td>
+                            </tr>
+                            <tr>
+                                <td id="eval2"></td>
+                                <td id="line2"></td>
+                            </tr>
+                            <tr>
+                                <td id="eval3"></td>
+                                <td id="line3"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="main-game">
+                <div id="gameTypeInfo" style="margin-left:10px">
+                    <div>
+                        <i class="bi bi-journal-check"></i>
+                        <span id="typeRating">Товарищеская</span>
+                    </div>
+                    <div>
+                        <span id="typeGame" class="mr-1">Blitz</span><span id="clock">3+0</span>
+                    </div>
+                </div>
+                <div id="gamePlayerInfo">
+                    <div class="gameInfo">
+                        <div id="counter" class="counter"></div>
+                        <div id="pgnContainer"></div>
+                        <div class="result_info">
+                            <div id="result">
+                            </div>
+                            <div id="alert">
+                            </div>
+                        </div>
+                        <div class="iconContainer">
+                            <div id="resignButton" class="gameActions">
+                                <div class="icon icon__danger">
+                                    <div class="my_tooltip my_tooltip__dang">
+                                        Сдаться!
+                                    </div>
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path opacity="0.5" fill-rule="evenodd" clip-rule="evenodd" d="M6.5 1.75C6.5 1.33579 6.16421 1 5.75 1C5.33579 1 5 1.33579 5 1.75V21.75C5 22.1642 5.33579 22.5 5.75 22.5C6.16421 22.5 6.5 22.1642 6.5 21.75V13.6V3.6V1.75Z" fill="#1C274C" />
+                                        <path d="M13.5582 3.87333L13.1449 3.70801C11.5821 3.08288 9.8712 2.9258 8.22067 3.25591L6.5 3.60004V13.6L8.22067 13.2559C9.8712 12.9258 11.5821 13.0829 13.1449 13.708C14.8385 14.3854 16.7024 14.5119 18.472 14.0695L18.5721 14.0445C19.1582 13.898 19.4361 13.2269 19.1253 12.7089L17.5647 10.1078C17.2232 9.53867 17.0524 9.25409 17.0119 8.94455C16.9951 8.81543 16.9951 8.68466 17.0119 8.55553C17.0524 8.24599 17.2232 7.96141 17.5647 7.39225L18.8432 5.26136C19.1778 4.70364 18.6711 4.01976 18.0401 4.17751C16.5513 4.54971 14.9831 4.44328 13.5582 3.87333Z" fill="#1C274C" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="statistics" style="display: flex; flex-direction:column;align-items:flex-end; width:100%; height:100%">
+        <div>Соединений: <span id="connects"></span></div>
+        <div>Игроков на сайте: <span id="sp"></span></div>
+        <div id="list_players"></div>
+        <div>Текущие игры: <span id="gm"></span></div>
+        <div id="list_games"></div>
+        <div>Текущие вызовы: <span id="vz"></span></div>
+        <div id="list_battles"></div>
+    </div>
+</div>
+@await Html.PartialAsync("LandingFooterPartial")

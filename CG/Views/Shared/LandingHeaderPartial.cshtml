@@ -1,0 +1,57 @@
+﻿@using System.Globalization
+@using CG.Domain
+@using CG.Helpers
+@using CG.Models.Enum
+@{
+    var currentPage = ViewBag.Title != null ? ViewBag.Title : "Главная";
+    var culture = CultureInfo.CurrentCulture;
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    var user = ViewData["User"] != null ? (ApplicationUser)ViewData["User"] : null;
+    var avatar = user?.Avatar != null ? user?.Avatar : "default.jpg";
+}
+<header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-baseline">
+
+        <a href="/@culture.Name.ToString()" class="logo d-flex align-items-center me-auto">
+            <!-- Uncomment the line below if you also wish to use an image logo -->
+            @* <img src="~/assets/assets/img/logo.png" alt=""> *@
+            <div>
+                <h1 class="sitename">Chess<span style="color:beige">Good</span></h1>
+                <p style="color:beige">игровая шахматная платформа</p>
+            </div>
+        </a>
+
+        <nav id="navmenu" class="navmenu">
+            <ul>
+                <li><a href="/@culture.Name.ToString()" class="@(currentPage == "Главная" ? "active" : "")">Главная<br></a></li>
+                @foreach (var opt in headers.menu)
+                {
+                    Enum.TryParse(opt, out HeaderMenu menu);
+                    <li><a href="~/@culture.Name.ToString()/@EnumHelper.GetDescriptionEnum(menu)" class="@(currentPage == opt ? "active" : "")">@(headers.settingsHeaders.TryGetValue("Header" + opt, out string value) ? value : "")</a></li>
+                }                
+            </ul>
+            <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        </nav>
+          @{
+            if(user != null)
+            {
+                <a style="margin: 0 10px;max-height: 60px;height: 60px;overflow: hidden; margin: 0 10px" href="~/adm/@culture.Name.ToString()">
+                    <div class="media" style="display:flex">
+                        <h6 class="text-white" style="line-height:2.5; margin: 0 5px;max-width: 100px; overflow: hidden;">
+                            @user.UserName
+                        </h6>
+                        <img class="align-self-center rounded-circle mr-3" style="width:30px; height:30px;" alt="" src="~/assets/assets/img/avatar/@avatar">
+                    </div>
+                </a>                
+            }
+            else {
+                <a class="btn-getstarted" href="~/adm/@culture.Name.ToString()">@(headers.settingsHeaders.TryGetValue("ButtonLogin", out string ButtonLogin) ? ButtonLogin : "")</a>
+            }
+        }
+       
+    </div>
+</header>
+
+  
+
+   

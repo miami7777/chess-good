@@ -1,0 +1,65 @@
+﻿@using CG.Helpers
+@using CG.Models.Enum
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();    
+}
+  <!-- Why Us Section -->
+<section id="why-us" class="section why-us">
+
+    <div class="container">
+
+        <div class="row gy-4">
+
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="why-box">
+                    <h3>@(headers.settingsHeaders.TryGetValue("TitleWhy", out string TitleWhy) ? TitleWhy : "")@* Почему выбирают нашу школу? *@</h3>
+                    <p>
+                        @(headers.settingsHeaders.TryGetValue("DescriptionWhy", out string DescriptionWhy) ? DescriptionWhy : "")@* Вы можете заниматься онлайн из любого города. Все тренеры проходят жесткий отбор и обучаются по единой
+                        методике школы, и только после этого допускаются к тренировкам детей. Школа работает 24/7 по всей России.
+                        Работаем с 2011 года *@
+                    </p>
+                    <div class="text-center">
+                        <a href="#" class="more-btn"><span>@(headers.settingsHeaders.TryGetValue("ButtonWhy", out string ButtonWhy) ? ButtonWhy : "")@* Читать далее *@</span> <i class="bi bi-chevron-right"></i></a>
+                    </div>
+                </div>
+            </div><!-- End Why Box -->
+
+            <div class="col-lg-8 d-flex align-items-stretch">
+                <div class="row gy-4" data-aos="fade-up" data-aos-delay="200">
+
+                    <div class="col-xl-4">
+                        <div class="icon-box d-flex flex-column justify-content-center align-items-center">
+                            <i class="bi bi-person-workspace"></i>
+                            <h4>@(headers.settingsHeaders.TryGetValue("Box1Why", out string Box1Why) ? Box1Why : "")@* Удобный формат обучения *@</h4>
+                            <p>@(headers.settingsHeaders.TryGetValue("DescBox1Why", out string DescBox1Why) ? DescBox1Why : "")@* Вы можете заниматься онлайн из любого города. *@</p>
+                        </div>
+                    </div><!-- End Icon Box -->
+
+                    <div class="col-xl-4" data-aos="fade-up" data-aos-delay="300">
+                        <div class="icon-box d-flex flex-column justify-content-center align-items-center">
+                            <i class="bi bi-mortarboard"></i>
+                            <h4>@(headers.settingsHeaders.TryGetValue("Box2Why", out string Box2Why) ? Box2Why : "")@* Сильнейшая команда тренеров *@</h4>
+                            <p>@(headers.settingsHeaders.TryGetValue("DescBox2Why", out string DescBox2Why) ? DescBox2Why : "")@* Доверьтесь профессионалам! *@</p>
+                        </div>
+                    </div><!-- End Icon Box -->
+
+                    <div class="col-xl-4" data-aos="fade-up" data-aos-delay="400">
+                        <div class="icon-box d-flex flex-column justify-content-center align-items-center">
+                            <i class="bi bi-journal-check"></i>
+                            <h4>@(headers.settingsHeaders.TryGetValue("Box3Why", out string Box3Why) ? Box3Why : "")@* Удобный график обучения *@</h4>
+                            <p>@(headers.settingsHeaders.TryGetValue("DescBox3Why", out string DescBox3Why) ? DescBox3Why : "")@* Школа работает 24/7 по всей России. *@</p>
+                        </div>
+                    </div><!-- End Icon Box -->
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section><!-- /Why Us Section -->
+
+  
+
+   

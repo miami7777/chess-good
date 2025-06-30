@@ -1,0 +1,42 @@
+﻿@using System.Globalization
+@using CG.Domain
+@using CG.Domain.Entities
+@using CG.Helpers
+@using CG.Models.Enum
+@model ApplicationUser
+@{
+    var myCounts = ViewData["MyCounts"] != null ? (Dictionary<string, int>)ViewData["MyCounts"] : new Dictionary<string, int>();
+    var myCategory = ViewData["MyCategory"] != null ? (List<DirectoryCategory>)ViewData["MyCategory"] : new List<DirectoryCategory>();
+    var popularCourses = ViewData["PopularCourse"] != null ? (List<Course>)ViewData["PopularCourse"] : new List<Course>();
+    var popularTrainers = ViewData["PopularTrainers"] != null ? (List<ApplicationUser>)ViewData["PopularTrainers"] : new List<ApplicationUser>();    
+    var culture = CultureInfo.CurrentCulture;
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel(); 
+    var user = Model != null ? Model.UserName : "";
+} 
+<main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section dark-background">
+
+        <img src="~/assets/assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
+
+        <div class="container">
+            <div>
+            <h2 data-aos="fade-up" data-aos-delay="100">@(headers.settingsHeaders.TryGetValue("BannerMain", out string HeaderMain) ? HeaderMain : "")<br>@(headers.settingsHeaders.TryGetValue("BannerMain1", out string HeaderMain1) ? HeaderMain1 : "")</h2>
+            <p data-aos="fade-up" data-aos-delay="200">@(headers.settingsHeaders.TryGetValue("BannerMain2", out string HeaderMain2) ? HeaderMain2 : "")</p>
+                
+            <div class="mt-2" data-aos="fade-up" data-aos-delay="300">
+                    <a href="~/@culture.Name.ToString()/chess/index" class="btn-get-started">@(headers.settingsHeaders.TryGetValue("ButtonGetStarted", out string ButtonGetStarted) ? ButtonGetStarted : "")</a>
+            </div>
+            </div>
+        </div>
+
+    </section><!-- /Hero Section -->
+    @await Html.PartialAsync("LandingAboutPartial", PrefixTypeBlock.Advantage)
+    @await Html.PartialAsync("LandingCountsPartial", myCounts)
+    @await Html.PartialAsync("LandingWhyPartial")
+    @await Html.PartialAsync("LandingFeaturesPartial", myCategory)
+    @* @await Html.PartialAsync("LandingCoursesPartial", popularCourses) *@
+    @* @await Html.PartialAsync("LandingTrainersPartial",(popularTrainers,PrefixTypeBlock.None))  *@  
+</main>
+@await Html.PartialAsync("LandingFooterPartial")

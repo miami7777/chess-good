@@ -1,0 +1,58 @@
+﻿@using System.Globalization
+@using CG.Models
+@{
+    var culture = CultureInfo.CurrentCulture;
+}
+@model LoginViewModel
+<div class="sufee-login d-flex align-content-center flex-wrap">
+    <div class="container">
+        <div class="login-content">
+            <div class="login-logo">
+                <a href="/@culture.Name.ToString()">
+                    @* <img class="align-content" src="~/images/logo.png" alt=""> *@
+                    <h1>ChessGood</h1>
+                </a>
+            </div>
+            <div class="login-form">
+                <form asp-area="" asp-controller="Account" asp-action="Login" method="POST" asp-route-returnUrl="@ViewBag.returnUrl">
+                    <div class="form-group">
+                        <label asp-for="UserName">Логин</label>
+                        <input asp-for="UserName" type="text" class="form-control" placeholder="Логин">
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password">Пароль</label>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Пароль">
+                    </div>
+                    <div class="checkbox">
+                        <label asp-for="RememberMe">
+                            <input asp-for="RememberMe"  type="checkbox"> Запомнить меня
+                        </label>
+                        <label class="pull-right">
+                            <a href="~/@culture.Name.ToString()/account/forget">Забыли пароль?</a>
+                        </label>
+
+                    </div>
+                    <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Войти</button>
+                    <div class="social-login-content">
+                        <div class="social-button">
+                            <button id="signLichess" type="button" class="btn social btn-flat btn-addon mb-3" style="background: #9e9e9e">
+                                Войти с помощью Lichess <img class="header__btn__logo-test" src="~/images/lichess.png"  style="margin-left:10px" width="16" height="16"/>                                
+                            </button>
+                        </div>
+                    </div>
+                    <div class="register-link m-t-15 text-center">
+                        <p>Не зарегистрированы ? <a href="~/@culture.Name.ToString()/account/register"> Зарегистрироваться сейчас</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const LichessLogin = document.getElementById("signLichess");
+
+    // используем метод addEventListener
+    LichessLogin.addEventListener('click', function () {
+        window.location.href = window.location.protocol + '//' + window.location.host +"/login/lichess";
+    })
+</script>
