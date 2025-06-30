@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-windowsservercore-ltsc2022 AS build
 
 WORKDIR /source
 COPY *.sln .
@@ -9,7 +9,7 @@ COPY CG/. ./CG/
 WORKDIR /source/CG
 RUN dotnet publish -c release -o /app --no-restore
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-windowsservercore-ltsc2022
 WORKDIR /app
 COPY --from=build /app ./
 ENTRYPOINT ["dotnet", "CG.dll"]
