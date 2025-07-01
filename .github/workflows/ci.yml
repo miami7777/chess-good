@@ -6,11 +6,8 @@ on:
       - main
 
 jobs:
-  deploy:   
-  - uses: actions/checkout@v2  
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
+  build:   
+      - uses: actions/checkout@v2
       - name: Build Docker image
         run: docker build -t myapp .
 
@@ -22,7 +19,7 @@ jobs:
       
       - name: Change file permissions
         run: chmod 644 myapp.tar
-   
+  deploy:   
      - name: SSH to VPS and remove existing tarball
       uses: appleboy/ssh-action@v0.1.7
       with:
