@@ -25,8 +25,8 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" private_key
           chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key user@your_vm_ip 'EOF'
-            cd /path/to/app
+          ssh -o StrictHostKeyChecking=no -i private_key root@81.177.24.44 'EOF'
+            cd d:\hst\chess-good_28a135e1\http
             sudo docker stop myapp || true
             sudo docker rm myapp || true
             git pull origin main
