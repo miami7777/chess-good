@@ -1,12 +1,15 @@
 name: myapp Deploy
-
+stages:
+  - build
+  - deploy
 on:
   push:
     branches:
       - main
 
 jobs:
-  build:   
+  build: 
+    stage: build  
       - uses: actions/checkout@v2
       - name: Build Docker image
         run: docker build -t myapp .
@@ -19,7 +22,8 @@ jobs:
       
       - name: Change file permissions
         run: chmod 644 myapp.tar
-  deploy:   
+  deploy-dev: 
+    stage: deploy  
      - name: SSH to VPS and remove existing tarball
       uses: appleboy/ssh-action@v0.1.7
       with:
