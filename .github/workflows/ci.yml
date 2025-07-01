@@ -9,8 +9,10 @@ on:
 
 jobs:
   build: 
+  runs-on: ubuntu-latest
     stage: build  
-      - uses: actions/checkout@v2
+      - name: Checkout code
+          uses: actions/checkout@v2
       - name: Build Docker image
         run: docker build -t myapp .
 
@@ -23,6 +25,7 @@ jobs:
       - name: Change file permissions
         run: chmod 644 myapp.tar
   deploy-dev: 
+  runs-on: ubuntu-latest
     stage: deploy  
      - name: SSH to VPS and remove existing tarball
       uses: appleboy/ssh-action@v0.1.7
