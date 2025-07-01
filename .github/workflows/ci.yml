@@ -23,9 +23,9 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          echo "$SSH_PRIVATE_KEY" mykey
-          chmod 600 mykey
-          ssh -o StrictHostKeyChecking=no -i mykey w_chess-good_28a135e1@81.177.174.12 'EOF'
+          echo "$SSH_PRIVATE_KEY" ~/.ssh/authorized_keys
+          chmod 600 ~/.ssh/authorized_keys
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/authorized_keys w_chess-good_28a135e1@81.177.174.12 'EOF'
             cd /home/virtwww/w_chess-good_28a135e1/http
             sudo docker stop myapp || true
             sudo docker rm myapp || true
