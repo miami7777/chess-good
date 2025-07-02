@@ -30,6 +30,13 @@ jobs:
         host: ${{ secrets.VPS_HOST }}
         username: ${{ secrets.VPS_USER }}
         key: ${{ secrets.VPS_KEY }}
+        before_script:
+            - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+            - eval $(ssh-agent -s)
+            - echo "$GITHUB_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+            - mkdir -p ~/.ssh
+            - chmod 700 ~/.ssh
+            - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
         script: |
           docker load -i /home/virtwww/${{ secrets.VPS_USER }}/http/app.tar
           if [ "$(docker ps -q -f name=app)" ]; then
