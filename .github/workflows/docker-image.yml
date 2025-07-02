@@ -7,7 +7,7 @@ on:
     branches: [ main, develop ]
     
 jobs:
-  production-deploy:
+  production-build:
     if: github.repository == 'miami7777/chess-good'
     runs-on: ubuntu-latest
     steps:
@@ -23,4 +23,19 @@ jobs:
       
     - name: Change file permissions
       run: chmod 644 app.tar
- 
+   production-deploy:
+   - name: SSH to VPS and deploy
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_KEY }}
+        script: |
+          docker load -i /home/virtwww/${{ secrets.VPS_USER }}/http/app.tar
+          if [ "$(docker ps -q -f name=app)" ]; then
+            docker stop app
+          fi
+          if [ "$(docker ps -a -q -f name=app)" ]; then
+            docker rm app
+          fi
+          docker run --name app -p 5177:7229 -d app
