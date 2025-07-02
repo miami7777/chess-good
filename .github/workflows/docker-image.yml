@@ -1,6 +1,10 @@
 name: myapp_Deploy
 
-on: push: branches: - main
+on:
+  push:
+    branches: [ main, develop, 'feature/**' ]
+  pull_request:
+    branches: [ main, develop ]
     
 jobs:
   production-deploy:
