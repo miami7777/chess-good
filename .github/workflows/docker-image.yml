@@ -1,5 +1,7 @@
-name: example-workflow
-on: [push]
+name: myapp Deploy
+on:
+  push:
+    branches:["main"]
 jobs:
   production-deploy:
     if: github.repository == 'miami7777/chess-good'
@@ -8,5 +10,13 @@ jobs:
     - uses: actions/checkout@v4    
     - name: Build the Docker image
       run: docker build -t app . --file Dockerfile --tag my-image-name:$(date +%s)
-    
+      
+    - name: Save Docker image as tarball
+      run: docker save app -o app.tar
+
+    - name: Verify tarball exists
+      run: ls -lh app.tar
+      
+    - name: Change file permissions
+      run: chmod 644 app.tar
  
