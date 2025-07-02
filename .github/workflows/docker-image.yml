@@ -1,13 +1,8 @@
-name: Docker Image CI
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
+name: example-workflow
+on: [push]
 jobs:
-  prod_build:
+  production-deploy:
+    if: github.repository == 'miami7777/chess-good'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
