@@ -23,6 +23,7 @@ jobs:
       
     - name: Change file permissions
       run: chmod 644 app.tar  
+    
       
     - name: SSH to VPS and deploy
       uses: appleboy/ssh-action@v0.1.7
