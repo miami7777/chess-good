@@ -1,8 +1,8 @@
 name: myapp_Deploy
 
-on:
-  push:
+on [push]:
     branches:["main"]
+    
 jobs:
   production-deploy:
     if: github.repository == 'miami7777/chess-good'
