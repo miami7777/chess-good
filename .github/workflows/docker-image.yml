@@ -30,14 +30,5 @@ jobs:
       with:
         host: ${{ secrets.VPS_HOST }}
         username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.VPS_KEY }}        
-        script: |          
-          apt-get update -y && apt-get install openssh-client -y         
-          docker load -i /home/virtwww/${{ secrets.VPS_USER }}/http/app.tar
-          if [ "$(docker ps -q -f name=app)" ]; then
-            docker stop app
-          fi
-          if [ "$(docker ps -a -q -f name=app)" ]; then
-            docker rm app
-          fi
-          docker run --name app -p 5177:7229 -d app
+        key: ${{ secrets.VPS_KEY }}                
+        
