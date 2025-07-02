@@ -8,9 +8,10 @@ COPY CG ./
 RUN dotnet publish ./CG.csproj -c release -o /publish 
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
-WORKDIR /CG
-COPY --from=build /CG ./
+WORKDIR /app
+COPY --from=build /publish ./
 
-EXPOSE 8080
+EXPOSE 80 5195 7066
+ENV ASPNETCORE_URLS=http://+:5195;https://+:7066
 
 ENTRYPOINT ["dotnet", "CG.dll"]
