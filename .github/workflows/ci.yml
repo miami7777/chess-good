@@ -7,22 +7,9 @@ on:
 jobs:
   build: 
   runs-on: ubuntu-latest  
-    steps:       
-      -uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-     
+    steps: 
       - name: Build Docker image
         run: docker build -t myapp .
-
-      - name: Save Docker image as tarball
-        run: docker save myapp -o myapp.tar
-
-      - name: Verify tarball exists
-        run: ls -lh myapp.tar
-      
-      - name: Change file permissions
-        run: chmod 644 myapp.tar
  
      - name: SSH to VPS and remove existing tarball
       uses: appleboy/ssh-action@v0.1.7
