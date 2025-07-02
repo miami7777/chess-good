@@ -15,17 +15,5 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build -t app . --file Dockerfile --tag my-image-name:$(date +%s) 
-     
-     - uses: actions/checkout@v4
-     - name: SSH to VPS and remove existing tarball
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.VPS_KEY }}
-        script: |
-          if [ -f /home/vitwww/${{ secrets.VPS_USER }}/http/CG.tar ]; then
-            rm /home/virtwww/${{ secrets.VPS_USER }}/http/CG.tar
-          fi
-      
+      run: docker build -t app . --file Dockerfile --tag my-image-name:$(date +%s)      
        
