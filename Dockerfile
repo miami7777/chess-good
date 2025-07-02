@@ -1,11 +1,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /CG
 
-COPY *.csproj ./
+COPY CG/CG.csproj CG/
 RUN dotnet restore
 
 COPY . ./
-RUN dotnet publish -c release -o /CG
+RUN dotnet publish -c release -o out CG/CG.csproj
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /CG
