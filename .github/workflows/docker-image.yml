@@ -33,9 +33,8 @@ jobs:
         script: |
           apt-get update -y && apt-get install openssh-client -y
           eval $(ssh-agent -s)
-          echo "${{ secrets.VPS_KEY }} | tr -d '\r' | ssh-add -
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
+          ssh-add id_rsa
+          cat id_rsa.pub         
           echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config 
           docker load -i /home/virtwww/${{ secrets.VPS_USER }}/http/app.tar
           if [ "$(docker ps -q -f name=app)" ]; then
