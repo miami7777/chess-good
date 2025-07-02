@@ -1,4 +1,4 @@
-name: myapp Deploy
+name: CG Deploy
 
 on:
   push:
@@ -9,40 +9,6 @@ jobs:
   runs-on: ubuntu-latest  
     steps: 
       - name: Build Docker image
-        run: docker build -t myapp .
- 
-     - name: SSH to VPS and remove existing tarball
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.VPS_KEY }}
-        script: |
-          if [ -f /home/${{ secrets.VPS_USER }}/myapp.tar ]; then
-            rm /home/${{ secrets.VPS_USER }}/myapp.tar
-          fi
-
-    - name: Copy Docker image to VPS
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.VPS_KEY }}
-        source: myapp.tar
-        target: /home/${{ secrets.VPS_USER }}/
-     
-     - name: SSH to VPS and deploy
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.VPS_KEY }}
-        script: |
-          docker load -i /home/${{ secrets.VPS_USER }}/myapp.tar
-          if [ "$(docker ps -q -f name=simpleapp)" ]; then
-            docker stop myapp
-          fi
-          if [ "$(docker ps -a -q -f name=myapp)" ]; then
-            docker rm myapp
-          fi
-          docker run --name myapp -p 5144:8080 -d myapp
+        run: docker build -t CG . 
+        
+          docker run --name CG -p 5144:8080 -d CG
