@@ -1,15 +1,15 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /chess-good/CG
+WORKDIR /CG
 
-COPY *.csproj ./chess-good/CG
+COPY *.csproj ./
 RUN dotnet restore
 
-COPY . ./CG
-RUN dotnet publish -c release -o /chess-good/CG
+COPY . ./
+RUN dotnet publish -c release -o /CG
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
-WORKDIR /chess-good/CG
-COPY --from=build /chess-good/CG ./chess-good/CG
+WORKDIR /CG
+COPY --from=build /CG ./
 
 EXPOSE 8080
 
