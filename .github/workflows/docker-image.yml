@@ -31,11 +31,8 @@ jobs:
         username: ${{ secrets.VPS_USER }}
         key: ${{ secrets.VPS_KEY }}        
         script: |
-          apt-get update -y && apt-get install openssh-client -y
-          eval $(ssh-agent -s)
-          ssh-add id_rsa
-          cat id_rsa.pub         
-          echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config 
+          cd http
+          apt-get update -y && apt-get install openssh-client -y         
           docker load -i /home/virtwww/${{ secrets.VPS_USER }}/http/app.tar
           if [ "$(docker ps -q -f name=app)" ]; then
             docker stop app
