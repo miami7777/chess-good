@@ -1,4 +1,4 @@
-name: myapp Deploy
+name: myapp_Deploy
 
 on:
   push:
