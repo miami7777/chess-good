@@ -22,9 +22,9 @@ jobs:
       run: ls -lh app.tar
       
     - name: Change file permissions
-      run: chmod 644 app.tar
-   production-deploy:
-   - name: SSH to VPS and deploy
+      run: chmod 644 app.tar  
+      
+    - name: SSH to VPS and deploy
       uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.VPS_HOST }}
