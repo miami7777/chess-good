@@ -12,6 +12,6 @@ WORKDIR /app
 COPY --from=build /publish ./
 
 EXPOSE 80 5195 7066
-ENV ASPNETCORE_URLS=http://+:5195;https://+:7066
+ENV ASPNETCORE_URLS=http://chess-good.ru;https://chess-good.ru
 
 ENTRYPOINT ["dotnet", "CG.dll"]
