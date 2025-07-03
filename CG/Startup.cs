@@ -108,6 +108,9 @@ public class Startup {
                               {
                                   policy.WithOrigins("http://chess-good.ru",
                                                       "https://chess-good.ru",
+                                                      "https://www.cb-sportstav.ru",
+                                                      "http://www.cb-sportstav.ru",
+                                                      "https://chess-good.aw-stage.ru",
                                                       "http://127.0.0.1:5177",
                                                            "https://127.0.0.1:7229");
                               });
@@ -141,7 +144,7 @@ public class Startup {
             SupportedCultures = supportedCultures,
             SupportedUICultures = supportedCultures
         });
-        app.UseHttpsRedirection();
+        //app.UseHttpsRedirection();
         
         app.Use(async (context, next) =>
         {
