@@ -1,0 +1,81 @@
+﻿@using CG.Domain.Entities
+@using CG.Helpers
+@using CG.Models.Enum
+@using System.Globalization
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    string headerMiddlegame = headers.settingsHeaders.TryGetValue("HeaderMiddlegame", out string HeaderMiddlegame) ? HeaderMiddlegame : "";
+    string descriptionMiddlegame = headers.settingsHeaders.TryGetValue("DescriptionMiddlegame", out string DescriptionMiddlegame) ? DescriptionMiddlegame : "";
+    var culture = CultureInfo.CurrentCulture;
+    ViewBag.Title = headerMiddlegame;
+    ViewBag.Description = descriptionMiddlegame;
+}
+<main class="main">
+    @await Html.PartialAsync("PageTitle")
+    <section id="middlegame" class="middlegame section">
+
+        <div class="container">
+
+            <div class="row gy-4 mb-5">
+
+                <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
+                    <img src="~/assets/assets/img/center.jpg" width="400" height="400" class="img-fluid m-3" alt="">                    
+                </div>
+
+                <div class="col-lg-6 order-2 order-lg-1 content" data-aos="fade-up" data-aos-delay="200">
+                    <h3>Как играть в миттельшпиле</h3>
+                    <p class="fst-italic">
+                        Три главных принципа разыгрывания миттельшпиля включают в себя борьбу за центр, борьбу за открытые линии, создание у противника слабостей.
+                    </p>
+                    <h4>Борьба за центр </h4>
+                    <p class="fst-italic">
+                        Центром на шахматной доске называют квадрат d4-e4-d5-e5. Многовековой опыт показывает, что игрок, занявший и контролирующий центр, имеет ощутимое позиционное преимущество.
+
+                        Игрок, занявший центр, обычно контролирует большую часть доски. Его фигуры свободны, имеют возможности для разнообразных манёвров, не мешают друг другу. В то же время фигуры соперника, как правило, стеснены, мешают и блокируют друг друга.
+                        Любая фигура, надёжно закреплённая в центре, часто угрожает сразу несколькими взятиями или опасными ходами вглубь позиции противника. Кроме того, она становится серьёзным подспорьем при фланговой атаке, причём на любом из флангов.
+                        В связи с такой важностью центра рекомендуется уже в дебюте, с первых же ходов, приступать к борьбе за центр. Она может состоять из следующих элементов:
+
+                        выдвижение центральных пешек («d» и «e») вперёд и занятие ими центра. Противник может выбрать либо аналогичную стратегию, либо позволить занять сопернику центр, а затем подорвать его пешками «c» и «f»;
+                        развитие коней на «c3» и «f3» (для чёрных — на «c6» и «f6»), так что они сразу держат центральные пешки соперника под угрозой взятия;
+                        размен центральных пешек и занятие центральных клеток своими фигурами, защищёнными пешками «c» и «f».
+                    </p>                    
+                </div>
+            </div>
+
+
+            <div class="row gy-4 mb-5">
+                <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">                    
+                    <img src="~/assets/assets/img/lines.jpg" width="400" height="400" class="img-fluid" alt="">
+                </div>
+
+                <div class="col-lg-6 order-2 order-lg-1 content" data-aos="fade-up" data-aos-delay="200">
+
+                    <h4>Борьба за открытые линии </h4>
+                    <p class="fst-italic">
+                        Открытые линии — это вертикали, свободные от пешек. Открытая линия является очень удобной для вторжения ладей и ферзя во вражеский тыл и дальнейшего подрыва позиции противника изнутри.
+
+                        Для получения контроля над какой-либо открытой линией часто используются следующие приёмы:
+
+                        сдваивание ладей по вертикали, часто с подстраховкой ферзём. После хода ладьёй вглубь позиции соперника и одного-двух разменов последняя тяжёлая фигура остаётся в тылу противника;
+                        занятие полуоткрытой линии, построение тяжёлых фигур, а затем подрыв пешки или фигуры противника.
+                    </p>
+                    <a href="~/adm/@culture.Name.ToString()"><span>@(headers.settingsHeaders.TryGetValue("ButtonAdvantage", out string ButtonAdvantage) ? ButtonAdvantage : "")</span></a>
+                </div>
+
+            </div>
+            <div class="row gy-4 mb-5">
+                <div class="col-lg-12 order-1 order-lg-2 content" data-aos="fade-up" data-aos-delay="200">
+
+                    <h4>Создание у противника слабостей </h4>
+                    <p class="fst-italic">
+                        Позиционные слабости у противника создаются не с целью непосредственной выгоды, а с расчётом на поздний миттельшпиль и эндшпиль. Наиболее часто встречаются слабости пешечной структуры, в частности, сдвоенные и изолированные пешки, а также отсталые и заблокированные пешки. Их слабость заключается в том, что они находятся под огнём фигур противника, и защищать их приходится не пешками, а своими же фигурами. Эти слабости проявляются в полную силу в эндшпиле, когда игра в основном идёт королями и лёгкими фигурами.
+                    </p>
+                </div>                
+            </div>
+
+        </div>
+
+    </section><!-- /About Section -->
+</main>
+
+@await Html.PartialAsync("LandingFooterPartial")

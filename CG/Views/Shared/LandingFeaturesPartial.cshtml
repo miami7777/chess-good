@@ -1,5 +1,9 @@
 ﻿@using CG.Domain.Entities
+@using System.Globalization
 @model List<DirectoryCategory>;
+@{
+    var culture = CultureInfo.CurrentCulture;
+}
 <!-- Features Section -->
 <section id="features" class="features section">
 
@@ -13,7 +17,7 @@
                     <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="@(item.ListOrder * 100)">
                         <div class="features-item">
                             <i class="bi bi-@item.Icon" style="color: #@item.Color;"></i>
-                            <h3><a href="@item.Url" class="stretched-link">@item.Name</a></h3>
+                            <h3><a href="/@culture/home/@item.Url" class="stretched-link">@item.Name</a></h3>
                         </div>
                     </div><!-- End Feature Item -->
                 }

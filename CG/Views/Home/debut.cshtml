@@ -1,0 +1,90 @@
+﻿@using CG.Domain.Entities
+@using CG.Helpers
+@using CG.Models.Enum
+@using System.Globalization
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    string headerDebut = headers.settingsHeaders.TryGetValue("HeaderDebut", out string HeaderDebut) ? HeaderDebut : "";
+    string descriptionDebut = headers.settingsHeaders.TryGetValue("DescriptionDebut", out string DescriptionDebut) ? DescriptionDebut : "";
+    var culture = CultureInfo.CurrentCulture;
+    ViewBag.Title = headerDebut;
+    ViewBag.Description = descriptionDebut;
+}
+<main class="main">
+    @await Html.PartialAsync("PageTitle")
+    <section id="debut" class="debut section">
+
+        <div class="container">
+
+            <div class="row gy-4 mb-5">
+
+                <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
+                    <img src="~/assets/assets/img/position2.jpg" class="img-fluid m-3" alt="">                   
+                    <img src="~/assets/assets/img/position4.jpg" class="img-fluid m-3" alt="">                   
+                </div>
+
+                <div class="col-lg-6 order-2 order-lg-1 content" data-aos="fade-up" data-aos-delay="200">
+                    <h3>Дебют – начало игры</h3>
+                    <p class="fst-italic">
+                        Три главных принципа разыгрывания дебюта включают в себя борьбу за центр, скорейшую мобилизацию сил, безопасность короля.
+                    </p>
+                    <h4>Борьба за центр </h4>
+                    <p class="fst-italic">
+                        Является одним из ключевых принципов разыгрывания дебюта, стороны должны пытаться захватить поля е4, е5, d4, d5. Обычно это делается при помощи пешек, но есть дебютные системы, направленные на фигурное давление на центр. Владение центром позволяет удобно расположить свои фигуры, оттеснить соперника на неудачные позиции, а также проводить фланговое наступление в удобной для себя редакции.
+                    </p>
+                    <h4>Мобилизация сил </h4>
+                    <p class="fst-italic">
+                        Фигуры следует развивать на безопасные позиции таким образом, чтобы они воздействовали на центр и на уязвимые поля в расстановке соперника. Следует тратить как можно меньше темпов(времени) на развитие одной фигуры, поэтому совершенно невыгодно ходить одной и той же фигурой в дебюте несколько раз без крайней необходимости. Опережение соперника в развитии фигур позволяет первым начать атаку, что нередко заканчивается матом или решающими материальными потерями для стороны, которая отстала в развитии.
+                    </p>
+                    <h4>Безопасность короля </h4>
+                    <p class="fst-italic">
+                        Важнейший фактор не только в дебюте, но и в других стадиях шахматной партии. Обусловлено это целью игры: король - самая важная фигура, которой пытаются поставить шах и мат. Ослабление позиции короля, отсутствие рокировки, недостаточная защищенность слабых пунктов рядом с королем нередко приводит к дебютным катастрофам, наиболее яркими примерами служат «Дурацкий мат»  и «Детский мат»
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="row gy-4 mb-5">
+                <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">                  
+                    <h4>Испанская партия (C88)</h4>
+                    <img src="~/assets/assets/img/ruy_lopez.jpg" width="400" height="400" class="img-fluid" alt="">
+                </div>
+
+                <div class="col-lg-6 order-2 order-lg-1 content" data-aos="fade-up" data-aos-delay="200">
+
+                    <h4>Открытые дебюты</h4>
+                    <p class="fst-italic">
+                        Открытые дебюты начинаются ходом 1.е4 е5.
+                    </p>
+                    <img src="~/assets/assets/img/openDebut.jpg" width="400" height="400" class="img-fluid" alt="">
+                    <p>
+                        В открытых дебютах часто возникают острые позиции, борьба идет ход в ход, одна неточность или ошибка может привести к катастрофе. Такие дебюты подходят шахматистам с агрессивным стилем игры, направленным на атаку короля соперника.
+                    </p>                   
+
+                    <a href="~/adm/@culture.Name.ToString()"><span>@(headers.settingsHeaders.TryGetValue("ButtonAdvantage", out string ButtonAdvantage) ? ButtonAdvantage : "")</span></a>
+                </div>
+
+            </div>
+            <div class="row gy-4 mb-5">
+                <div class="col-lg-6 order-1 order-lg-2 content" data-aos="fade-up" data-aos-delay="200">
+
+                    <h4>Закрытые дебюты</h4>
+                    <p class="fst-italic">
+                        Закрытые дебюты начинаются ходом 1.d4 d5.
+                    </p>
+                    <p>
+                        В закрытых дебютах чаще происходит позиционная маневренная борьба, направленная на планомерное усиление своей позиции. Такие дебюты больше подходят для шахматистов, которые любят стратегическое маневрирование, спокойные позиции с минимальным количеством тактических ресурсов.
+                    </p>
+                </div>
+                <div class="col-lg-6 order-2 order-lg-1" data-aos="fade-up" data-aos-delay="100">
+                    <h4>Ферзевый гамбит (D07)</h4>
+                    <img src="~/assets/assets/img/queens_gambit.jpg" width="400" height="400" class="img-fluid" alt="">
+                </div>
+            </div>
+
+        </div>
+
+    </section><!-- /About Section -->
+</main>
+
+@await Html.PartialAsync("LandingFooterPartial")

@@ -189,14 +189,35 @@
   <data name="DescriptionAdvantage" xml:space="preserve">
     <value>Игра в шахматы онлайн против других игроков с использованием различных вариантов контроля времени. Много различных видов турниров, часто проводятся призовые турниры. Строгий контроль за читерством.</value>
   </data>
+  <data name="DescriptionChessRules" xml:space="preserve">
+    <value>До начала игры необходимо изучить основные правила. Для новичков игра мастеров кажется сложным таинством, но на самом деле стоит правильно расставить фигуры и запомнить, как именно они ходят, как все становится понятным.</value>
+  </data>
   <data name="DescriptionContact" xml:space="preserve">
     <value>Будем рады ответить вам на все ваши вопросы!</value>
+  </data>
+  <data name="DescriptionDebut" xml:space="preserve">
+    <value>Шахматную партию принято разделять на три стадии: дебют, миттельшпиль и эндшпиль. Для каждой стадии характерны свои особенности и принципы игры, в этой статье мы поговорим о начале шахматной партии.</value>
+  </data>
+  <data name="DescriptionEndgame" xml:space="preserve">
+    <value>заключительная часть шахматной или шашечной партии. Провести границу, отделяющую середину шахматной партии (миттельшпиль) от конца (эндшпиля), возможно не всегда. Обычно игра переходит в эндшпиль, когда разменяно большинство фигур и нет характерных для середины игры угроз королям. Как правило, в эндшпиле основной задачей является не поставить мат, а провести пешку в ферзи и таким образом добиться решающего материального преимущества. Существует классификация позиций эндшпиля в зависимости от количества и качества имеющихся сил.</value>
   </data>
   <data name="DescriptionFAQ" xml:space="preserve">
     <value>Здесь собраны часто задаваемые вопросы и ответы на них.</value>
   </data>
+  <data name="DescriptionMiddlegame" xml:space="preserve">
+    <value>следующая за дебютом стадия шахматной партии, в которой, как правило, развиваются основные события в шахматной борьбе — атака и защита, позиционное маневрирование, комбинации и жертвы. Характеризуется большим количеством фигур и разнообразием планов игры. Иногда шахматная партия минует эту стадию игры и сразу переходит в эндшпиль</value>
+  </data>
   <data name="DescriptionPricing" xml:space="preserve">
     <value>На нашей платформе есть 4 разных вида подписки. Игроки с платной подпиской получают возможность играть в призовых турнирах. Есть вид подписки для проведения обучаемых стримов с подписчиками, предоставляющая более удобный формат. </value>
+  </data>
+  <data name="DescriptionRules" xml:space="preserve">
+    <value>Шахматы – это один из самых интересных, полезных и развивающих видов спорта. Он подходит для всех независимо от пола и возраста. В процессе обучения и игры развивается память, мышление, активно совершенствуется логика.</value>
+  </data>
+  <data name="DescriptionStrategy" xml:space="preserve">
+    <value>У шахматной игры есть две важные составляющие ― стратегия и тактика. Стратегическими принципами в шахматах должен овладеть любой игрок, который хочет добиться успеха. </value>
+  </data>
+  <data name="DescriptionTactics" xml:space="preserve">
+    <value>Короткая последовательность ходов, обычно включающая в себя атаку или взятие, цель которой - получить быстрое весомое преимущество</value>
   </data>
   <data name="DescriptionTestimonials" xml:space="preserve">
     <value>Что о нас говорят</value>
@@ -234,11 +255,23 @@
   <data name="HeaderCourses" xml:space="preserve">
     <value>Задачи</value>
   </data>
+  <data name="HeaderDebut" xml:space="preserve">
+    <value>Дебют в шахматах</value>
+  </data>
+  <data name="HeaderEndgame" xml:space="preserve">
+    <value>Эндшпиль</value>
+  </data>
   <data name="HeaderFAQ" xml:space="preserve">
     <value>Вопросы</value>
   </data>
+  <data name="HeaderMiddlegame" xml:space="preserve">
+    <value>Миттельшпиль</value>
+  </data>
   <data name="HeaderPricing" xml:space="preserve">
     <value>Подписка</value>
+  </data>
+  <data name="HeaderRules" xml:space="preserve">
+    <value>Основы шахмат</value>
   </data>
   <data name="HeaderTrainers" xml:space="preserve">
     <value>Игроки</value>
@@ -273,6 +306,9 @@
   <data name="TitleAdvantage" xml:space="preserve">
     <value>Преимущества нашей платформы</value>
   </data>
+  <data name="TitleChessRules" xml:space="preserve">
+    <value>Правила игры</value>
+  </data>
   <data name="TitleCourses" xml:space="preserve">
     <value>Задачи</value>
   </data>
@@ -287,6 +323,12 @@
   </data>
   <data name="TitleServiceMenu" xml:space="preserve">
     <value>Что мы предлагаем</value>
+  </data>
+  <data name="TitleStrategy" xml:space="preserve">
+    <value>Стратегия в шахматах</value>
+  </data>
+  <data name="TitleTactics" xml:space="preserve">
+    <value>Тактика в шахматах</value>
   </data>
   <data name="TitleTestimonials" xml:space="preserve">
     <value>Нас рекомендуют</value>
