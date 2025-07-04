@@ -164,6 +164,42 @@ namespace CG.Controllers
             GetHeaders();
             return View();
         }
+        public IActionResult RulesChess()
+        {
+            GetLocalization();            
+            GetHeaders();
+            return View();
+        }
+        public IActionResult Debut()
+        {
+            GetLocalization();
+            GetHeaders();
+            return View();
+        }
+        public IActionResult middlegame()
+        {
+            GetLocalization();
+            GetHeaders();
+            return View();
+        }
+        public IActionResult endgame()
+        {
+            GetLocalization();
+            GetHeaders();
+            return View();
+        }
+        public IActionResult strategy()
+        {
+            GetLocalization();
+            GetHeaders();
+            return View();
+        }
+        public IActionResult tactics()
+        {
+            GetLocalization();
+            GetHeaders();
+            return View();
+        }
         public IActionResult Contact()
         {
             GetLocalization();

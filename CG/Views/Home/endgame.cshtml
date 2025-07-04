@@ -1,0 +1,71 @@
+﻿@using CG.Domain.Entities
+@using CG.Helpers
+@using CG.Models.Enum
+@using System.Globalization
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    string headerEndgame = headers.settingsHeaders.TryGetValue("HeaderEndgame", out string HeaderEndgame) ? HeaderEndgame : "";
+    string descriptionEndgame = headers.settingsHeaders.TryGetValue("DescriptionEndgame", out string DescriptionEndgame) ? DescriptionEndgame : "";
+    var culture = CultureInfo.CurrentCulture;
+    ViewBag.Title = headerEndgame;
+    ViewBag.Description = descriptionEndgame;
+}
+<main class="main">
+    @await Html.PartialAsync("PageTitle")
+    <section id="endgame" class="endgame section">
+
+        <div class="container">
+
+            <div class="row gy-4 mb-5">
+
+                <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
+                    <img src="~/assets/assets/img/endgame.jpg" class="img-fluid m-3" alt="">
+                    <img src="~/assets/assets/img/endgame1.jpg" class="img-fluid m-3" alt="">
+                </div>
+
+                <div class="col-lg-6 order-2 order-lg-1 content" data-aos="fade-up" data-aos-delay="200">
+                    <h3>Эндшпиль</h3>
+                    <p class="fst-italic">
+                        Этап шахматной партии после того, как было проведено сокращение большинства сил[1]. Это определение также применимо к шашкам. Отсутствие на доске ферзей не является обязательным признаком эндшпиля (см., например, статью «Ферзевые окончания»). Окончания со стратегическим планом «организовать атаку на короля и завершить её матом», за редким исключением, элементарны (см. статью «Технические окончания»). Чаще всего в эндшпиле возникает иная стратегическая цель — провести пешку в ферзи, чтобы получить необходимый для выигрыша материальный перевес.
+                        Для эндшпиля характерны следующие основные особенности:
+                    </p>
+                    <ul>
+                        <li><i class="bi bi-check-circle"></i> <span>Король в эндшпиле — фигура активная. Не опасаясь угрозы мата, он может покинуть укрытие и принять участие в борьбе наравне с другими фигурами; он способен атаковать фигуры и пешки соперника и первым вторгаться в неприятельский лагерь.</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span>При малом числе фигур на доске в эндшпиле возрастает ценность каждой из них. В середине игры создание решающего перевеса сил на каком-либо участке доски обычно является достаточным для выигрыша, но в эндшпиле для победы нужно обеспечить максимальную активность и чёткое взаимодействие фигур.</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span>Стратегическая цель эндшпиля — проведение одной из пешек в ферзи — определяет возрастающую роль пешек. Если в середине игры перевес одного из партнёров в одну пешку обычно решающей роли не играет, то в эндшпиле он во многих случаях достаточен для выигрыша.</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span>В середине игры план зачастую определяется не только особенностями позиции, но и стилем игры соперников, психологическим расчётом и т. п. В окончании приходится избирать путь, характерный для того или иного типа эндшпиля, поскольку только он ведёт к достижению цели.</span></li>                        
+                    </ul>
+                        
+                    <p class="fst-italic">
+                        В эндшпиле стратегия (выбор правильного плана) во многом определяется такими особенностями позиции, как:
+                        <ul>
+                            <li><i class="bi bi-check-circle"></i> <span>материальное преимущество;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>наличие проходных пешек или возможность их образования;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>дефекты в пешечной структуре;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>степень активности фигур, включая короля;</span></li>
+                        </ul> 
+                        Поскольку степень активности фигур в значительной мере зависит от пешечного расположения, возрастает роль согласованности расположения фигур и пешек: пешки не должны мешать действию фигур. Активизируя свои фигуры, нужно одновременно теснить фигуры соперника, ограничивать их подвижность. В эндшпиле особое значение приобретает наличие пешечной слабости: фигуры, вынужденные их защищать, становятся пассивными и теряют в силе. Итогом правильной стратегии в эндшпиле нередко оказывается достижение позиций цугцванга.
+                        Поскольку в эндшпиле фигур и пешек меньше, чем в середине игры, он легче поддаётся классификации и изучению. Развитие шахмат сопровождалось анализом множества позиций эндшпиля: в них найдены лучшие планы игры сторон, точно установлен конечный результат. Таким образом, в эндшпиле возрастает роль знаний, то есть теории. По существу многие теоретические позиции эндшпиля представляют собой логические задачи, часто имеющие единственное решение. Для лучшей ориентации в многочисленных позициях эндшпиля разработана их классификация в зависимости от количества и качества имеющихся сил. См. статьи:
+                        <ul>
+                            <li><i class="bi bi-check-circle"></i> <span>«Пешечные окончания»;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>«Коневые окончания»;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>«Слоновые окончания»;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>«Смешанные окончания»;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>«Слон против коня»;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>«Ладья против лёгкой фигуры»;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span> «Ферзь против ладьи»;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>«Ферзь против лёгкой фигуры»;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>«Слон против коня»;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>«Тяжелофигурные окончания»;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span> «Ладейные окончания»;</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>«Оппозиция».</span></li>
+                        </ul>
+                    </p>                   
+                </div>
+            </div>
+        </div>
+
+    </section><!-- /About Section -->
+</main>
+
+@await Html.PartialAsync("LandingFooterPartial")

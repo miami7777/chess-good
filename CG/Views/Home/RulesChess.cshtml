@@ -1,0 +1,103 @@
+﻿@using CG.Domain.Entities
+@using CG.Helpers
+@using CG.Models.Enum
+@using System.Globalization
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    string headerRules = headers.settingsHeaders.TryGetValue("HeaderRules", out string HeaderRules) ? HeaderRules : "";
+    string descriptionRules = headers.settingsHeaders.TryGetValue("DescriptionRules", out string DescriptionRules) ? DescriptionRules : "";
+    var culture = CultureInfo.CurrentCulture;
+    ViewBag.Title = headerRules;
+    ViewBag.Description = descriptionRules;   
+}
+<main class="main">
+    @await Html.PartialAsync("PageTitle")  
+    <section id="rules" class="rules section">
+
+        <div class="container">
+
+            <div class="row gy-4 mb-5">
+
+                <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
+                    <img src="~/assets/assets/img/position1.jpg" class="img-fluid" alt="">
+                </div>
+
+                <div class="col-lg-6 order-2 order-lg-1 content" data-aos="fade-up" data-aos-delay="200">
+                    <h3>@(headers.settingsHeaders.TryGetValue("Title", out string TitleChessRules) ? TitleChessRules : "")</h3>
+                    <p class="fst-italic">
+                        @(headers.settingsHeaders.TryGetValue("Description", out string DescriptionChessRules) ? DescriptionChessRules : "")
+                    </p>
+                    <h4>Расстановка фигур и их роль</h4>
+                    <p class="fst-italic">                        
+                        Игровое поле в шахматах представляет собой 64 черно-белых квадрата. Суть игры заключается в том, что противники являются управляющими двух армий, черных и белых, основная задача которых поразить короля противника. Изначально необходимо правильно расставить фигуры на отведенной территории.
+
+                        Комплект шахматных фигур одного цвета состоит из ряда фигур:
+                        <ul>
+                            <li><i class="bi bi-check-circle"></i> <span>король</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>ферзь</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>2 ладьи</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>2 слона</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>2 коня</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>8 пешек</span></li>
+                        </ul>                        
+                        При расстановке ладьи обязательно занимают крайнее положение в первом ряду со стороны игрока. После ладью, по направлению к центру, располагаются сначала кони, затем слоны с обеих сторон. В центре располагается ферзь на той же клетке, какого он цвета, а рядом с ним находится король.
+                        Второй ряд от игрока занимают только лишь пешки. Они должны подставляться под удар и защищать главные фигуры от нападок противника. Таким образом, подготавливается шахматная доска к игре и можно непосредственно начинать противостояние игроков и их соревнование в тактике и стратегии.
+                    </p>
+                </div>
+                </div>
+
+
+            <div class="row gy-4 mb-5">
+                <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
+                    <img src="~/assets/assets/img/chess.jpg" class="img-fluid" alt="">
+                </div>
+
+                <div class="col-lg-6 order-2 order-lg-1 content" data-aos="fade-up" data-aos-delay="200">
+                    
+                    <h4>Правила игры</h4>
+                    <p class="fst-italic">
+                        До начала игры необходимо изучить основные правила. Для новичков игра мастеров кажется сложным таинством, но на самом деле стоит правильно расставить фигуры и запомнить, 
+                        как именно они ходят, как все становится понятным. 
+                    </p>
+                    <p>
+                        Правила хода для фигур следующие:
+                        Король ходит лишь на одну клетку, но направление не имеет значения;
+                        Ферзь ходит в любую сторону, при этом он не ограничен по количеству клеток;
+                        Для пешки нормально ходить только вперед на одну клетку, но атаковать она может вперед и по диагонали в любую сторону, исключением является первый ход, в рамках которого можно передвинуть пешку на две кетки;
+                        Ладья очень прямолинейна, вперед, назад, вправо или влево, но диагонали недоступны;
+                        Слоны ходят лишь по диагонали, в результате у каждого игрока есть черный и белый слоны, они ограничены по цвету, направлению, но не по количеству клеток;
+                        Наконец, сложно запомнить ход конем, он перемещается по форме буквой «Г», при этом препятствий для этой фигуры не существует, конь может перепрыгивать через любые фигуры, но всегда перемещение будет на 3 клетки.
+                    </p> 
+                    <p>
+                        С учетом этих актуальных аспектов каждый игрок получает внушительные возможности и огромное количество разнообразных комбинаций ходов, которые он самостоятельно подбирает во время игры.
+                    </p>
+                    
+                    <a href="~/adm/@culture.Name.ToString()"><span>@(headers.settingsHeaders.TryGetValue("ButtonAdvantage", out string ButtonAdvantage) ? ButtonAdvantage : "")</span></a>
+                </div>
+
+            </div>
+            <div class="row gy-4 mb-5"> 
+                <div class="col-lg-6 order-1 order-lg-2 content" data-aos="fade-up" data-aos-delay="200">
+
+                    <h4>Основные приемы</h4>
+                    <p class="fst-italic">
+                        С учетом внушительного количества комбинаций шахматы являются достаточно сложной игрой. Новички могут сразу познакомиться с рядом наиболее распространенных ситуаций, которые помогут им в полной мере погрузиться в этот мир стратегии и тактики.
+                    </p>
+                    <p>
+                        В такой игре как шахматы может быть не только лишь победа одного из противников. На доске складывается ситуация, при которой одному из соперников некуда ходить, но мата нет. В подобной ситуации признается пат, это вариант ничьи. Также существует вариант, при котором нет достаточного количества фигур для постановки мата, и игра угрожает стать бесконечной.
+                    </p>
+                    <p>
+                        Шахматы являются уникальной игрой, она доступна на всех уровнях, есть профессионалы, специалисты, новички. Некоторые становятся настоящими чемпионами и признанными игроками по всему миру, другие только лишь получают удовольствие от подобного хобби. Новички достаточно быстро осваивают шахматы и занимаются саморазвитием с удовольствием. Многие признают, что совершенствование в этой игре помогает в жизни, ведь это лучшая тренировка для мозга.
+                    </p>
+                </div>
+                <div class="col-lg-6 order-2 order-lg-1" data-aos="fade-up" data-aos-delay="100">
+                    <img src="~/assets/assets/img/about3.jpg" class="img-fluid" alt="">
+                </div>
+            </div>
+
+        </div>
+
+    </section><!-- /About Section -->
+</main>
+
+@await Html.PartialAsync("LandingFooterPartial")

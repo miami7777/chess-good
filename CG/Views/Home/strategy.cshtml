@@ -1,0 +1,166 @@
+﻿@using CG.Domain.Entities
+
+@{
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
+    ViewBag.Title = headers.settingsHeaders.TryGetValue("TitleStrategy", out string TitleStrategy) ? TitleStrategy : "";
+    ViewBag.Description = headers.settingsHeaders.TryGetValue("DescriptionStrategy", out string DescriptionStrategy) ? DescriptionStrategy : "";   
+}
+<main class="main">
+    @await Html.PartialAsync("PageTitle")
+
+    <!-- Courses Course Details Section -->
+    <section id="courses-course-details" class="courses-course-details section">
+
+        <div class="container" data-aos="fade-up">
+
+            <div class="row">
+                <div class="col-lg-8">                    
+                    <img src="~/assets/assets/img/strategy.jpg" class="img-fluid" style="min-height:300px" alt="">
+
+                    <h3>Стратегия, анализ, план</h3>
+                    <p>
+                    Любой игрок, который хочет закончить партию победой, должен выполнять следующие принципы шахматной стратегии:
+                        <ul>
+                            <li><i class="bi bi-check-circle"></i> <span>анализировать и оценивать позицию, возникшую на доске</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>намечать дальнейший план</span></li>
+                            <li><i class="bi bi-check-circle"></i> <span>постоянно вести расчет вариантов, и выбирать наилучшие</span></li>
+                        </ul>
+                    </p>
+                    <p>
+                        Анализ и оценка позиции. Что имеется ввиду. Для начала нужно выявить материальное ли равенство на доске?(кто не понял о чем речь, то ему следует познакомиться с правилами шахмат, там описано какая фигура сколько "стоит"). Затем игрок должен оценить позицию королей (как своего, так и противника), и сделать вывод чей король стоит лучше (то есть в центре он, под атакой или уже сделал рокировку). Дальше нужно анализировать расположение пешек - есть ли "изоляторы", проходные пешки, связанные проходные. После этого оценить чьи фигуры стоят лучше. Может быть у соперника конь на краю доски или "плохой" слон, или как его называл мой тренер, - "большая пешка" - то есть слон, который не имеет ни одного поля чтобы пойти, или имеет всего 1-2 поля, так как ему преграждают дорогу собственные пешки. На основании всех этих выводов, их совокупности, и делается оценка позиции, и принимается решение о дальнейшей игре, построении плана, или же о фиксировании ничьи.
+                    </p>
+                    <p>
+                        План в шахматной партии. Чтобы намечать план, а не играть бездумно, как это делают начинающие, нужно более менее уже иметь понятие в шахматах. Книга, которую я советую к прочтению всем, - это книга Нимцовича - "Моя система". Книга ярко описывает все основы шахматной партии, без которых вам просто не стать хорошим шахматистом. Книга очень большая, по-моему там около 500 страниц, так что придется потрудиться чтобы ее прочитать.
+                    </p>
+                </div>
+                <div class="col-lg-4">
+                    <p>Самые основные принципы стратегии и построения плана можно систематизировать в следующий ряд:
+                    
+                    <div class="course-info d-flex justify-content-between align-items-center">
+                            <h5>Ладьи должны работать по открытым линиям.</h5>
+                        <p><a href="#"></a></p>
+                    </div>
+
+                    <div class="course-info d-flex justify-content-between align-items-center">
+                            <h5>Ладьи должны врываться на 7-ю (или 2-ю) горизонталь и работать по ней.</h5>
+                            <p></p>                        
+                    </div>
+
+                    <div class="course-info d-flex justify-content-between align-items-center">
+                            <h5>Нежелательно ходить одной и той же фигурой в дебюте два или более раз.</h5>
+                        <p></p>
+                    </div>
+
+                    <div class="course-info d-flex justify-content-between align-items-center">
+                            <h5>Не стоит гоняться за пешками, порой темп в шахматах, важнее любой фигуры.</h5>
+                        <p></p>
+                    </div>
+                        <div class="course-info d-flex justify-content-between align-items-center">
+                            <h5>Развивать фигуры нужно к центру, а не на край доски</h5>
+                            <p></p>
+                        </div>
+                        <div class="course-info d-flex justify-content-between align-items-center">
+                            <h5>Бей центральную пешку, как бы тебе не было потом плохо (в пределах разумного,конечно)</h5>
+                            <p></p>
+                        </div>
+                    <div class="about">
+                        <div class="content">
+                            <a class="read-more" href=""><span>Узнать больше</span><i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+
+    </section><!-- /Courses Course Details Section -->
+    <!-- Tabs Section -->
+    <section id="tabs" class="tabs section">
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="row">
+                <div class="col-lg-3">
+                    <ul class="nav nav-tabs flex-column">  
+                                <li class="nav-item"> 
+                                    <a class="nav-link active show" data-bs-toggle="tab" href="#tab-1">Анализ и оценка позиции</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#tab-2">Наметить план действий</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#tab-3">Расчет вариантов</a>
+                                </li>                                
+                    </ul>
+                </div>
+                <div class="col-lg-9 mt-4 mt-lg-0">
+                    <div class="tab-content">
+                                                  
+                                <div class="tab-pane active show" id="tab-1">
+                                    <div class="row">
+                                        <div class="col-lg-8 details order-2 order-lg-1">
+                                    <h3>Анализ и оценка позиции</h3>
+                                            <p class="fst-italic">Выявление материального соотношения на доске</p>
+                                                <p>Для этого нужно познакомиться с правилами шахмат, в которых описано, сколько «стоит» каждая фигура.</p>
+                                            <p class="fst-italic">Оценка позиции королей</p>
+                                                <p>Нужно сделать вывод, чей король стоит лучше: в центре он, под атакой или уже сделал рокировку</p>
+                                            <p class="fst-italic">Анализ пешечной структуры</p>
+                                            <p>Необходимо определить, есть ли «изоляторы», проходные пешки, связанные проходные.</p>
+                                            <p class="fst-italic">Оценка позиций фигур</p>
+                                            <p>Нужно определить, чьи фигуры стоят лучше: возможно, у соперника конь на краю доски или «плохой» слон</p>
+                                        </div>
+                                        <div class="col-lg-4 text-center order-1 order-lg-2">
+                                            <img src="~/assets/assets/img/analys.jpg" alt="" class="img-fluid">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tab-2">
+                                    <div class="row">
+                                        <div class="col-lg-8 details order-2 order-lg-1">
+                                    <h3>Наметить план действий</h3>
+                                    <p class="fst-italic">План формируется на основе динамичной оценки позиции и включает в себя</p>
+                                    <ul>
+                                        <li><i class="bi bi-check-circle"></i> <span>постановку адекватной цели борьбы (борьба за победу, за ничью)</span></li>
+                                        <li><i class="bi bi-check-circle"></i> <span>оценку необходимости перегруппировки фигур</span></li>
+                                        <li><i class="bi bi-check-circle"></i> <span>оценку приемлемости (неприемлемости) серии разменов</span></li>
+                                        <li><i class="bi bi-check-circle"></i> <span>необходимость тех или иных манёвров, лавирования и т. п.</span></li>
+                                    </ul>
+                                        </div>
+                                        <div class="col-lg-4 text-center order-1 order-lg-2">
+                                            <img src="~/assets/assets/img/plan.jpg" alt="" class="img-fluid">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tab-3">
+                                    <div class="row">
+                                        <div class="col-lg-8 details order-2 order-lg-1">
+                                    <h3>Расчет вариантов</h3>
+                                    <p class="fst-italic">
+                                        это анализ различных ходов и их последствий, а также рассмотрение возможных ответов противника. Цель расчёта — выбрать наиболее перспективный вариант, который поможет достичь стратегических целей.
+                                        Некоторые шаги, которые обычно предпринимают игроки при расчёте вариантов
+                                    </p>
+                                    <ul>
+                                        <li><p><i class="bi bi-check-circle"></i> <b>Идентификация критических ходов</b></p>Это наиболее важные ходы в текущей позиции, которые создают угрозы, возможности для атаки или обороны, развивают фигуры или меняют структуру пешек.</li>
+                                        <li><p><i class="bi bi-check-circle"></i> <b>Рассмотрение ходов противника</b></p>Игроки анализируют возможные ходы противника в ответ на свои, пытаются предсказать их последствия</li>
+                                        <li><p><i class="bi bi-check-circle"></i> <b>Расчёт вариантов и вариаций</b></p>Рассматриваются различные варианты ходов и их развития, иногда на несколько ходов вперёд</li>
+                                        <li><p><i class="bi bi-check-circle"></i> <b>Оценка позиций и последствий</b></p>Учитываются изменение позиции фигур, материальное равновесие, безопасность короля, структура пешек и другие факторы</li>
+                                        <li><p><i class="bi bi-check-circle"></i> <b>Приоритизация вариантов</b></p>Выбираются наиболее перспективные варианты, которые обещают больше выгоды, создают больше возможностей или уменьшают риски и угрозы</li>
+                                    </ul>
+                                        </div>
+                                        <div class="col-lg-4 text-center order-1 order-lg-2">
+                                            <img src="~/assets/assets/img/calculate.jpg" alt="" class="img-fluid">
+                                        </div>
+                                    </div>
+                                </div>                               
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section><!-- /Tabs Section -->
+
+</main>
+@await Html.PartialAsync("LandingFooterPartial")
