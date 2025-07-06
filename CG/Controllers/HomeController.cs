@@ -200,6 +200,30 @@ namespace CG.Controllers
             GetHeaders();
             return View();
         }
+        public IActionResult matte_designs()
+        {
+            GetLocalization();
+            GetHeaders();
+            return View();
+        }
+        public IActionResult tactical_techniques()
+        {
+            GetLocalization();
+            GetHeaders();
+            return View();
+        }
+        public IActionResult world_champions()
+        {
+            GetLocalization();
+            GetHeaders();
+            return View();
+        }
+        public IActionResult stalemate_structures()
+        {
+            GetLocalization();
+            GetHeaders();
+            return View();
+        }
         public IActionResult Contact()
         {
             GetLocalization();

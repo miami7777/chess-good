@@ -15,6 +15,7 @@ let selectedLevel = 1;
 let pgn = "";
 let clockWhite = 180;
 let clockBlack = 180;
+process_move = false;
 let add_sec = 0;
 let isRatingGame = true;
 var touchText="";
@@ -893,7 +894,7 @@ function checkForEndGame() {
     let isDraw = threeFoldRepetition || insuficientMaterial || fiftyMovesRule;
     if (isDraw) {
         if (!isRatingGame) {
-            hubConnection.invoke("Message", { type: "SaveRating", gameState: game, result: "1/2-1/2" })
+            hubConnection.invoke("Process", { type: "SaveRating", gameState: game, result: "1/2-1/2" })
                 .catch(function (err) {
                     return console.error(err.toString());
                 });
@@ -925,7 +926,7 @@ function checkForCheckMateAndStaleMate() {
     }
     clearInterval(intervalClock);
     if (!isRatingGame) {
-        hubConnection.invoke("Message", { type: "SaveRating", gameState: game, result: res })
+        hubConnection.invoke("Process", { type: "SaveRating", gameState: game, result: res })
             .catch(function (err) {
                 return console.error(err.toString());
             });
@@ -1208,32 +1209,32 @@ function displayEval(lines, evaluations, scoreString, whiteTurn = true, moveNumb
         eval.innerHTML = evaluations[i];
         line.innerHTML = convertToStockfishToStandardNotation(lines[i],moveNumber,whiteTurn);
         document.getElementById("eval").innerHTML = evaluations[0];
-        //if (Math.abs(evaluations[0] < 0.5)) {
-        //    document.getElementById("evalText").innerHTML = "Equal";
-        //}
-        //if (evaluations[0] < 1 && evaluations[0] >= 0.5) {
-        //    document.getElementById("evalText").innerHTML = "У белых немного лучше";
-        //}
-        //if (evaluations[0] > -1 && evaluations[0] <= 0.5) {
-        //    document.getElementById("evalText").innerHTML = "У черных немного лучше";
-        //}
-        //if (evaluations[0] < 2 && evaluations[0] >= 1) {
-        //    document.getElementById("evalText").innerHTML = "У белых намного лучше";
-        //}
-        //if (evaluations[0] > -2 && evaluations[0] <= 1) {
-        //    document.getElementById("evalText").innerHTML = "У черных намного лучше";
-        //}
-        //if (evaluations[0] > 2) {
-        //    document.getElementById("evalText").innerHTML = "Белые выигрывают";
-        //}
-        //if (evaluations[0] < -2) {
-        //    document.getElementById("evalText").innerHTML = "Черные выигрывают";
-        //}
+        if (Math.abs(evaluations[0] < 0.5)) {
+            document.getElementById("evalText").innerHTML = "Equal";
+        }
+        if (evaluations[0] < 1 && evaluations[0] >= 0.5) {
+            document.getElementById("evalText").innerHTML = "У белых немного лучше";
+        }
+        if (evaluations[0] > -1 && evaluations[0] <= 0.5) {
+            document.getElementById("evalText").innerHTML = "У черных немного лучше";
+        }
+        if (evaluations[0] < 2 && evaluations[0] >= 1) {
+            document.getElementById("evalText").innerHTML = "У белых намного лучше";
+        }
+        if (evaluations[0] > -2 && evaluations[0] <= 1) {
+            document.getElementById("evalText").innerHTML = "У черных намного лучше";
+        }
+        if (evaluations[0] > 2) {
+            document.getElementById("evalText").innerHTML = "Белые выигрывают";
+        }
+        if (evaluations[0] < -2) {
+            document.getElementById("evalText").innerHTML = "Черные выигрывают";
+        }
         if (evaluations[0].toString().includes("#")) {
             const mateInMoves = evaluations[0].slice(1);
             const isWhiteWinning = (parseInt(scoreString) > 0 && isWhiteTurn) || (parseInt(scoreString) < 0 && !isWhiteTurn);
             const winningColor = isWhiteWinning ? "White" : "Black";
-            //document.getElementById("evalText").innerHTML = `${winningColor} могут поставить мат в ${mateInMoves} ходов`;
+            document.getElementById("evalText").innerHTML = `${winningColor} могут поставить мат в ${mateInMoves} ходов`;
             blackBarHeight = isWhiteWinning ? 0 : 100;
             blackBar.style.height = blackBarHeight + "%";
         }
@@ -1458,7 +1459,7 @@ function displayObserverMove(startingSquareId, destinationSquareId, promotedTo =
         return;
     }
 }
-function displayMove(startingSquareId, destinationSquareId, promotedTo = "blank") {
+function displayMove(startingSquareId, destinationSquareId, promotedTo = "blank") {    
     const pieceObject = getPieceAtSquare(startingSquareId, boardSquaresArray);
     const piece = document.getElementById(pieceObject.pieceId);
     const pieceId = pieceObject.pieceId;
@@ -1467,7 +1468,7 @@ function displayMove(startingSquareId, destinationSquareId, promotedTo = "blank"
     let destinationSquare = document.getElementById(destinationSquareId);
     let legalSquares = getPossibleMoves(startingSquareId, pieceObject, boardSquaresArray);
 
-    legalSquares = isMoveValidAgainstCheck(legalSquares, startingSquareId, pieceColor, pieceType);
+    legalSquares = isMoveValidAgainstCheck(legalSquares, startingSquareId, pieceColor, pieceType);    
     if (pieceType == "king") {
         let isCheck = IsKingInCheck(destinationSquareId, pieceColor, boardSquaresArray);
         if (isCheck) return;
@@ -1504,7 +1505,7 @@ function displayMove(startingSquareId, destinationSquareId, promotedTo = "blank"
         let startingSquare = document.getElementById(startingSquareId);
         startingSquare.classList.add("lastMoveSquare");
         destinationSquare.classList.add("lastMoveSquare");
-        isWhiteTurn = !isWhiteTurn;
+        isWhiteTurn = !isWhiteTurn;        
         updatePGN(startingSquareId, destinationSquareId, isWhiteTurn);
         updateBoardSquaresArray(startingSquareId, destinationSquareId, boardSquaresArray);
         let captured = false;
@@ -1528,7 +1529,7 @@ function displayMove(startingSquareId, destinationSquareId, promotedTo = "blank"
             }
         }        
         destinationSquare.appendChild(piece);
-        isWhiteTurn = !isWhiteTurn; 
+        isWhiteTurn = !isWhiteTurn;         
         updatePGN(startingSquareId, destinationSquareId, isWhiteTurn);
         updateBoardSquaresArray(startingSquareId, destinationSquareId, boardSquaresArray);
         let captured = true;

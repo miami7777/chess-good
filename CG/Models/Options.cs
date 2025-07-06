@@ -1,4 +1,5 @@
 ﻿using CG.Models.Enum;
+using CG.Models.Enums;
 
 namespace CG.Models
 {
@@ -9,5 +10,6 @@ namespace CG.Models
         public int add_sec { get; set; }
         public Type_Game type { get; set; }
         public bool isRating { get; set; }
+        public Color color { get; set; }
     }
 }

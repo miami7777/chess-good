@@ -22,13 +22,21 @@
                 @if(user == null)
                 {
                     <div style="display:flex">
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame(3,0,0)"><span>3+0</span></a>
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame(3,0,2)"><span>3+2</span></a>
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame(5,0,0)"><span>5+0</span></a>                     
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame(5,0,3)"><span>5+3</span></a>
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame(10,0,0)"><span>10+0</span></a>
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame(10,0,5)"><span>10+5</span></a>
+                    </div>
+                    <div style="display:none">
                         <input type="text" class="form-control" id="min_game" placeholder="мин." />
                         <input type="text" class="form-control" id="sec_game" placeholder="сек." />
-                        <input type="text" class="form-control" id="add_sec" placeholder="доб." />
-                    </div>
-                    <div style="display:flex;align-items:baseline">
-                        <input type="text" class="form-control" id="usernameInput" placeholder="Введите ваше имя"/>
+                        <input type="text" class="form-control" id="add_sec" placeholder="доб." /> 
                         <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame()"><span>Найти соперника</span></a>
+                    </div>
+                    <div style="display:none;align-items:baseline">                       
+                        <input type="text" class="form-control" id="usernameInput" placeholder="Введите ваше имя" />                       
                     </div>                
                     <div style="display:flex; align-items: flex-start">
                         <label class="switch switch-3d switch-warning mr-3">
@@ -41,18 +49,26 @@
                     
                 }
                 else
-                {       <div style="display:flex">
-                            <input type="text" class="form-control" id="min_game" placeholder="мин." />
-                            <input type="text" class="form-control" id="sec_game" placeholder="сек." />
-                            <input type="text" class="form-control" id="add_sec" placeholder="доб." />
-                        </div>
-                        <div style="display:flex;align-items:baseline">
-                            <input id="usernameInput" style="display:none" type="text" value="@user.UserName" readonly="readonly" />
-                        <div style="display:flex;align-items:baseline">
-                            <input id="userRating" style="display:none" type="text" value="@userRating" readonly="readonly" />
-                            <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame()"><span>Найти соперника</span></a>
-                        </div>
-                        <div style="display:flex; align-items: flex-start">
+                {
+                    <div style="display:flex">
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame(3,0,0)"><span>3+0</span></a>
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame(3,0,2)"><span>3+2</span></a>
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame(5,0,0)"><span>5+0</span></a>
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame(5,0,3)"><span>5+3</span></a>
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame(10,0,0)"><span>10+0</span></a>
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame(10,0,5)"><span>10+5</span></a>
+                    </div>
+                    <div style="display:none">
+                        <input type="text" class="form-control" id="min_game" placeholder="мин." />
+                        <input type="text" class="form-control" id="sec_game" placeholder="сек." />
+                        <input type="text" class="form-control" id="add_sec" placeholder="доб." />
+                        <a href="#" class="btn searchBtn" style="margin:10px" onclick="joinGame()"><span>Найти соперника</span></a>
+                    </div>
+                    <div style="display:none;align-items:baseline">
+                        <input type="text" class="form-control" id="usernameInput" value="@user.UserName" placeholder="Введите ваше имя" />
+                        <input type="text" class="form-control" id="userRating" value="@userRating" placeholder="Введите ваше имя" />
+                    </div>
+                    <div style="display:flex; align-items: flex-start">
 
                             <label class="switch switch-3d switch-warning mr-3">
                                 <input id="switchRating" type="checkbox" class="switch-input" onclick="SelectRatingGame()">
@@ -60,15 +76,24 @@
                                 <span class="switch-handle"></span>
                             </label>
                             <p id="isRating">Товарищеская</p>
-                        </div>
+                    </div>                   
                     
-                    </div>
-                }
+                }               
+                <div class="form-check-inline form-check">
+                    <label for="inline-radio1" class="form-check-label d-flex align-items-center mr-1">
+                        <input type="radio" id="inline-radio1" name="inline-radios" value="0" class="form-check-input" style="height:auto">Белые
+                    </label>                            
+                    <label for="inline-radio3" class="form-check-label d-flex align-items-center mr-1">
+                        <input type="radio" id="inline-radio3" name="inline-radios" value="1" class="form-check-input" style="height:auto">Черные
+                    </label>
+                    <label for="inline-radio2" class="form-check-label d-flex align-items-center mr-1">
+                        <input type="radio" id="inline-radio2" name="inline-radios" value="2" class="form-check-input" style="height:auto">Случайный цвет
+                    </label>
+                </div>                    
                 <audio id="audioMove" src="https://chess-good.ru/sounds/6a897efd83627af.mp3" preload="none"></audio>
                 <audio id="audioStart" src="https://chess-good.ru/sounds/2f63ff459178cf2.mp3" preload="none"></audio>
                 <audio id="audioTik" src="https://chess-good.ru/sounds/1650ec5222ba51a.mp3" preload="none"></audio>
-            </div>
-                        
+            </div>            
             <div id="playerInfo"></div>
         </div>
     </div>

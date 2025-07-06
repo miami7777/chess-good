@@ -27,14 +27,13 @@ namespace CG.Controllers
             var user = await GetCurrentUser();
             ViewData["User"] = user;
             return View();
-        }
-
+        }        
         public async Task<IActionResult> Game(int id)
         {
             GetLocalization();
             GetHeaders();
             var user = await GetCurrentUser();
-            ViewData["User"] = user;
+            ViewData["User"] = user;          
             return View(id);
         }
         [HttpPost]

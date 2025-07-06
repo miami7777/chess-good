@@ -1,0 +1,44 @@
+﻿@model PrefixTypeBlock
+@using CG.Helpers
+@using CG.Models.Enum
+@using System.Globalization
+@{
+    var culture = CultureInfo.CurrentCulture;
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();   
+}
+<!-- About Section -->
+<section id="about" class="about section">
+
+    <div class="container">
+
+        <div class="row gy-4">
+
+            <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
+                <img src="~/assets/assets/img/Stalemate.jpg" class="img-fluid" alt="">
+            </div>
+
+            <div class="col-lg-6 order-2 order-lg-1 content" data-aos="fade-up" data-aos-delay="200">
+                <h3>Типичные патовые конструкции</h3>
+                <p class="fst-italic">
+                    Пат в шахматах представляет собой положение в шахматной партии, в котором при своей очереди хода игрок не имеет ни одного возможного ответа, и его король не находится под нападением. Если на доске возникает пат, то партии присваивается ничейный результат.
+                    Особенно важно помнить о возможности пата в следующих случаях:
+                    1. Когда у вас большое материальное преимущество, а у соперника «голый» король.
+                    2. Когда у соперника большое материальное преимущество.
+                    Зачастую при помощи пата удаётся свести партию к ничьей.
+                </p>
+                <p class="fst-italic">
+                    Патовая позиция выгодна тому игроку, который был близок к поражению. Ничья, все же, лучший исход, чем проигрыш. Поэтому ответ на вопрос о том, кто выиграл при пате в шахматах ― однозначен: никто.
+                </p>
+                <p class="fst-italic">
+                    Существует разные типичные патовые позиции.
+                    <img src="~/assets/assets/img/ch2.jpg" class="img-fluid" alt="">
+                </p>
+                <a href="~/adm/@culture.Name.ToString()" class="read-more"><span>@(headers.settingsHeaders.TryGetValue("ButtonAdvantage", out string ButtonAdvantage) ? ButtonAdvantage : "")</span><i class="bi bi-arrow-right"></i></a>
+            </div>
+
+        </div>
+
+    </div>
+
+</section><!-- /About Section -->
+@await Html.PartialAsync("LandingFooterPartial")

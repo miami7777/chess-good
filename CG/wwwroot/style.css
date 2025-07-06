@@ -136,6 +136,7 @@ div:has(>#levelLabel){
     margin-bottom: 5px;
 }
    #evalBar {
+       display:none;
     background-color:rgb(255,255,255);
     width:5%;
     /*height:70vw;*/

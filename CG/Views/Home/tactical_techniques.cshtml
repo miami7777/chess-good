@@ -3,13 +3,13 @@
 @{
     var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
     ViewBag.Title = headers.settingsHeaders.TryGetValue("TitleTactics", out string TitleTactics) ? TitleTactics : "";
-    ViewBag.Description = headers.settingsHeaders.TryGetValue("DescriptionTactics", out string DescriptionTactics) ? DescriptionTactics : "";    
+    ViewBag.Description = headers.settingsHeaders.TryGetValue("DescriptionTactics", out string DescriptionTactics) ? DescriptionTactics : "";
 }
 <main class="main">
     @await Html.PartialAsync("PageTitle")
 
     <!-- Courses Course Details Section -->
-    <section id="courses-course-details" class="courses-course-details section">
+    <section id="tactical_techniques" class="tactical_techniques section">
 
         <div class="container" data-aos="fade-up">
 
@@ -17,7 +17,7 @@
                 <div class="col-lg-8">
                     <img src="~/assets/assets/img/tactic.jpg" class="img-fluid" style="min-height:300px" alt="">
 
-                    <h3>Тактика</h3>
+                    <h3>Тактические приемы</h3>
                     <p>
                         Изучение и практика шахматных тактик - лучшее, что можно посоветовать начинающему играть в шахматы для улучшения навыков. Как сказал великий немецкий шахматист Рихард Тейхман: «Шахматы на 99% состоят из тактики» - более точного утверждения для большинства игроков сложно придумать.
                         Тактика - это то, что нужно искать, и к чему нужно стремиться на каждом ходу. Тактика являются решающим элементом почти во всех играх ниже уровня гроссмейстера. Шахматная тактика - это защитник и содействующая сторона стратегии.
@@ -30,11 +30,11 @@
                             <li><i class="bi bi-check-circle"></i> <span>Уничтожение защиты</span></li>
                             <li><i class="bi bi-check-circle"></i> <span>Перегрузка</span></li>
                             <li><i class="bi bi-check-circle"></i> <span>Отвлечение</span></li>
-                            <li><i class="bi bi-check-circle"></i> <span>Завлечение</span></li>                            
+                            <li><i class="bi bi-check-circle"></i> <span>Завлечение</span></li>
                         </ul>
                     </p>
                     <h3>Комбинация</h3>
-                    <p>Важнейший элемент тактики шахматной игры — комбинация, которая нередко связана с жертвой, что делает её особенно привлекательной с эстетической точки зрения.</p>                    
+                    <p>Важнейший элемент тактики шахматной игры — комбинация, которая нередко связана с жертвой, что делает её особенно привлекательной с эстетической точки зрения.</p>
                 </div>
                 <div class="col-lg-4">
                     <p>
@@ -65,7 +65,7 @@
                             <p></p>
                         </div>
                         <div class="course-info d-flex justify-content-between align-items-center">
-                            <h5>Завлечение</h5>                            
+                            <h5>Завлечение</h5>
                         </div>
                         <div class="about">
                             <div class="content">

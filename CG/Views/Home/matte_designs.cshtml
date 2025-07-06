@@ -1,0 +1,39 @@
+﻿@using CG.Helpers
+@using CG.Models.Enum
+@using System.Globalization
+@{
+    var culture = CultureInfo.CurrentCulture;
+    var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();     
+}
+<!-- About Section -->
+<section id="mat_design" class="mat_design section">
+
+    <div class="container">
+
+        <div class="row gy-4">
+
+            <div class="col-lg-6 order-2 order-lg-1" data-aos="fade-up" data-aos-delay="100">
+                <img src="~/assets/assets/img/mat.jpg" class="img-fluid" alt="">
+            </div>
+
+            <div class="col-lg-6 order-1 order-lg-2 content" data-aos="fade-up" data-aos-delay="200">
+                <h3>Типичные матовые конструкции</h3>
+                <p class="fst-italic">
+                    Навык постановки мата является вероятно ключевым умением шахматиста. Нельзя завершить партию победой, не обладая знанием того, как матовать неприятельского короля, если не рассматривать в контексте вопроса ситуации просроченного времени и сдачи соперника. В совершенствовании познаний о постановке мата неискушенному в настоящей проблеме шахматисту в силах помочь подготовленный редакцией материал на тему типичных матовых финалов, который изложен на нашем сайте в трех частях. Внимательно изучить базовые матовые конструкции – это первое, что нужно сделать в освоении предмета обсуждения.
+                </p>
+                <p class="fst-italic">
+                    На текущей и, в продолжение, на страницах второй и третьей собраны в наибольшей степени типичные примеры объявления мата, которые могут встречаться в шахматной практике. Каждая из позиций подробно, но в меру проиллюстрирована графикой воздействия и взаимодействия фигур. На всех диаграммах, где в постановке мата участвует ладья или слон, эти фигуры могут быть благополучно заменены ферзем, ввиду того, что ферзь, как известно, заключает в себе свойства ладьи и слона.
+                </p>
+                <p class="fst-italic">
+                    В части первой типичных матовых финалов представлены позиции объявления мата ладьей при поддержке легкой фигуры и наоборот – слоном или конем при поддержке ладьи.
+                </p>  
+                <img src="~/assets/assets/img/ch1.jpg" class="img-fluid" alt="">                
+                <a href="~/adm/@culture.Name.ToString()" class="read-more"><span>@(headers.settingsHeaders.TryGetValue("ButtonAdvantage", out string ButtonAdvantage) ? ButtonAdvantage : "")</span><i class="bi bi-arrow-right"></i></a>
+            </div>
+
+        </div>
+
+    </div>
+
+</section><!-- /About Section -->
+@await Html.PartialAsync("LandingFooterPartial")

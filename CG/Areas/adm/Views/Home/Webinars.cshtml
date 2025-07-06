@@ -24,10 +24,17 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                             <div class="dropdown-menu-content">
-                                <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/Card/@item.Id">Карточка</a>
-                                <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/Index/@item.Id">Детали</a>
-                                <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/EditWebinar/@item.Id">Редактировать</a>                             
-                                <a class="dropdown-item" href="#">Удалить</a>
+                                @if (User.IsInRole("organizer") || User.IsInRole("admin"))
+                                {
+                                    <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/Card/@item.Id">Карточка</a>
+                                    <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/Index/@item.Id">Детали</a>
+                                    <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/EditWebinar/@item.Id">Редактировать</a>                             
+                                    <a class="dropdown-item" href="#">Удалить</a>
+                                }
+                                else
+                                {
+                                    <a class="dropdown-item" href="~/adm/@System.Globalization.CultureInfo.CurrentCulture.Name.ToString()/webinar/Card/@item.Id">Открыть</a>
+                                }
                             </div>
                         </div>
                     </div>
@@ -35,7 +42,7 @@
                         @item.Name
                     </h4>
                     <p class="text-light">
-                        Просмотров
+                        Участников
                         <span class="count">@item.Purchases</span>
                     </p>
                     <div class="chart-wrapper px-0" style="height:100px;" height="100">
@@ -55,11 +62,7 @@
                             {
                                 <i class="fa fa-star-o"></i>
                             }
-                        }
-                        <button type="button" class="btn btn-info m-l-10 m-b-10 float-right">
-                            Отзывы
-                            <span class="badge badge-light">1</span>
-                        </button>
+                        }                        
                     </div>
                 </div>
             </div>
@@ -74,7 +77,10 @@
             <small>Use <code>&lt;i&gt;</code></small> *@
         </div>
         <div class="card-body">
-            <button id="addWebinar" type="button" class="btn btn-outline-primary"><i class="fa fa-star"></i>&nbsp; Добавить турнир</button>
+            @if (User.IsInRole("organizer") || User.IsInRole("admin"))
+            {
+                 <button id="addWebinar" type="button" class="btn btn-outline-primary"><i class="fa fa-star"></i>&nbsp; Добавить турнир</button>
+            }
         </div>
     </div><!-- /# card -->
 </footer>

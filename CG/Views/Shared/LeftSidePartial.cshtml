@@ -2,7 +2,10 @@
 @{
     var role = "User";
     if (User.IsInRole("admin")) role = "Админ";
-    else if (User.IsInRole("organizer")) role = "Организатор"; 
+    else if (User.IsInRole("organizer")) role = "Организатор";
+    else if (User.IsInRole("user")) role = "Пользователь";
+    else if (User.IsInRole("member")) role = "Подписчик";
+    else if (User.IsInRole("sportsman")) role = "Участник ППМТ";
     var culture = CultureInfo.CurrentCulture;
 }
 <aside id="left-panel" class="left-panel">
@@ -43,7 +46,7 @@
                             </ul>
                         </li>
                         <li class="menu-item-has-children dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-table"></i>Анонсы</a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-table"></i>Задачи</a>
                             <ul class="sub-menu children dropdown-menu">                                
                                 <li><i class="fa fa-table"></i><a href="tables-data.html">Продажи</a></li>
                                 <li><i class="fa fa-table"></i><a href="tables-basic.html">Статистика</a></li>
@@ -62,27 +65,20 @@
                             <li><i class="fa fa-table"></i><a href="tables-data.html">Параметры</a></li>
                             <li><i class="fa fa-table"></i><a href="tables-data.html">Конструктор</a></li>
                             </ul>
-                        </li>
-                        <li class="menu-item-has-children dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-th"></i>Интеграция</a>
-                            <ul class="sub-menu children dropdown-menu">
-                                <li><i class="menu-icon fa fa-th"></i><a href="forms-basic.html">Lichess</a></li>
-                                <li><i class="menu-icon fa fa-th"></i><a href="forms-advanced.html">Сервис видеоконференций</a></li>
-                            </ul>
-                        </li>
+                        </li>                        
                     }
                 @if (User.IsInRole("organizer") || User.IsInRole("admin"))
                 {
                     <h3 class="menu-title">Организаторская</h3><!-- /.menu-title -->
 
                     <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Анонсы</a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Задачи</a>
                         <ul class="sub-menu children dropdown-menu">
                             <li><i class="fa fa-table"></i><a href="~/adm/@culture.Name.ToString()/home/courses">Архив</a></li> 
                         </ul>
                     </li>
                     <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Стримы</a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Турниры</a>
                         <ul class="sub-menu children dropdown-menu">
                             <li><i class="fa fa-table"></i><a href="~/adm/@culture.Name.ToString()/home/webinars">Архив</a></li>
                         </ul>
@@ -92,16 +88,54 @@
                 {
                     <h3 class="menu-title">Пользовательская</h3><!-- /.menu-title -->
                     <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Анонсы</a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Задачи</a>
                         <ul class="sub-menu children dropdown-menu">
-                            <li><i class="fa fa-table"></i><a href="tables-basic.html">Архив</a></li>
+                            <li><i class="fa fa-table"></i><a href="~/adm/@culture.Name.ToString()/home/courses">Архив</a></li>
                           
                         </ul>
                     </li>
                     <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Стримы</a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Турниры</a>
                         <ul class="sub-menu children dropdown-menu">
-                            <li><i class="fa fa-table"></i><a href="tables-basic.html">Архив</a></li>
+                            <li><i class="fa fa-table"></i><a href="~/adm/@culture.Name.ToString()/home/webinars">Архив</a></li>
+                        </ul>
+                    </li>
+                }
+                @if (User.IsInRole("member") || User.IsInRole("admin"))
+                {
+                    <h3 class="menu-title">Пользовательская</h3>
+
+                    <!-- /.menu-title -->
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Задачи</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="fa fa-table"></i><a href="~/adm/@culture.Name.ToString()/home/courses">Архив</a></li>
+
+                        </ul>
+                    </li>
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Турниры</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="fa fa-table"></i><a href="~/adm/@culture.Name.ToString()/home/webinars">Архив</a></li>
+                        </ul>
+                    </li>
+                }
+                @if (User.IsInRole("sportsman") || User.IsInRole("admin"))
+                {
+                    <h3 class="menu-title">Пользовательская</h3>
+
+                    <!-- /.menu-title -->
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Задачи</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="fa fa-table"></i><a href="~/adm/@culture.Name.ToString()/home/courses">Архив</a></li>
+
+                        </ul>
+                    </li>
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Турниры</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="fa fa-table"></i><a href="~/adm/@culture.Name.ToString()/home/webinars">Архив</a></li>
                         </ul>
                     </li>
                 }

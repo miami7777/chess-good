@@ -5,7 +5,7 @@
 @using CG.Helpers
 
 @{
-    ViewData["Title"] = "Редактирование курса";
+    ViewData["Title"] = "Редактирование задачи";
     Layout = "_Layout_Course";
     CoursePreview coursePreview = new CoursePreview();
     var courseDetails = String.Join(",",Model.CourseDetails.Select(x => x.ChapterId.ToString()));
@@ -23,7 +23,7 @@
             <div class="col-lg-6">                              
                 <div class="card">
                     <div class="card-header">
-                        <strong>Основные данные </strong> курса
+                        <strong>Основные данные </strong> задачи
                     </div>
                     @using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal", onsubmit = "return courseFormSubmit(this);" }))
                     {
@@ -33,7 +33,7 @@
                         <div class="card-body card-block">
                             <div class="row form-group">
                                 <div class="col col-md-3">
-                                    @Html.LabelFor(model => model.TrainerId, "Ведущий", htmlAttributes: new { @class = "form-control-label" })
+                                    @Html.LabelFor(model => model.TrainerId, "Автор", htmlAttributes: new { @class = "form-control-label" })
                                 </div>
                                 <div class="col-12 col-md-9">
                                     <p class="form-control-static">@(ViewData["user"] != null ? ((ApplicationUser)ViewData["user"]).GetFio() : "")</p>
@@ -69,7 +69,7 @@
                                 </div>
                                 <div class="col-12 col-md-9">
                                     @Html.EditorFor(model => model.Duration, new {  type = "number", htmlAttributes = new { @class = "form-control", @min = "0", @placeholder = "0" } })
-                                    <small class="form-text text-muted">Введите длительность курса</small>
+                                    <small class="form-text text-muted">Введите длительность задачи</small>
                                 </div>
                             </div>
                             
@@ -80,7 +80,7 @@
                                     </div>
                                     <div class="col-12 col-md-9">
                                         @Html.Editor("priceEdit", new { htmlAttributes = new { @class = "form-control", @type= "number", @min = "0", @placeholder = "0,00",@step = "0.01" } })
-                                        <small class="form-text text-muted">Введите цену курса</small>
+                                        <small class="form-text text-muted">Введите цену задачи</small>
                                     </div>
                                 </div>
                                 <div class="row form-group">
@@ -107,15 +107,15 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-header">
-                        <strong>Превью </strong> курса
+                        <strong>Превью </strong> задачи
                     </div>
                     <div class="card-body card-block">
                         @{
                         var filePreview = Model.CourseFiles.Where(x => x.TypeCourseFiles == TypeCourseFiles.Preview).FirstOrDefault();                        
                         var img = "background: url(" + (Url.Action("DownloadThumb", "Course", new { id = filePreview?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"])) + ")no-repeat; background-size:cover;height:140px;width:250px);";                        
                         }
-                        @if (filePreview != null)
-                        {
+                        @* @if (filePreview != null)
+                        { *@
                                                         <div class="row form-group">                                    
                                                             <div class="col-12 col-md-4">
                                                                 <div id="preview_course" class="file" style="@(img)">
@@ -127,7 +127,7 @@
                                                             <div class="col-12 col-md-4">                                                    
                                                                 <div class="card-body">
                                                                     <div class="right_t konk">
-                                                                        <div class="lbl req-field">Тип курса:</div>
+                                                                        <div class="lbl req-field">Тип задачи:</div>
 
                                                                     <a href="javascript:void(0)" class="info_k info_k_undo_click" id="typeCourse">
                                                                                 @EnumHelper.GetDescriptionEnum((TypeCourse)Model.TypeCourse)
@@ -144,7 +144,7 @@
                                                                         </div>                                                
                                                                     </div>
                                                                 <div class="right_t konk">
-                                                                    <div class="lbl req-field">Статус курса:</div>
+                                                                    <div class="lbl req-field">Статус задачи:</div>
 
                                                                     <a href="javascript:void(0)" class="info_k info_k_undo_click" id="statusCourse">
                                                                         @(Model.DirectoryStatusCourses?.Name ?? "Выбрать")
@@ -165,7 +165,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>                                            
-                        }                                     
+                        @* }                                      *@
                         @using (Html.BeginForm("SavePreview", "Course", FormMethod.Post, new { enctype = "multipart/form-data", id = "fileuploadPreview", @class = "form-horizontal" }))
                         {
                             @Html.HiddenFor(model => model.Id)
@@ -207,7 +207,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <strong>Превью на детальной странице </strong> курса
+                        <strong>Превью на детальной странице </strong> задачи
                     </div>
                     <div class="card-body card-block">
                         @{
@@ -215,8 +215,8 @@
                             var imgDetails = "background: url(" + (Url.Action("DownloadThumb", "Course", new { id = filePreviewDetails?.Id ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"])) + ")no-repeat; background-size:cover;height:140px;width:250px);";
                         }
                         @{
-                            if (filePreviewDetails != null)
-                            {
+                            // if (filePreviewDetails != null)
+                            // {
                                 <div class="row form-group">
                                     <div class="col-12 col-md-4">
                                         <div id="preview_details_course" class="file" style="@(imgDetails)">
@@ -226,7 +226,7 @@
                                         </div>
                                     </div>                                        
                                 </div>
-                            }
+                            // }
                         }                    
                    
                         @using (Html.BeginForm("SavePreviewDetails", "Course", FormMethod.Post, new { enctype = "multipart/form-data", id = "fileuploadPreviewDetails", @class = "form-horizontal" }))
@@ -270,7 +270,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Программа курса</h4>
+                        <h4>Программа задачи</h4>
                     </div>
                     <div class="card-body">
                         <div class="default-tab">
@@ -309,7 +309,7 @@
                                                 {                                                                                                               
                                                                                 <div class="row form-group">
                                                                                     <div class="col col-md-3">
-                                                                                        Превью главы курса
+                                                                                        Превью главы задачи
                                                                                     </div>
                                                                                     <div class="col-12 col-md-9">
                                                                                         <div class="file">
@@ -373,7 +373,7 @@
                                                     {                                                                                                        
                                                                                     <div class="row form-group">
                                                                                         <div class="col col-md-3">
-                                                                                            Видео курса
+                                                                                            Видео задачи
                                                                                         </div>
                                                                                         <div class="col-12 col-md-9">
                                                                                             <div class="file">
@@ -634,7 +634,7 @@
                 $("#preview_course").css('background-image', 'url(' + this.src + ')');
                 // URL.revokeObjectURL(this.src);
                 
-                if ((sizes.width / sizes.height) > 1.75 && (sizes.width / sizes.height) < 1.85) {
+                /*if ((sizes.width / sizes.height) > 1.75 && (sizes.width / sizes.height) < 1.85) {
                     $("#filePathUniversalPreview").val(name);
                     $("#downloadFilesSizeErrorUniversalPreview").hide();
                     $('#addFileUniversalPreview').attr("disabled", false);
@@ -644,7 +644,10 @@
                     $('#uploadedFileUniversalPreview').val("");
                     $("#downloadFilesSizeErrorUniversalPreview").show();
                     $('#addFileUniversalPreview').attr("disabled", true);
-                }
+                }*/
+                                    $("#filePathUniversalPreview").val(name);
+                                    $("#downloadFilesSizeErrorUniversalPreview").hide();
+                                    $('#addFileUniversalPreview').attr("disabled", false);
             }
 
             var objectURL = URL.createObjectURL(file);
@@ -675,19 +678,21 @@
                                     $("#preview_details_course").css('background-image', 'url(' + this.src + ')');
                 //URL.revokeObjectURL(this.src);
 
-                if ((sizes.width / sizes.height) > 1.4 && (sizes.width / sizes.height) < 2.2) {
-                    $("#filePathUniversalPreviewDetails").val(name);
-                    $("#downloadFilesSizeErrorUniversalPreviewDetails").hide();
-                                        $('#addFileUniversalPreviewDetails').attr("disabled", false);
-                }
-                else {
-                    $("#filePathUniversalPreviewDetails").val(null);
-                    $('#uploadedFileUniversalPreview').val("");
-                    $("#downloadFilesSizeErrorUniversalPreviewDetails").show();
-                                        $('#addFileUniversalPreviewDetails').attr("disabled", true);
-                }
+                // if ((sizes.width / sizes.height) > 1.4 && (sizes.width / sizes.height) < 2.2) {
+                //     $("#filePathUniversalPreviewDetails").val(name);
+                //     $("#downloadFilesSizeErrorUniversalPreviewDetails").hide();
+                //                         $('#addFileUniversalPreviewDetails').attr("disabled", false);
+                // }
+                // else {
+                //     $("#filePathUniversalPreviewDetails").val(null);
+                //     $('#uploadedFileUniversalPreview').val("");
+                //     $("#downloadFilesSizeErrorUniversalPreviewDetails").show();
+                //                         $('#addFileUniversalPreviewDetails').attr("disabled", true);
+                // }
             }
-
+                                $("#filePathUniversalPreviewDetails").val(name);
+                                $("#downloadFilesSizeErrorUniversalPreviewDetails").hide();
+                                $('#addFileUniversalPreviewDetails').attr("disabled", false);
             var objectURL = URL.createObjectURL(file);
             img.src = objectURL;
         }        
@@ -722,17 +727,18 @@
                     };
                     URL.revokeObjectURL(this.src);
 
-                    if ((sizes.width / sizes.height) == 1) {
-                        $("#filePathUniversalPreviewChapter_"+index).val(name);
-                        $("#downloadFilesSizeErrorUniversalPreviewChapter_"+index).hide();
-                    }
-                    else {
-                        $("#filePathUniversalPreviewChapter_"+index).val(null);
-                        $('#uploadedFileUniversalPreviewChapter_'+index).val("");
-                        $("#downloadFilesSizeErrorUniversalPreviewChapter_"+index).show();
-                    }
+                    // if ((sizes.width / sizes.height) == 1) {
+                    //     $("#filePathUniversalPreviewChapter_"+index).val(name);
+                    //     $("#downloadFilesSizeErrorUniversalPreviewChapter_"+index).hide();
+                    // }
+                    // else {
+                    //     $("#filePathUniversalPreviewChapter_"+index).val(null);
+                    //     $('#uploadedFileUniversalPreviewChapter_'+index).val("");
+                    //     $("#downloadFilesSizeErrorUniversalPreviewChapter_"+index).show();
+                    // }
                 }
-
+                $("#filePathUniversalPreviewChapter_"+index).val(name);
+                        $("#downloadFilesSizeErrorUniversalPreviewChapter_"+index).hide();
                 var objectURL = URL.createObjectURL(file);
                 img.src = objectURL;
             }

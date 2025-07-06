@@ -1,4 +1,3 @@
-
 const hubConnection = new signalR.HubConnectionBuilder()
         .withUrl("/ru/chess/chessHub")
     .build();
@@ -20,7 +19,7 @@ const typeBattles = ["Пуля", "Пуля с добавлением", "Блиц
                         gameTypeInfo.style.display = "flex";
                         playerInfo.style.display = "none";
                         openGame(gameId.value);                        
-                    }
+                    }                    
                     hubConnection.on("Statistics", function (event) {                        
                         const data = event;                        
                         if (data && data.connects) {                           
@@ -46,7 +45,7 @@ const typeBattles = ["Пуля", "Пуля с добавлением", "Блиц
                     });
                     hubConnection.on("Receive", function (event) {                       
                         const data = event;                           
-                        if (data.type === "PlayerList") {                            
+                        if (data.type === "PlayerList") {                             
                             players = data.players;
                             game = data.gameState;                           
                             clockWhite = game.options.min * 60 + game.options.sec;
@@ -75,7 +74,7 @@ const typeBattles = ["Пуля", "Пуля с добавлением", "Блиц
                                         }
                                 }
                             });
-                            if (data.players.length === 2) {
+                            if (data.players.length === 2) { 
                                 playSound('audioStart');
                                 let countdown = 10;
                                 const updateCounter = () => {
@@ -106,7 +105,7 @@ const typeBattles = ["Пуля", "Пуля с добавлением", "Блиц
                                 const intervalId = setInterval(updateCounter, 1000); 
                                 setTimeout(() => {                                    
                                     updateClock();
-                                    intervalClock = setInterval(updateClock, 1000);                                    
+                                    intervalClock = setInterval(updateClock, 1200);                                    
                                 }, 10000);                                
                             }
                         } 
@@ -118,30 +117,51 @@ const typeBattles = ["Пуля", "Пуля с добавлением", "Блиц
                             moves = game.moves;
                             isWhiteTurn = moves.length % 2 === 0 ? true : false;
                             boardSquaresArray = [];
-                            loadPositionFromFen(game.currentBoard, isWhiteTurn);
-                            pgn = game.pgn;
-                            recreateHTMLFromPGN(pgn);   
+                            if (moves.length > 0) {
+                                loadPositionFromFen(game.currentBoard, isWhiteTurn);
+                                pgn = game.pgn;
+                                recreateHTMLFromPGN(pgn);
+                            }
                             positionArray = [...new Set(game.fen)];
                             isOpponentWhite = false;
                                                        
                         }
-                        if (data.type === "Move") {
+                        if (data.type === "Move") {                            
                             const startSquare = data.move.startSquare;
                             const endSquare = data.move.endSquare;
                             const promotedTo = data.move.promotedTo;
-                            document.querySelectorAll('.lastMoveSquare').forEach((el) => { el.classList.remove('lastMoveSquare') });
+                            clockWhite = data.whiteTime;
+                            clockBlack = data.blackTime;
+                            document.querySelectorAll('.lastMoveSquare').forEach((el) => { el.classList.remove('lastMoveSquare') });                            
                             displayMove(startSquare, endSquare, promotedTo);                            
                             playSound('audioMove');
-                            playTik('audioTik');
+                            playTik('audioTik');                            
                         }                       
                         if (data.type === "Clock") {                             
                             updateObserverClock();                            
+                        }
+                        if (data.type === "GetClock") {
+                            updatePlayersClock();
                         }
                         if (data.type === "UpdateClock") {
                             clockWhite = data.whiteTime;
                             clockBlack = data.blackTime;
                             updateClockOpen();
-                            intervalClock = setInterval(updateClockOpen, 1000);
+                            intervalClockOpen = setInterval(updateClockOpen, 1200);
+                        }
+                        if (data.type === "UpdatePlayersClock") {
+                            players = data.gameState.players;
+                            clockWhite = data.whiteTime;
+                            clockBlack = data.blackTime;
+                            updateClock();
+                            intervalClock = setInterval(updateClockOpen, 1200);
+                            hubConnection.invoke("Message", { type: "Ongoing", gameState: game })
+                                .catch(function (err) {
+                                    return console.error(err.toString());
+                                });
+                        }
+                        if (data.type === "UpdatePlayerList") {                            
+                            game.players = data.gameState.players;
                         }
                         if (data.type === "UpdateMove") {                            
                             const startSquare = data.move.startSquare;
@@ -156,7 +176,7 @@ const typeBattles = ["Пуля", "Пуля с добавлением", "Блиц
                         if (data.type === "Resign") {                            
                             if (!allowMoment) return; 
                             clearInterval(intervalClock);
-                            hubConnection.invoke("Message", { type: "SaveRating", gameState: game, result: (!isWhiteTurn ? "1-0" : "0-1") })
+                            hubConnection.invoke("Process", { type: "SaveRating", gameState: game, result: (!isWhiteTurn ? "1-0" : "0-1") })
                                 .catch(function (err) {
                                     return console.error(err.toString());
                                 });
@@ -165,38 +185,31 @@ const typeBattles = ["Пуля", "Пуля с добавлением", "Блиц
                         if (data.type === "ObserverResign") {                            
                             showAlert(data.winner + " выиграл!", (!isWhiteTurn ? "1-0" : "0-1"));
                         }
-                        if (data.type === "Reconnect") {                             
-                            players = data.players;
+                        if (data.type === "Reconnect") {                            
                             game = data.gameState;
-                            color = data.color;
-                            if (color == "black") {
+                            userName = data.userName;
+                            players = game.players;                            
+                            color = game.colors;                            
+                            if (color["black"].userName == userName) {
                                 flipBoard();
-                            }
-                                
-                            if (data.gameState.isOngoing) {                                  
+                            }                           
                                 document.getElementById("join").style.display = "none";
                                 document.querySelector(".container-game").style.display = "flex";
                                 gamePlayerInfo.style.display = "flex";
                                 gamePlayerTopInfo.style.display = "flex";
                                 gamePlayerBottomInfo.style.display = "flex";
                                 gameTypeInfo.style.display = "flex";
-                                playerInfo.style.display = "none";
-                                if (data.opponent) {                                    
-                                    players = [data.playerOngoing,data.opponent];                                    
-                                    userName = data.playerOngoing.userName;
-                                    updatePlayerInfo();
-                                    loadPositionFromFen(data.gameState.currentBoard); 
-                                    pgn = data.gameState.pgn;
-                                    recreateHTMLFromPGN(pgn);
-                                    moves = data.gameState.moves;
-                                    isWhiteTurn = moves.length % 2 === 0 ? true : false;
-                                    positionArray = [...new Set(data.gameState.fen)];
-
-                                }
-                            }
-                            else {
-
-                            }
+                                playerInfo.style.display = "none";                            
+                                updatePlayerInfo();
+                                boardSquaresArray = [];
+                                loadPositionFromFen(game.currentBoard, game.isWhiteTurn); 
+                                pgn = game.pgn;
+                                recreateHTMLFromPGN(pgn);
+                                moves = game.moves;
+                                isWhiteTurn = moves.length % 2 === 0 ? true : false;
+                            positionArray = [...new Set(game.fen)];
+                            allowMoment = true;
+                                                            
                         }
                         if (data.type === "Fen") {
                             currentPosition = data.fen;
@@ -211,10 +224,14 @@ const typeBattles = ["Пуля", "Пуля с добавлением", "Блиц
                         if (data.type === "Color") {                            
                             color = data.color;                           
                             if (color === "black") {
-                                isOpponentWhite = true;                                                                                        
-                                flipBoard();                                                               
-                            }                            
-
+                                isOpponentWhite = true;
+                                isWhiteTurn = true;
+                                flipBoard();
+                            }
+                            else {
+                                isWhiteTurn = true;
+                                isOpponentWhite = false;
+                            }
                         }
                     });
                     hubConnection.on("Error", function (event) {
@@ -227,14 +244,13 @@ const typeBattles = ["Пуля", "Пуля с добавлением", "Блиц
                 return console.error(err.toString());
             });
     hubConnection.onclose(function () {
-        console.log("Disconnected from the server!");
+        console.log("Disconnected from the server!");        
     })
 let userName;
 let color;
 let userRating;
 let intervalClock;
-const updateClock = () => {
-
+const updateClock = () => {    
     if (isWhiteTurn) {
         if (clockWhite > 0) {
             let sec_w = clockWhite / 60;
@@ -247,10 +263,10 @@ const updateClock = () => {
             else {
                 sec_player2.innerText = sec_w < 10 ? "0" + sec_w : sec_w;
                 min_player2.innerText = min_w < 10 ? "0" + min_w : min_w;
-            }
-            clockWhite--;            
+            }            
+                clockWhite--;           
         }
-        else {
+        else {            
             clearInterval(intervalClock);           
 
             if (!isOpponentWhite) {
@@ -261,7 +277,7 @@ const updateClock = () => {
                 let res = hasMaterial ? "0-1" : "1/2-1/2";
                 showAlert(message, res);
                 if (!allowMoment) return;
-                hubConnection.invoke("Message", { type: "SaveRating", gameState: game, result: res })
+                hubConnection.invoke("Process", { type: "SaveRating", gameState: game, result: res })
                     .catch(function (err) {
                         return console.error(err.toString());
                     });                
@@ -274,7 +290,7 @@ const updateClock = () => {
                 let res = hasMaterial ? "0-1" : "1/2-1/2";
                 showAlert(message, res);
                 if (!allowMoment) return;
-                hubConnection.invoke("Message", { type: "SaveRating", gameState: game, result: res })
+                hubConnection.invoke("Process", { type: "SaveRating", gameState: game, result: res })
                     .catch(function (err) {
                         return console.error(err.toString());
                     });                
@@ -292,10 +308,10 @@ const updateClock = () => {
             else {
                 sec_player2.innerText = sec_b < 10 ? "0" + sec_b : sec_b;
                 min_player2.innerText = min_b < 10 ? "0" + min_b : min_b;
-            }
-            clockBlack--;           
+            }            
+                clockBlack--;           
         }
-        else {
+        else {            
             clearInterval(intervalClock);            
             if (isOpponentWhite) {
                 min_player1.innerText = "0";
@@ -305,7 +321,7 @@ const updateClock = () => {
                 let res = hasMaterial ? "1-0" : "1/2-1/2";
                 showAlert(message, res);
                 if (!allowMoment) return;
-                hubConnection.invoke("Message", { type: "SaveRating", gameState: game, result: res })
+                hubConnection.invoke("Process", { type: "SaveRating", gameState: game, result: res })
                     .catch(function (err) {
                         return console.error(err.toString());
                     });                
@@ -317,7 +333,7 @@ const updateClock = () => {
                 let res = hasMaterial ? "1-0" : "1/2-1/2";
                 showAlert(message, res);
                 if (!allowMoment) return;
-                hubConnection.invoke("Message", { type: "SaveRating", gameState: game, result: res })
+                hubConnection.invoke("Process", { type: "SaveRating", gameState: game, result: res })
                     .catch(function (err) {
                         return console.error(err.toString());
                     });
@@ -325,7 +341,7 @@ const updateClock = () => {
         }
     }
 };
-const updateClockOpen = () => {  
+const updateClockOpen = () => {     
     if (isWhiteTurn) {        
         if (clockWhite > 0) {
             let sec_w = clockWhite / 60;
@@ -337,12 +353,12 @@ const updateClockOpen = () => {
             let min_b = Math.floor(sec_b);
             sec_b = clockBlack - min_b * 60;
             sec_player2.innerText = sec_b < 10 ? "0" + sec_b : sec_b;
-            min_player2.innerText = min_b < 10 ? "0" + min_b : min_b;
-            clockWhite--;
+            min_player2.innerText = min_b < 10 ? "0" + min_b : min_b;           
+            clockWhite--;            
                         
         }
         else {
-            clearInterval(intervalClock);           
+            clearInterval(intervalClockOpen);           
             min_player1.innerText = "0";
             sec_player1.innerText = "00";
             let hasMaterial = hasMaterialToMate(currentPosition, "black");
@@ -362,10 +378,11 @@ const updateClockOpen = () => {
             sec_b = clockBlack - min_b * 60;            
             sec_player2.innerText = sec_b < 10 ? "0" + sec_b : sec_b;
             min_player2.innerText = min_b < 10 ? "0" + min_b : min_b;
-            clockBlack--;           
+            clockBlack--;    
+            
         }
         else {    
-            clearInterval(intervalClock);           
+            clearInterval(intervalClockOpen);           
             min_player2.innerText = "0";
             sec_player2.innerText = "00";
             let hasMaterial = hasMaterialToMate(currentPosition, "black");
@@ -376,10 +393,16 @@ const updateClockOpen = () => {
     }    
 };
 const updateObserverClock = () => {    
-    hubConnection.invoke("Message", { type: "ObserverClock", userName, gameState: game, whiteTime: clockWhite, blackTime: clockBlack })       
+    hubConnection.invoke("Process", { type: "ObserverClock", userName, gameState: game, whiteTime: clockWhite, blackTime: clockBlack })       
         .catch(function (err) {
             return console.error(err.toString());
         });    
+};
+const updatePlayersClock = () => {
+    hubConnection.invoke("Process", { type: "PlayersClock", userName, gameState: game, whiteTime: clockWhite, blackTime: clockBlack })
+        .catch(function (err) {
+            return console.error(err.toString());
+        });
 };
 function setClock() { 
     let sec_w = clockWhite / 60;
@@ -406,17 +429,34 @@ function setClock() {
         min_player2.innerText = min_b < 10 ? "0" + min_b : min_b;
     } 
 };
-function joinGame() {
-    userName = document.getElementById("usernameInput").value;
+function startGame(user, color, rating, options) {
+    hubConnection.invoke("Message", { type: "Connect", userName: user, color: color, rating: rating, options: options })
+        .catch(function (err) {
+            return console.error(err.toString());
+        });
+}
+function joinGame(min, sec, add_sec) {
+    if (!min) {
+        min = document.getElementById("min_game").value === '' ? 3 : parseInt(document.getElementById("min_game").value);
+    }
+    if (!sec) {
+        sec = document.getElementById("sec_game").value === '' ? 0 : parseInt(document.getElementById("sec_game").value);
+    }
+    if (!add_sec) {
+        add_sec = document.getElementById("add_sec").value === '' ? 0 : parseInt(document.getElementById("add_sec").value);
+    }
+    let select_color = document.querySelector('input[name="inline-radios"]:checked') == null ? 2 : parseInt(document.querySelector('input[name="inline-radios"]:checked').value);   
+    userName = document.getElementById("usernameInput").value === '' ? 'Гость' : document.getElementById("usernameInput").value;
     userRating = document.getElementById("userRating")?.value;
     options = {
-        min: document.getElementById("min_game").value === '' ? 3 : parseInt(document.getElementById("min_game").value),
-        sec: document.getElementById("sec_game").value === '' ? 0 : parseInt(document.getElementById("sec_game").value),
-        add_sec: document.getElementById("add_sec").value === '' ? 0 : parseInt(document.getElementById("add_sec").value),
-        isRating: isRatingGame
+        min: min,
+        sec: sec,
+        add_sec: add_sec,
+        isRating: isRatingGame,
+        color: select_color
     };
     if (!userName) {
-        alert("Пожалуйста введи имя под которым хотите играть!");
+        alert("Пожалуйста введите имя под которым хотите играть!");
         return;
     }
     join.style.display = "none";
@@ -546,29 +586,29 @@ function loadPositionFromFen(currentBoard,isWhite) {
     }
     setupBoardSquares();
     setupPieces();
-    fillBoardSquaresArray();
+    fillBoardSquaresArray();    
     let currentFen = generateFEN(boardSquaresArray); 
     getEvaluation(currentFen, function (lines, evaluations, scoreString) {
         displayEval(lines, evaluations, scoreString);
     });
 }
-function sendMove(startSquare, endSquare, promotedTo = "blank") {
+function sendMove(startSquare, endSquare, promotedTo = "blank") {    
     if (!startSquare || !endSquare) {
         alert("Invalid move!");
         return;
-    }
+    }   
     const move = { startSquare, endSquare, promotedTo };
     const board = chessBoard.innerHTML;
     if (isWhiteTurn)
-        clockBlack += add_sec+1;
+        clockBlack += parseInt(add_sec);
     else {
-        clockWhite += add_sec+1;
+        clockWhite += parseInt(add_sec);
     }
     setClock();
-    stopPlayTik('audioTik');
-   
-        let res = { type: "Move", userName, move: move, currentBoard: board, moves: moves, gameState: game };
-        hubConnection.invoke("Message", res)
+    stopPlayTik('audioTik');   
+    process_move = true;
+    let res = { type: "Move", userName, move: move, currentBoard: board, moves: moves, gameState: game, whiteTime: clockWhite, blackTime: clockBlack };
+    hubConnection.invoke("Process", res)
             .catch(function (err) {
                 return console.error(err.toString());
             });
@@ -577,12 +617,12 @@ function sendMove(startSquare, endSquare, promotedTo = "blank") {
 }
 function sendObserverMove(res) {    
     if (isWhiteTurn)
-        clockBlack += add_sec + 1;
+        clockBlack += parseInt(add_sec);
     else {
-        clockWhite += add_sec + 1;
+        clockWhite += parseInt(add_sec);
     }
     setClock();  
-    hubConnection.invoke("Message", res)
+    hubConnection.invoke("Process", res)
         .catch(function (err) {
             return console.error(err.toString());
         });
@@ -590,12 +630,12 @@ function sendObserverMove(res) {
 function sendResign(winner) {  
     if (!allowMoment) return;
     clearInterval(intervalClock);
-    hubConnection.invoke("Message", { type: "SaveRating", gameState: game, result: (!isWhiteTurn ? "1-0" : "0-1") })
+    hubConnection.invoke("Process", { type: "SaveRating", gameState: game, result: (!isWhiteTurn ? "1-0" : "0-1") })
         .catch(function (err) {
             return console.error(err.toString());
         });
     showAlert(player2.innerText + " выиграл!", (!isWhiteTurn ? "1-0" : "0-1"));
-    hubConnection.invoke("Message", { type: "Resign", winner: winner, gameState: game })
+    hubConnection.invoke("Process", { type: "Resign", winner: winner, gameState: game })
         .catch(function (err) {
             return console.error(err.toString());
         });    
