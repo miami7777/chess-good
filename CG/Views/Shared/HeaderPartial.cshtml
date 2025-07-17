@@ -1,7 +1,8 @@
 ﻿@using System.Globalization
+@using CG.Domain
 @using CG.Helpers
 @{
-    var avatarImg = ViewData["avatar"] != null ? ViewData["avatar"] : "default.jpg";
+    var avatarId = User.Identity?.Name != null ? ((ApplicationUser)ViewData["user"])?.AvatarFilesId ??  0 : 0;
     var flag = ViewData["flag"] != null ? ViewData["flag"] : "us";
     var culture = CultureInfo.CurrentCulture;
 }
@@ -90,10 +91,18 @@
 
             <div class="col-sm-5">
                 <div class="user-area dropdown float-right">
+                @{                    
+                if (avatarId != 0) {
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="user-avatar rounded-circle" src="~/assets/assets/img/avatar/@avatarImg" alt="User Avatar">
+                        <img class="user-avatar rounded-circle" src="@(Url.Action("DownloadThumb", "Home" , new { id=avatarId }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))" alt="User Avatar">
                     </a>
-
+                    } else
+                    {
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <img class="user-avatar rounded-circle" src="~/assets/assets/img/avatar/default.jpg" alt="User Avatar">
+                        </a>
+                    }
+                }
                     <div class="user-menu dropdown-menu">
                     <a class="nav-link" href="~/adm/@culture.Name.ToString()/home/profile"><i class="fa fa-user"></i> Мой профиль</a>
 

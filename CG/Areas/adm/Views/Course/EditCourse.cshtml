@@ -705,8 +705,7 @@
     var details = '@courseDetails';
     var arrDetails = details.split(',');
     
-    arrDetails.forEach(function(index){
-        console.log('index0', index);
+    arrDetails.forEach(function(index){       
         $('#selectFileUniversalPreviewChapter_'+index).click(function () {
            
             $('#uploadedFileUniversalPreviewChapter_'+index).trigger('click');

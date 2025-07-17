@@ -2,14 +2,7 @@
 using CG.Models.Enum;
 using CG.Models;
 using Microsoft.AspNetCore.SignalR;
-using System.Runtime.InteropServices;
-using System.Numerics;
-using CG.Services.Interfaces;
-using CG.Service;
 using CG.Service.Interfaces;
-using CG.Dto.ResponseMessage;
-using static Org.BouncyCastle.Asn1.Cmp.Challenge;
-using NuGet.Packaging.Signing;
 
 namespace CG.Hubs;
 public class ChessHub : Hub
@@ -73,40 +66,40 @@ public class ChessHub : Hub
             Users = Users
         };
         await Clients.All.SendAsync("Statistics", statistics);
-        if (DisConnections.Count > 0)
-        {
-            var game = gameState.Where(x => x.IsOngoing && DisConnections.Contains(x?.PlayerOngoing?.ConnectionId ?? "")).FirstOrDefault();
-            var delCOn = game?.PlayerOngoing?.ConnectionId;
-            if (game != null && delCOn != null)
-            {
-                var join_pl = game.PlayerOngoing;
-                if (join_pl != null && Context != null)
-                {
-                    join_pl.ConnectionId = Context.ConnectionId;
-                    var player_opponent = game.Players.FirstOrDefault();
-                    if (player_opponent != null)
-                    {
-                        if (game.Colors["white"].UserName == player_opponent.UserName) {
-                            game.Players.Clear();
-                          game.Players.AddRange([player_opponent,join_pl]);
-                        }
-                        else
-                        {
-                            game.Players.Clear();
-                          game.Players.AddRange([join_pl,player_opponent]);
-                        }                        
-                        game.PlayerOngoing = null;
-                        game.IsOngoing = false;                        
-                        GameMessage gameMessage = new GameMessage() { Type = "Reconnect", UserName = join_pl.UserName, Players = game.Players, gameState = game, games = gameState };
-                        await Clients.Client(Context.ConnectionId).SendAsync("Receive", gameMessage);
-                        GameMessage observerMessage = new GameMessage() { Type = "GetClock" };
-                        await Clients.Client(player_opponent.ConnectionId).SendAsync("Receive", observerMessage);                   
+        //if (DisConnections.Count > 0)
+        //{
+        //    var game = gameState.Where(x => x.IsOngoing && DisConnections.Contains(x?.PlayerOngoing?.ConnectionId ?? "")).FirstOrDefault();
+        //    var delCOn = game?.PlayerOngoing?.ConnectionId;
+        //    if (game != null && delCOn != null)
+        //    {
+        //        var join_pl = game.PlayerOngoing;
+        //        if (join_pl != null && Context != null)
+        //        {
+        //            join_pl.ConnectionId = Context.ConnectionId;
+        //            var player_opponent = game.Players.FirstOrDefault();
+        //            if (player_opponent != null)
+        //            {
+        //                if (game.Colors["white"].UserName == player_opponent.UserName) {
+        //                    game.Players.Clear();
+        //                  game.Players.AddRange([player_opponent,join_pl]);
+        //                }
+        //                else
+        //                {
+        //                    game.Players.Clear();
+        //                  game.Players.AddRange([join_pl,player_opponent]);
+        //                }                        
+        //                game.PlayerOngoing = null;
+        //                game.IsOngoing = false;                        
+        //                GameMessage gameMessage = new GameMessage() { Type = "Reconnect", UserName = join_pl.UserName, Players = game.Players, gameState = game, games = gameState };
+        //                await Clients.Client(Context.ConnectionId).SendAsync("Receive", gameMessage);
+        //                GameMessage observerMessage = new GameMessage() { Type = "GetClock" };
+        //                await Clients.Client(player_opponent.ConnectionId).SendAsync("Receive", observerMessage);                   
 
-                        DisConnections.Remove(delCOn);
-                    }
-                }
-            }
-        }
+        //                DisConnections.Remove(delCOn);
+        //            }
+        //        }
+        //    }
+        //}
 
         await base.OnConnectedAsync();
     }
@@ -127,12 +120,12 @@ public class ChessHub : Hub
                 game.Players.Remove(game.PlayerOngoing);
             }
             game.IsOngoing = true; 
-            var player_opponent = game.Players.FirstOrDefault(x => x.ConnectionId != Context.ConnectionId); 
-            //if (player_opponent != null)
-            //{
-            //    GameMessage gameMessage = new GameMessage() { Type = "Resign", Winner = player_opponent.UserName, games = gameState };
-            //    await Clients.Client(player_opponent.ConnectionId).SendAsync("Receive", gameMessage);
-            //};          
+            var player_opponent = game.Players.FirstOrDefault(x => x.ConnectionId != Context.ConnectionId);
+            if (player_opponent != null)
+            {
+                GameMessage gameMessage = new GameMessage() { Type = "Disconnect", games = gameState };
+                await Clients.Client(player_opponent.ConnectionId).SendAsync("Receive", gameMessage);
+            };
         }
         var player = Players.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
         if (player != null)
@@ -157,58 +150,25 @@ public class ChessHub : Hub
 
             var join_pl = new Player { ConnectionId = Context.ConnectionId, UserName = message.UserName, Options = message.Options };
             Players.Add(join_pl);
+            GetTypeGame(message);
             if (join_pl.UserName != null)
             {
                 var user = Users.Where(x => x.UserName == Context.User.Identity.Name).FirstOrDefault();
-                join_pl.Avatar = "default.jpg";
+                join_pl.Avatar = 0;
                 if (user != null)
                 {
+                    var avatar = _calculationRatingService.GetAvatarAndFlagAsync(new List<Player> { join_pl, new Player() });
                     var rating = await _calculationRatingService.GetRatingByTypeAsync(message?.Options?.type ?? Type_Game.Blitz);
                     join_pl.Rating = rating.ToString();
+                    join_pl.Avatar = avatar.Item1;
+                    join_pl.Country = avatar.Item3;
                     Users.Remove(user);
                 }
                 Users.Add(join_pl);
             }
             if (game == null)
             {
-                if (message.Options != null && message.Options.add_sec == 0)
-                {
-                    if (message.Options.min * 60 + message.Options.sec <= 120)
-                    {
-                        message.Options.type = Type_Game.Bullet;
-                    }
-                    if (message.Options.min * 60 + message.Options.sec > 120 && message.Options.min * 60 + message.Options.sec <= 480)
-                    {
-                        message.Options.type = Type_Game.Blitz;
-                    }
-                    if (message.Options.min * 60 + message.Options.sec > 480 && message.Options.min * 60 + message.Options.sec <= 1500)
-                    {
-                        message.Options.type = Type_Game.Rapid;
-                    }
-                    if (message.Options.min * 60 + message.Options.sec > 1500)
-                    {
-                        message.Options.type = Type_Game.Classical;
-                    }
-                }
-                else if (message.Options != null && message.Options.add_sec > 0)
-                {
-                    if (message.Options.min * 60 + message.Options.sec <= 120)
-                    {
-                        message.Options.type = Type_Game.BulletInc;
-                    }
-                    if (message.Options.min * 60 + message.Options.sec > 120 && message.Options.min * 60 + message.Options.sec <= 480)
-                    {
-                        message.Options.type = Type_Game.BlitzInc;
-                    }
-                    if (message.Options.min * 60 + message.Options.sec > 480 && message.Options.min * 60 + message.Options.sec <= 1500)
-                    {
-                        message.Options.type = Type_Game.RapidInc;
-                    }
-                    if (message.Options.min * 60 + message.Options.sec > 1500)
-                    {
-                        message.Options.type = Type_Game.ClassicalInc;
-                    }
-                }
+                GetTypeGame(message);
                 game = new GameState
                 {
                     Id = gameState.Count + 1,
@@ -252,13 +212,19 @@ public class ChessHub : Hub
                 {
                     game.Options.color = Models.Enums.Color.RndColor;
                 }
-                var avatars = _calculationRatingService.GetAvatarAsync(searchPlayers);
+                var avatars = _calculationRatingService.GetAvatarAndFlagAsync(searchPlayers);
                 var rating1 = await _calculationRatingService.GetRatingByTypeAndUserAsync(game.Options.type, searchPlayers[0].UserName);
                 var rating2 = await _calculationRatingService.GetRatingByTypeAndUserAsync(game.Options.type, searchPlayers[1].UserName);
+                var kf1 = await _calculationRatingService.GetKfPlayer(game, searchPlayers[0].UserName);
+                var kf2 = await _calculationRatingService.GetKfPlayer(game, searchPlayers[1].UserName);
                 searchPlayers[0].Rating = rating1.ToString();
                 searchPlayers[1].Rating = rating2.ToString();
                 searchPlayers[0].Avatar = avatars.Item1;
                 searchPlayers[1].Avatar = avatars.Item2;
+                searchPlayers[0].Country = avatars.Item3;
+                searchPlayers[1].Country = avatars.Item4;
+                searchPlayers[0].Kf = kf1.ToString();
+                searchPlayers[1].Kf = kf2.ToString();
                 game.Players.Clear();
                 game.Players.AddRange([searchPlayers[0], searchPlayers[1]]);
                 await AssignColors(game);
@@ -350,104 +316,7 @@ public class ChessHub : Hub
                 GameMessage observerMessage = new GameMessage() { Type = "Clock" };
                 await Clients.Client(game.Players[0].ConnectionId).SendAsync("Receive", observerMessage);
             }
-        }
-        //else if (message.Type == "Move")
-        //{
-        //    GameState game = gameState.FirstOrDefault(x => x.Id == message.gameState.Id);
-        //    Move move = new Move()
-        //    {
-        //        StartSquare = message?.Move?.StartSquare,
-        //        EndSquare = message?.Move?.EndSquare,
-        //        PromotedTo = message?.Move?.PromotedTo
-        //    };
-        //    game.Moves = message?.Moves ?? game.Moves;
-        //    game.IsWhiteTurn = !game.IsWhiteTurn;
-        //    game.CurrentBoard = message?.CurrentBoard;
-
-        //    foreach (Player player_opponent in game.Players)
-        //    {
-        //        if (player_opponent != null && player_opponent.ConnectionId != Context.ConnectionId)
-        //        {
-        //            GameMessage gameMessage = new GameMessage() { Type = "Move", Move = move, CurrentBoard = game.CurrentBoard, Moves = game.Moves, games = gameState };
-        //            await Clients.Client(player_opponent.ConnectionId).SendAsync("Receive", gameMessage);
-        //        }                
-        //    }            
-
-        //}
-        //else if (message.Type == "PlayersClock")
-        //{
-
-        //    GameState game = gameState.FirstOrDefault(x => x.Id == message.gameState.Id);
-        //    if (game == null) return;
-
-        //    GameMessage playersMessage = new GameMessage() { Type = "UpdatePlayersClock", gameState = game,games = gameState, WhiteTime = message.WhiteTime, BlackTime = message.BlackTime };
-
-        //    foreach (Player player in game.Players)
-        //    {
-        //        await Clients.Client(player.ConnectionId).SendAsync("Receive", playersMessage);
-        //    }
-        //}
-        //else if (message.Type == "ObserverClock")
-        //{
-
-        //    GameState game = gameState.FirstOrDefault(x => x.Id == message.gameState.Id);
-        //    if (game == null) return;
-
-        //    GameMessage observerMessage = new GameMessage() { Type = "UpdateClock", games = gameState, WhiteTime = message.WhiteTime, BlackTime= message.BlackTime };
-
-        //    foreach (Player observer in game.Observers)
-        //    {
-        //        await Clients.Client(observer.ConnectionId).SendAsync("Receive", observerMessage);
-        //    }
-        //}
-        //else if (message.Type == "ObserverMove")
-        //{
-
-        //    GameState game = gameState.FirstOrDefault(x => x.Id == Convert.ToInt32(message.Id));
-        //    if (game == null) return;
-        //    Move move = new Move()
-        //    {
-        //        StartSquare = message?.Move?.StartSquare,
-        //        EndSquare = message?.Move?.EndSquare,
-        //        PromotedTo = message?.Move?.PromotedTo
-        //    };            
-        //    List<string> observers = new List<string>();
-        //     foreach (Player observer in game.Observers)
-        //    {
-        //        observers.Add(observer.ConnectionId);
-        //    }
-        //    GameMessage observerMessage = new GameMessage() { Type = "UpdateMove",  Move = move};
-        //    await Clients.Clients(observers).SendAsync("Receive", observerMessage);
-
-        //}
-        //else if (message.Type == "Resign")
-        //{
-        //    GameState game = gameState.FirstOrDefault(x => x.Id == message.gameState.Id);
-        //    var player_opponent = game.Players.FirstOrDefault(x => x.ConnectionId != Context.ConnectionId);
-        //    if (player_opponent != null)
-        //    {
-        //        GameMessage gameMessage = new GameMessage() { Type = "Resign", Winner = message.Winner, games = gameState };
-        //        await Clients.Client(player_opponent.ConnectionId).SendAsync("Receive", gameMessage);
-        //    };
-        //    GameMessage observerMessage = new GameMessage() { Type = "ObserverResign", Winner = message.Winner, games = gameState };
-
-        //    foreach (Player observer in game.Observers)
-        //    {
-        //        await Clients.Client(observer.ConnectionId).SendAsync("Receive", observerMessage);
-        //    }
-        //}
-        //else if (message.Type == "SaveRating")
-        //{
-        //    GameState game = gameState.FirstOrDefault(x => x.Id == message.gameState.Id);
-        //    if (game != null)
-        //    {
-        //        game.Result = message.Result;
-        //        if (Context.User?.Identity?.Name != null)
-        //        {
-        //            await _calculationRatingService.CalculateRatingAsync(game);
-        //        }
-        //    }
-        //}
+        }        
         else if (message.Type == "Fen")
         {
             GameState game = gameState.FirstOrDefault(x => x.Id == message.gameState.Id);
@@ -482,6 +351,49 @@ public class ChessHub : Hub
             game.Pgn = message.Pgn;
         }       
     }
+
+    private static void GetTypeGame(GameMessage message)
+    {
+        if (message.Options != null && message.Options.add_sec == 0)
+        {
+            if (message.Options.min * 60 + message.Options.sec <= 120)
+            {
+                message.Options.type = Type_Game.Bullet;
+            }
+            if (message.Options.min * 60 + message.Options.sec > 120 && message.Options.min * 60 + message.Options.sec <= 480)
+            {
+                message.Options.type = Type_Game.Blitz;
+            }
+            if (message.Options.min * 60 + message.Options.sec > 480 && message.Options.min * 60 + message.Options.sec <= 1500)
+            {
+                message.Options.type = Type_Game.Rapid;
+            }
+            if (message.Options.min * 60 + message.Options.sec > 1500)
+            {
+                message.Options.type = Type_Game.Classical;
+            }
+        }
+        else if (message.Options != null && message.Options.add_sec > 0)
+        {
+            if (message.Options.min * 60 + message.Options.sec <= 120)
+            {
+                message.Options.type = Type_Game.BulletInc;
+            }
+            if (message.Options.min * 60 + message.Options.sec > 120 && message.Options.min * 60 + message.Options.sec <= 480)
+            {
+                message.Options.type = Type_Game.BlitzInc;
+            }
+            if (message.Options.min * 60 + message.Options.sec > 480 && message.Options.min * 60 + message.Options.sec <= 1500)
+            {
+                message.Options.type = Type_Game.RapidInc;
+            }
+            if (message.Options.min * 60 + message.Options.sec > 1500)
+            {
+                message.Options.type = Type_Game.ClassicalInc;
+            }
+        }
+    }
+
     public async Task Process(GameMessage message)
     {
         if (message.Type == "Move")
@@ -496,16 +408,22 @@ public class ChessHub : Hub
             game.Moves = message?.Moves ?? game.Moves;
             game.IsWhiteTurn = !game.IsWhiteTurn;
             game.CurrentBoard = message?.CurrentBoard;
-
+            game.Fen = message?.Fen;
+            game.FenArray.Add(message.Fen);
+            
             foreach (Player player_opponent in game.Players)
             {
                 if (player_opponent != null && player_opponent.ConnectionId != Context.ConnectionId)
                 {
-                    GameMessage gameMessage = new GameMessage() { Type = "Move", Move = move, CurrentBoard = game.CurrentBoard, Moves = game.Moves, games = gameState, WhiteTime = message.WhiteTime, BlackTime = message.BlackTime };
+                    GameMessage gameMessage = new GameMessage() { Type = "Move", Move = move,Fen = game.Fen, CurrentBoard = game.CurrentBoard, Moves = game.Moves, games = gameState, WhiteTime = message.WhiteTime, BlackTime = message.BlackTime };
                     await Clients.Client(player_opponent.ConnectionId).SendAsync("Receive", gameMessage);
                 }
             }
-
+            if (game.IsOngoing && game.PlayerOngoing.ConnectionId != Context.ConnectionId)
+            {
+                GameMessage gameMessage = new GameMessage() { Type = "Disconnect", games = gameState };
+                await Clients.Client(Context.ConnectionId).SendAsync("Receive", gameMessage);
+            }
         }
         else if (message.Type == "PlayersClock")
         {
@@ -552,7 +470,8 @@ public class ChessHub : Hub
             {
                 observers.Add(observer.ConnectionId);
             }
-            GameMessage observerMessage = new GameMessage() { Type = "UpdateMove", Move = move };
+            game.Fen = message?.Fen;
+            GameMessage observerMessage = new GameMessage() { Type = "UpdateMove", Fen = game.Fen, Move = move };
             await Clients.Clients(observers).SendAsync("Receive", observerMessage);
 
         }
@@ -572,6 +491,54 @@ public class ChessHub : Hub
                 await Clients.Client(observer.ConnectionId).SendAsync("Receive", observerMessage);
             }
         }
+        else if (message.Type == "Draw")
+        {
+            GameState game = gameState.FirstOrDefault(x => x.Id == message.gameState.Id);
+            var player_opponent = game.Players.FirstOrDefault(x => x.ConnectionId != Context.ConnectionId);
+            if (player_opponent != null)
+            {
+                GameMessage gameMessage = new GameMessage() { Type = "Draw", games = gameState };
+                await Clients.Client(player_opponent.ConnectionId).SendAsync("Receive", gameMessage);
+            };
+            GameMessage observerMessage = new GameMessage() { Type = "ObserverDraw", games = gameState };
+
+            foreach (Player observer in game.Observers)
+            {
+                await Clients.Client(observer.ConnectionId).SendAsync("Receive", observerMessage);
+            }
+        }
+        else if (message.Type == "AcceptDraw")
+        {
+            GameState game = gameState.FirstOrDefault(x => x.Id == message.gameState.Id);
+            var player_opponent = game.Players.FirstOrDefault(x => x.ConnectionId != Context.ConnectionId);
+            if (player_opponent != null)
+            {
+                GameMessage gameMessage = new GameMessage() { Type = "AcceptDraw", games = gameState };
+                await Clients.Client(player_opponent.ConnectionId).SendAsync("Receive", gameMessage);
+            };
+            GameMessage observerMessage = new GameMessage() { Type = "ObserverAcceptDraw", games = gameState };
+
+            foreach (Player observer in game.Observers)
+            {
+                await Clients.Client(observer.ConnectionId).SendAsync("Receive", observerMessage);
+            }
+        }
+        else if (message.Type == "CancelDraw")
+        {
+            GameState game = gameState.FirstOrDefault(x => x.Id == message.gameState.Id);
+            var player_opponent = game.Players.FirstOrDefault(x => x.ConnectionId != Context.ConnectionId);
+            if (player_opponent != null)
+            {
+                GameMessage gameMessage = new GameMessage() { Type = "CancelDraw", games = gameState };
+                await Clients.Client(player_opponent.ConnectionId).SendAsync("Receive", gameMessage);
+            };
+            GameMessage observerMessage = new GameMessage() { Type = "ObserverCancelDraw", games = gameState };
+
+            foreach (Player observer in game.Observers)
+            {
+                await Clients.Client(observer.ConnectionId).SendAsync("Receive", observerMessage);
+            }
+        }
         else if (message.Type == "SaveRating")
         {
             GameState game = gameState.FirstOrDefault(x => x.Id == message.gameState.Id);
@@ -580,7 +547,16 @@ public class ChessHub : Hub
                 game.Result = message.Result;
                 if (Context.User?.Identity?.Name != null)
                 {
-                    await _calculationRatingService.CalculateRatingAsync(game);
+                   var resCalculate =  await _calculationRatingService.CalculateRatingAsync(game);
+                    if (resCalculate != null)
+                    {
+                        GameMessage gameMessage = new GameMessage() { Type = "UpdateRating" };
+                        foreach(Player player in game.Players)
+                        {
+                            await Clients.Client(player.ConnectionId).SendAsync("Receive",gameMessage);
+                        }
+                        
+                    };                
                 }
             }
         }

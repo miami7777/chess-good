@@ -17,5 +17,6 @@ namespace CG.Domain.Repositories.Abstract
         Task SaveUserAsync(ApplicationUser user);        
         Task DeleteUserAsync(string id);
         Task CreateUserPerfsAsync(ApplicationUser user, LichessAccountDto lichessAccountDto = null);
+        Task UpdateUserPerfsAsync(ApplicationUser user);
     }
 }

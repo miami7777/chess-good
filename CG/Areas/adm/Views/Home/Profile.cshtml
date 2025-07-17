@@ -40,16 +40,61 @@
                 </div>
             }
             <div class="fa fa-chess wtt-mark">@Model.ChessTitle</div>
-
-            <div class="media">
-                <a href="#">
-                    <img class="align-self-center rounded-circle mr-3" style="width:85px; height:85px;" alt="" src="~/assets/assets/img/avatar/@avatar">
-                </a>
+            @{
+                var avatarFileId = Model.AvatarFilesId;
+                var img = "background: url(" + (Url.Action("DownloadThumb", "Home", new { id = avatarFileId ?? 0 }, System.Configuration.ConfigurationManager.AppSettings["httpschema"])) + ")no-repeat; background-size:cover;height:85px;width:85px);";
+            }
+            <div class="media"> 
+                @if (avatarFileId != 0)
+                {
+                     <a href="#" id="selectFileUniversalPreview" class="file_up btn btn-outline-primary btn-sm">
+                         <div id="avatar_user" class="file align-self-center rounded-circle mr-3" style="@(img);width:85px; height:85px;">                         
+                        </div>
+                    </a>
+                }
+                else
+                {
+                    <a href="#" id="selectFileUniversalPreview" class="file_up btn btn-outline-primary btn-sm"> 
+                        <div id="avatar_user" class="file align-self-center rounded-circle mr-3" style="background:url(/assets/assets/img/avatar/@avatar)no-repeat; background-size:cover;height:85px;width:85px;">
+                        </div> 
+                    </a>
+                    
+                }
                 <div class="media-body">
                     <h2 class="text-white display-6">@Model.FIO</h2>
                     <p class="text-light"></p>
                 </div>
             </div>
+            @using (Html.BeginForm("SavePreview", "Course", FormMethod.Post, new { enctype = "multipart/form-data", id = "fileuploadPreview", @class = "form-horizontal" }))
+            {
+                @Html.HiddenFor(model => model.Id)
+                @Html.Hidden("preview", "")
+                <div class="file_uploadPreview">
+
+                    <input id="GUIDUniversalPreview" name="GUID" type="hidden" value='@Model.Id.ToString()'>
+                    <input id="universal_field_idPreview" name="courseId" type="hidden" value=''>
+                    <input id="errorUniversalPreview" name="error" type="hidden" value="0">
+
+                    <input id="fileExtUniversalPreview" name="fileExt" type="hidden" value="">
+                    <input id="sizeUniversalPreview" name="size" type="hidden" value="">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            @* <label for="uploadedFileUniversal" class=" form-control-label">Добавить превью</label> *@
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <input id="filePathUniversalPreview" name="filePath" type="text" class="form-control" style="display:none" placeholder="Введите путь к файлу">
+
+                            <input id="uploadedFileUniversalPreview" type="file" style="display: none;" class="form-control" accept="true">
+                        </div>
+                    </div>
+
+                    <label id="downloadFileErrorUniversalPreview" class="customerror" style="display: none;"></label>
+                    <label id="downloadFilesSizeErrorUniversalPreview" class="customerror" style="display: none;">Размеры картинки не подходят! Попробуйте выбрать другое изображение.</label>
+                    <label id="downloadFileExceptionErrorUniversalPreview" class="customerror" style="display: none;"></label>
+                    <label id="downloadFileFormatErrorUniversalPreview" class="customerror" style="display: none;"></label>
+                    <div class="clear"></div>
+                </div> 
+            }
         </div>
         <div class="weather-category twt-category">
             <ul>
@@ -279,3 +324,102 @@
         window.location.href = '@(Url.Action("RemoveLinkLichess", "Auth", null, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))';
     }    
 </script>
+<script>
+    $('#selectFileUniversalPreview').click(function () {
+        $('#uploadedFileUniversalPreview').trigger('click');
+    });
+
+    $('#uploadedFileUniversalPreview').change(function () {
+        var file = $('#uploadedFileUniversalPreview')[0].files[0];
+        if (file != null) {
+            var name = file.name;
+            var file = this.files[0];
+            var img = new Image();
+
+            img.onload = function () {
+                var sizes = {
+                    width: this.width,
+                    height: this.height
+                };
+                $("#avatar_user").css('background-image', 'url(' + this.src + ')');
+                // URL.revokeObjectURL(this.src);
+
+                /*if ((sizes.width / sizes.height) > 1.75 && (sizes.width / sizes.height) < 1.85) {
+                    $("#filePathUniversalPreview").val(name);
+                    $("#downloadFilesSizeErrorUniversalPreview").hide();
+                    $('#addFileUniversalPreview').attr("disabled", false);
+                }
+                else {
+                    $("#filePathUniversalPreview").val(null);
+                    $('#uploadedFileUniversalPreview').val("");
+                    $("#downloadFilesSizeErrorUniversalPreview").show();
+                    $('#addFileUniversalPreview').attr("disabled", true);
+                }*/
+                $("#filePathUniversalPreview").val(name);
+                $("#downloadFilesSizeErrorUniversalPreview").hide();
+                $('#addFileUniversalPreview').attr("disabled", false);
+            }
+
+            var objectURL = URL.createObjectURL(file);
+            img.src = objectURL;
+            ClearFileErrorUniversal('Preview');
+            UploadFileInSystem('Preview');
+        }
+    });
+    function ClearFileErrorUniversal(prefix) {
+        $("#downloadFileErrorUniversal" + prefix).hide();
+        // $("#downloadFilesSizeErrorUniversal" + prefix).hide();
+        $("#downloadFileExceptionErrorUniversal" + prefix).hide();
+        $("#downloadFileFormatErrorUniversal" + prefix).hide();
+    }
+    function UploadFileInSystem(prefix, index) {
+        var str = ""
+        if (index)
+            str = "_" + index;
+        document.getElementById("errorUniversal" + prefix + str).value = "0";
+        var file = document.getElementById("uploadedFileUniversal" + prefix + str).files[0];
+        if (file != null) {
+            document.getElementById("fileExtUniversal" + prefix + str).value = file.name.split(".").pop();
+            document.getElementById("sizeUniversal" + prefix + str).value = file.size;
+            var fileExt = document.getElementById("fileExtUniversal" + prefix + str).value.toLowerCase();
+
+
+            var maxFileSize = $("#MaxFileSize").val() * 1024;
+            var maxTotalFilesSize = $("#MaxSumFileSize").val() * 1024;
+            var size = document.getElementById("sizeUniversal" + prefix + str).value;
+            if (size >= maxFileSize) {
+                $("#downloadFileErrorUniversal" + prefix + str).show();
+
+                document.getElementById("errorUniversal" + prefix + str).value = "1";
+            }
+
+            if (parseInt($("#totalFilesSize" + prefix + str).val()) + parseInt(size) > maxTotalFilesSize) {
+                $("#downloadFileFormatErrorUniversal" + prefix + str).show();
+
+                document.getElementById("errorUniversal" + prefix + str).value = "1";
+            }
+            var formData = new FormData();
+
+            formData.append("FileUpload" + prefix + str, file);
+            formData.append("AvatarFileId", document.getElementById("GUIDUniversal" + prefix + str).value);
+            formData.append("error", document.getElementById("errorUniversal" + prefix + str).value);
+            $.ajax({
+                type: "POST",
+                url: "/adm/ru/Home/FileUserUploadUniversal",
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    location.reload();
+                },
+                error: function (result) {
+
+                    if (result.status == 400 && result.responseText != '')
+                        alert(result.responseText);
+                }
+            });
+        }
+    }
+    
+    </script>

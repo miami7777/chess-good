@@ -5,6 +5,7 @@ namespace CG.Models
     {        
         public string Type { get; set; }
         public string? UserName { get; set; }
+        public string? Country { get; set; }
         public List<Player>? Players { get; set; }
         public string? Color { get; set; }
         public Move? Move { get; set; }

@@ -22,6 +22,7 @@ using CG.HttpServices.Interfaces;
 using CG.Interfaces;
 using CG.Models;
 using CG.Services.Interfaces;
+using CG.Areas.adm.Models;
 
 namespace CG.Areas.adm.Controllers
 {
@@ -99,7 +100,8 @@ namespace CG.Areas.adm.Controllers
 
                    var data = await _lichessService.GetLichessUser(user.LichessUserId, token);
                    await _userService.UpdateLichessUser(data);
-                   Enum.TryParse(data.Title, out ChessTitle title);
+                    await _dataManager.userRepositories.UpdateUserPerfsAsync(user);
+                    Enum.TryParse(data.Title, out ChessTitle title);
                    profile.ChessTitle = title;
                    
                 }
@@ -409,6 +411,7 @@ namespace CG.Areas.adm.Controllers
         public void GetDataHeaderline()
         {
             var user = GetCurrentUser();
+            ViewData["user"] = user;
             ViewData["avatar"] = user?.Avatar;
             ViewData["flag"] = user?.Country != null ? user?.Country.Substring(0, 2).ToLower() : null;
         }
@@ -417,6 +420,111 @@ namespace CG.Areas.adm.Controllers
             var language = Request.Cookies["CultureInfo"];
             if (Request.RouteValues["language"] != null && Request.RouteValues["language"] != language)
                 SetLanguage(Request.RouteValues["language"].ToString(), Request.GetDisplayUrl());
+        }
+        [Area("adm")]
+        public async Task<ActionResult> FileUserUploadUniversal(string error)
+        {
+            if (error == "1")
+            {
+                return Json(0);
+            }
+           
+            var preview = await _dataManager.userFilesRepositories.GetUserFilesByTypeAsync(TypeUserFiles.Avatar, GetCurrentUser().Id);
+            var user = GetCurrentUser();
+            try
+            {
+                UserFiles file = new UserFiles();
+                if (preview.Count() > 0)
+                {
+                    file = await preview.FirstOrDefaultAsync() ?? new UserFiles();
+                }
+                foreach (UploadedFileInfo fileInfo in FileHelper.GetFilesFromRequest(HttpContext.Request))
+                {
+                    file.CreateDate = DateTime.Now;
+                    file.FileName = fileInfo.FileName;
+                    file.FileContentType = fileInfo.FileContentType;
+                    file.FileContent = fileInfo.FileContent;
+                    file.UserId = GetCurrentUser().Id;                   
+                    file.TypeUserFiles = TypeUserFiles.Avatar;
+                    await _dataManager.userFilesRepositories.SaveUserFilesAsync(file);
+                    user.AvatarFilesId = file.Id;
+                    await _dataManager.userRepositories.SaveUserAsync(user);
+                }
+            }
+            catch (DbUpdateException e)
+            {
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return Json(1);
+        }
+        [Area("adm")]
+        public async Task<FileResult> DownloadThumb(int id, int height, int width)
+        {
+            try
+            {
+                var file = await _dataManager.userFilesRepositories.GetUserFilesByIdAsync(id);
+
+                if (file?.FileContent != null)
+                {
+                    try
+                    {
+                        #region SkiaSharp
+                        using MemoryStream ms = new MemoryStream(file.FileContent);
+                        using SkiaSharp.SKBitmap sourceBitmap = SkiaSharp.SKBitmap.Decode(ms);
+
+                        int sheight = height > 0 ? Math.Min(height, sourceBitmap.Height) : sourceBitmap.Height;
+                        int swidth = width > 0 ? Math.Min(width, sourceBitmap.Width) : sourceBitmap.Width;
+
+                        using SkiaSharp.SKBitmap scaledBitmap = sourceBitmap.Resize(new SkiaSharp.SKImageInfo(swidth, sheight), SkiaSharp.SKFilterQuality.Medium);
+                        using SkiaSharp.SKImage scaledImage = SkiaSharp.SKImage.FromBitmap(scaledBitmap);
+                        using SkiaSharp.SKData data = scaledImage.Encode();
+                        return File(data.ToArray(), string.IsNullOrEmpty(file.FileContentType) ? "application/unknown" : file.FileContentType, file.FileName);
+                        #endregion
+
+                    }
+                    catch (Exception ex)
+                    {
+                        #region System.Drawing
+                        Stream imageStream = new MemoryStream(file.FileContent);
+                        System.Drawing.Image fullImage = System.Drawing.Image.FromStream(imageStream);
+
+                        int thumbHeight = height;
+                        int thumbWidth = fullImage.Width * thumbHeight / fullImage.Height;
+
+                        if (fullImage.Height > fullImage.Width)
+                        {
+                            thumbHeight = height;
+                            thumbWidth = fullImage.Width * thumbHeight / fullImage.Height;
+                        }
+                        else
+                        {
+                            thumbWidth = width;
+                            thumbHeight = fullImage.Height * thumbWidth / fullImage.Width;
+                        }
+
+                        System.Drawing.Image thumbImage = fullImage.GetThumbnailImage(thumbWidth, thumbHeight, null, new IntPtr());
+                        MemoryStream thumbStream = new MemoryStream();
+                        thumbImage.Save(thumbStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+                        return File(thumbStream.ToArray(), string.IsNullOrEmpty(file.FileContentType) ? "application/unknown" : file.FileContentType, file.FileName);
+                        #endregion
+                    }
+                }
+                else
+                {
+                    return File(new byte[0], "image/jpg", "empty.jpg");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Не удалось загрузить изображение {@id}", id);
+                throw;
+            }
         }
     }
 }

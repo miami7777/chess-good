@@ -6,18 +6,23 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using CG.Domain;
+using CG.Service.Interfaces;
+using CG.Service;
+using Org.BouncyCastle.Crypto.Digests;
 
 namespace CG.Controllers
 {
     public class ChessController : Controller
     {
-        private readonly IStringLocalizer<ChessController> _localizer;
+        private readonly IStringLocalizer<ChessController> _localizer;         
         private readonly DataManager _dataManager;
+        public ICalculationRatingService _calculationRatingService;
 
-        public ChessController(IStringLocalizer<ChessController> localizer, DataManager dataManager)
+        public ChessController(IStringLocalizer<ChessController> localizer,DataManager dataManager,ICalculationRatingService calculationRatingService)
         {
-            _localizer = localizer;
+            _localizer = localizer;            
             _dataManager = dataManager;
+            _calculationRatingService = calculationRatingService;
         }
 
         public async Task<IActionResult> Index()
@@ -37,6 +42,18 @@ namespace CG.Controllers
             return View(id);
         }
         [HttpPost]
+        public async Task<ActionResult> GetNewRating([FromBody] GameState game)
+        {
+            var newRatingW = await _calculationRatingService.GetRatingByTypeAndUserAsync(game.Options.type, game.Colors["white"].UserName);
+            var newRatingB = await _calculationRatingService.GetRatingByTypeAndUserAsync(game.Options.type, game.Colors["black"].UserName);
+            var oldRatingW = game.Colors["white"].Rating;
+            var oldRatingB = game.Colors["black"].Rating;
+            var result = new { whiteR = Convert.ToInt32(newRatingW) - Convert.ToInt32(oldRatingW),
+                blackR = Convert.ToInt32(newRatingB) - Convert.ToInt32(oldRatingB)
+            };
+            return Json(result);
+        }
+            [HttpPost]
         public IActionResult SetLanguage(string culture, string returnUrl)
         {
             Response.Cookies.Append(

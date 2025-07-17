@@ -4,6 +4,7 @@ using CG.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace test.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250717084658_AddUserFiles")]
+    partial class AddUserFiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -213,8 +216,6 @@ namespace test.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AvatarFilesId");
-
                     b.HasIndex("LichessUserId");
 
                     b.HasIndex("NormalizedEmail")
@@ -227,13 +228,9 @@ namespace test.Migrations
 
                     b.HasIndex("PerfsId");
 
-                    b.HasIndex("PreviewTrainerPhotoId");
-
                     b.HasIndex("StudentId");
 
                     b.HasIndex("TrainerId");
-
-                    b.HasIndex("TrainerPhotoId");
 
                     b.ToTable("AspNetUsers", (string)null);
 
@@ -243,7 +240,7 @@ namespace test.Migrations
                             Id = "1",
                             AccessFailedCount = 0,
                             Avatar = "avatar-3.jpg",
-                            ConcurrencyStamp = "39e7e323-0a32-4a81-8a98-c67d59ab82be",
+                            ConcurrencyStamp = "9c385c4d-e26c-4d52-b427-21fab1cf6b30",
                             DateBirthday = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@admin.ru",
                             EmailConfirmed = true,
@@ -251,7 +248,7 @@ namespace test.Migrations
                             Name = "Максим",
                             NormalizedEmail = "ADMIN@ADMIN.RU",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFxGaM625dJXbhDBVNL2LobIWYbsfgvUN8+OnD4vBWvNOFRi1Tw28xL5euTuHZlmIQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIvSvP0qDtSe9NfyO1vlzR8HFkGeec+VmVxme7e2/jxg6YD4Ot6Rez/5lNa8YxpGpA==",
                             Patronymic = "Владимирович",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
@@ -266,7 +263,7 @@ namespace test.Migrations
                             AccessFailedCount = 0,
                             Avatar = "avatar-3.jpg",
                             City = "Ставрополь",
-                            ConcurrencyStamp = "32b95004-9f9b-49c0-bc7c-8ea3d91d0363",
+                            ConcurrencyStamp = "d23ed234-5cc5-4f59-9345-ecdbebdad64d",
                             Country = "Россия",
                             DateBirthday = new DateTime(1983, 12, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "trainer@trainer.ru",
@@ -275,7 +272,7 @@ namespace test.Migrations
                             Name = "Максим",
                             NormalizedEmail = "TRAINER@TRAINER.RU",
                             NormalizedUserName = "TRAINER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFy1gyyyIOCR2E7R4/VzuOSuMJhxQv7XNNu458i7oojNFBD6aWZQqk/T2/vvOBNAqg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG0dgWcV0zPlD2EKkvT6iwBYaV9OlUDNt+VgkHr4Tk+L3NdQ8uvl40Aizqf+Zd9jsg==",
                             Patronymic = "Владимирович",
                             PhoneNumberConfirmed = false,
                             PreviewTrainerPhoto = "trainer-6.jpg",
@@ -294,7 +291,7 @@ namespace test.Migrations
                             Avatar = "avatar-1.jpg",
                             ChessTitle = 7,
                             City = "Краснодар",
-                            ConcurrencyStamp = "ce57e0e1-3f80-4a54-8443-9ab46f0455a7",
+                            ConcurrencyStamp = "2fc69175-5346-4c72-b775-bd397a880e84",
                             Country = "Россия",
                             DateBirthday = new DateTime(1998, 5, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "trainer@trainer.ru",
@@ -303,7 +300,7 @@ namespace test.Migrations
                             Name = "Майя",
                             NormalizedEmail = "TRAINER@TRAINER.RU",
                             NormalizedUserName = "TRAINER2",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEIhyBLcvimZ+wqeC/Yp/CgEbdy+QKC5jqjdcM3SGT0sUrKjAEyqbGwyQzCSLq4i/g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGKTNH81s+ee8NrlrknAma7zDTSR3CiA2+p/g4bWxX45JUPfMZPoVALwI+uENanY2g==",
                             Patronymic = "Владимировна",
                             PhoneNumberConfirmed = false,
                             PreviewTrainerPhoto = "trainer-4.jpg",
@@ -323,7 +320,7 @@ namespace test.Migrations
                             AccessFailedCount = 0,
                             Avatar = "avatar-2.jpg",
                             City = "Ростов-на-Дону",
-                            ConcurrencyStamp = "102ed445-9b85-4bcf-9a19-4422f9d1a5aa",
+                            ConcurrencyStamp = "3fe0d0b2-ae14-4b46-ba85-d3d146545f19",
                             Country = "Россия",
                             DateBirthday = new DateTime(1984, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "trainer@trainer.ru",
@@ -332,7 +329,7 @@ namespace test.Migrations
                             Name = "Мурат",
                             NormalizedEmail = "TRAINER@TRAINER.RU",
                             NormalizedUserName = "TRAINER3",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGM2PbSKRRVktsBBwMSlqq6GTk6BLoQjGIg6vlQY852BInzmdskrGl29V5XH0NCh/Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEP8AP7YuGoPhFVpKvhF0/MRBRWq9vFvOmm7c8Z69PX3y4SE3JkI9VmHz6DlCRzHkMQ==",
                             Patronymic = "Муратович",
                             PhoneNumberConfirmed = false,
                             PreviewTrainerPhoto = "trainer-5.jpg",
@@ -350,14 +347,14 @@ namespace test.Migrations
                         {
                             Id = "5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7c7024b7-e267-4ac3-b573-b9f614d69734",
+                            ConcurrencyStamp = "77829a8c-9b2b-4f47-9b0f-1ff98fb01fab",
                             DateBirthday = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "user@user.ru",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@USER.RU",
                             NormalizedUserName = "USER",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGZ942/W2+YP11drNDvbsqTve89YUOjBo7Jg1o+q1fZwhRLMa5Kh1udn8r69tlWKyg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHahu5Wpo2BEmSBFkYOdyv/yk5/c6sifUHjBVhLeqmulyZnlpfxPzgl9Is63uXnbRg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             Sex = 0,
@@ -369,7 +366,7 @@ namespace test.Migrations
                             Id = "6",
                             AccessFailedCount = 0,
                             City = "Краснодар",
-                            ConcurrencyStamp = "62f1d6ca-6ed2-41a1-a4ae-93fec9cc2df9",
+                            ConcurrencyStamp = "ae2c7cad-2baa-4fc9-8071-41288bd73a2d",
                             Country = "Россия",
                             DateBirthday = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "student@student.ru",
@@ -378,7 +375,7 @@ namespace test.Migrations
                             Name = "name",
                             NormalizedEmail = "STUDENT@STUDENT.RU",
                             NormalizedUserName = "STUDENT1",
-                            PasswordHash = "AQAAAAIAAYagAAAAENpS4eV5OYjK0nGE12XvdKsFH+vYnPTkr4bmK/e4drdZPArKWQfzFfSSesO3KJjWsA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENJBoQD5zIe0Wx3sbzVxqtEg6atEIGwWnnX6pacdQKqS6Rev64PhIxs+MqLnCcofkQ==",
                             PhoneNumberConfirmed = false,
                             Region = "Краснодарский край",
                             SecurityStamp = "",
@@ -390,14 +387,14 @@ namespace test.Migrations
                         {
                             Id = "7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "746e2017-277b-4dcb-904a-f24d9e671ffe",
+                            ConcurrencyStamp = "18681c27-7540-4c69-b388-918fe2f77176",
                             DateBirthday = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "student@student.ru",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "STUDENT@STUDENT.RU",
                             NormalizedUserName = "STUDENT2",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFr81bIKarbMkmmRQQGdBj06GYqsNL/bIDYp0nQPI+1XRUk6EretH2F7eZWsDAkRoA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKRPDeFiHjyMnXKFG9+t+F8J9sIj43vij6suKAmPWVxmsV8Y7oY5QX+kJs71i7nzsg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             Sex = 0,
@@ -408,14 +405,14 @@ namespace test.Migrations
                         {
                             Id = "8",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1ceb5a34-3a71-4488-b400-100769333c40",
+                            ConcurrencyStamp = "f779ccd3-6f03-4b5a-9481-3e9b081eeba2",
                             DateBirthday = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "student@student.ru",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "STUDENT@STUDENT.RU",
                             NormalizedUserName = "STUDENT3",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMw/qpWT/qYqSsIKrvSrB+0Ns7enYRUXqPad2Zo392OYRiL8f3U8vXAivkqYTzGSQg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG9PDAMbm2a+nolXRDDRnfJboCPTbJ2EEf/gllrcNrZiSeBMFg+Y8Rn9vJvpiT226Q==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             Sex = 0,
@@ -426,14 +423,14 @@ namespace test.Migrations
                         {
                             Id = "9",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d39f57c4-03de-4a35-800e-0ccc894e2db1",
+                            ConcurrencyStamp = "45c7e40f-f9cc-4ddb-9fa5-3e7e9537915c",
                             DateBirthday = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "student@student.ru",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "STUDENT@STUDENT.RU",
                             NormalizedUserName = "STUDENT4",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFx0bnaKFJOIJPY0aILmlqBdtx2+z3Ys6+TJqqQNS4nRCNyKMQmGX5cYfCOXD7qKVA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGQ9/5GY9YlxcTKyL3vvLydvvIGGV/MnNUheCZsEvUdwoPisk1bSoSabYhIdMfi3pQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             Sex = 0,
@@ -549,7 +546,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3934),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2135),
                             Description = "Прослушав курс вы поймете основные идеи данного гамбита, и историю возникновения. Узнаете кто из современников играет этот дебют.\r\n                                        Научитесь играть в комбинационные активные шахматы.",
                             Header = "",
                             Name = "Принятый северный гамбит",
@@ -558,7 +555,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3955),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2156),
                             Description = "Обсуждается возможный план игры в миттельшпиле. Основные плюсы и минусы данного дебюта.",
                             Header = "Глубокий разбор основных линий в дебюте, последнии новинки.",
                             Name = "Основные варианты дебюта",
@@ -567,7 +564,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3973),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2174),
                             Description = "Расматривается основные возражения против северного гамбита. Способы уйти в удобные для черных линии.Обсуждается возможный план игры в миттельшпиле.",
                             Header = "",
                             Name = "Отказанный северный гамбит",
@@ -697,7 +694,7 @@ namespace test.Migrations
                             Id = 1,
                             CategoryId = 2,
                             CategoryTournament = 0,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3366),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1451),
                             Currency = 0,
                             Description = "Один из острейших дебютов в шахматах, так как там с первых же ходов жертвуются две пешки. В данном видео рассматриваются ловушки за белых и черных, \r\n                        которых так много в представленном дебютном варианте. Изучив их, вы сможете вылавливать тех соперников, которые слабо знакомы с тонкостями \r\n                        Северного гамбита. К тому же многие из этих ловушек очень красивы, поэтому даже если вы не собираетесь применять данный вариант на практике, то все \r\n                        равно получите незабываемое эстетическое удовольствие от просмотра этого ролика.",
                             Duration = 120,
@@ -718,7 +715,7 @@ namespace test.Migrations
                             Id = 2,
                             CategoryId = 2,
                             CategoryTournament = 0,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3451),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1484),
                             Currency = 0,
                             Description = "В курсе рассказывается как ставить ловушки в северном гамбите",
                             Duration = 60,
@@ -874,7 +871,7 @@ namespace test.Migrations
                         {
                             Id = 1,
                             Color = "ffbb2c",
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(2841),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(575),
                             Description = "",
                             Icon = "book",
                             IsActive = true,
@@ -886,7 +883,7 @@ namespace test.Migrations
                         {
                             Id = 2,
                             Color = "5578ff",
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(2880),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(741),
                             Description = "",
                             Icon = "door-open",
                             IsActive = true,
@@ -898,7 +895,7 @@ namespace test.Migrations
                         {
                             Id = 3,
                             Color = "e80368",
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(2898),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(822),
                             Description = "",
                             Icon = "medium",
                             IsActive = true,
@@ -910,7 +907,7 @@ namespace test.Migrations
                         {
                             Id = 4,
                             Color = "e361ff",
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(2915),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(840),
                             Description = "",
                             Icon = "door-closed",
                             IsActive = true,
@@ -922,7 +919,7 @@ namespace test.Migrations
                         {
                             Id = 5,
                             Color = "47aeff",
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(2931),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(856),
                             Description = "",
                             Icon = "shuffle",
                             IsActive = true,
@@ -934,7 +931,7 @@ namespace test.Migrations
                         {
                             Id = 6,
                             Color = "ffa76e",
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(2948),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(873),
                             Description = "",
                             Icon = "star",
                             IsActive = true,
@@ -946,7 +943,7 @@ namespace test.Migrations
                         {
                             Id = 7,
                             Color = "11dbcf",
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(2963),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(890),
                             Description = "",
                             Icon = "stop-circle-fill",
                             IsActive = true,
@@ -958,7 +955,7 @@ namespace test.Migrations
                         {
                             Id = 8,
                             Color = "4233ff",
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(2988),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(910),
                             Description = "",
                             Icon = "stop-circle",
                             IsActive = true,
@@ -970,7 +967,7 @@ namespace test.Migrations
                         {
                             Id = 9,
                             Color = "b2904f",
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3004),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(926),
                             Description = "",
                             Icon = "textarea-t",
                             IsActive = true,
@@ -982,7 +979,7 @@ namespace test.Migrations
                         {
                             Id = 10,
                             Color = "b20969",
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3020),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(943),
                             Description = "",
                             Icon = "people-fill",
                             IsActive = true,
@@ -994,7 +991,7 @@ namespace test.Migrations
                         {
                             Id = 11,
                             Color = "ff5828",
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3036),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(958),
                             Description = "",
                             Icon = "stack",
                             IsActive = true,
@@ -1006,7 +1003,7 @@ namespace test.Migrations
                         {
                             Id = 12,
                             Color = "29cc61",
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3051),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(974),
                             Description = "",
                             Icon = "list-task",
                             IsActive = true,
@@ -1054,7 +1051,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3080),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1000),
                             Description = "",
                             ListOrder = 1,
                             Name = "Опубликован"
@@ -1062,7 +1059,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3100),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1018),
                             Description = "",
                             ListOrder = 2,
                             Name = "В разработке"
@@ -1070,7 +1067,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3267),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1344),
                             Description = "",
                             ListOrder = 3,
                             Name = "На модерации"
@@ -1078,7 +1075,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3284),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1364),
                             Description = "",
                             ListOrder = 4,
                             Name = "Одобрен"
@@ -1086,7 +1083,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3301),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1380),
                             Description = "",
                             ListOrder = 5,
                             Name = "В продаже"
@@ -1094,7 +1091,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3319),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1399),
                             Description = "",
                             ListOrder = 6,
                             Name = "В архиве"
@@ -1384,7 +1381,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(4065),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2254),
                             Description = "Занимается онлайн года 4,5 точно. Тренеры Майя Порожняк и Мурат Болотчиев ❤️❤️❤️самые лучшие тренера! Активные, позитивные, интересные!",
                             Image = "testimonials-1.jpg",
                             ListOrder = 1,
@@ -1395,7 +1392,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(4092),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2277),
                             Description = "Сын занимается около полугода, очень доволен!\r\n                                    На урок всегда идет с удовольвствием. Тренеру Максиму Королёву - отдельная благодарность!",
                             Image = "testimonials-2.jpg",
                             ListOrder = 2,
@@ -1406,7 +1403,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(4110),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2296),
                             Description = "Занимается онлайн года 4,5 точно. Тренеры Майя Порожняк и Мурат Болотчиев ❤️❤️❤️самые лучшие тренера! Активные, позитивные, интересные!",
                             Image = "testimonials-3.jpg",
                             ListOrder = 3,
@@ -1417,7 +1414,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(4153),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2312),
                             Description = "Мой сын начал заниматься в шахматной школе почти год назад и мы просто в восторге от результатов! Каждое занятие не только увлекательно, но и полезно.",
                             Image = "testimonials-4.jpg",
                             ListOrder = 4,
@@ -1428,7 +1425,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(4171),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2330),
                             Description = "Рекомендую школу шахмат!\r\n                                    Там работают самые добрые , умные люди !",
                             Image = "testimonials-5.jpg",
                             ListOrder = 5,
@@ -1439,7 +1436,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(4188),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2348),
                             Description = "Это просто ужасно!Ужасный дебют, как можно такой дебют рекомендовать играть своим ученикам. ",
                             Image = "testimonials-5.jpg",
                             ListOrder = 6,
@@ -1505,48 +1502,48 @@ namespace test.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3564),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1719),
                             Description = "Пробный урок",
                             Name = "Пробный урок"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3584),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1761),
                             Description = "Доступ к открытым курсам",
                             Name = "Доступ к открытым курсам"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3601),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1779),
                             Description = "Доступ к открытым вебинарам",
                             Name = "Доступ к открытым вебинарам"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3618),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1796),
                             Name = "Доступ к закрытым курсам"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3634),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1813),
                             Description = "Доступ к закрытым курсам",
                             Name = "Доступ к закрытым вебинарам"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3773),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1982),
                             Description = "Доступ к закрытым вебинарам, 10 вебинаров в месяц длительность 1 час 30 мин.",
                             Name = "Доступ к закрытым вебинарам, 10 вебинаров в месяц длительность 1 час 30 мин."
                         },
                         new
                         {
                             Id = 7,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3792),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2000),
                             Description = "Доступ к индивидуальным занятиям 10 занятий в месяц длительность 1 час 30 мин.",
                             Name = "Доступ к индивидуальным занятиям 10 занятий в месяц длительность 1 час 30 мин."
                         });
@@ -1590,7 +1587,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(4218),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2373),
                             Description = "Заголовок на главной странице на первом баннере",
                             Key = "HeaderMain",
                             Name = "Главный заголовок",
@@ -1673,7 +1670,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3844),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2045),
                             Description = "Бесплатно",
                             IsAdvanced = false,
                             IsFeatured = false,
@@ -1684,7 +1681,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3869),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2071),
                             Description = "Самостоятельное обучение",
                             IsAdvanced = false,
                             IsFeatured = true,
@@ -1695,7 +1692,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3889),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2092),
                             Description = "Групповые занятия",
                             IsAdvanced = false,
                             IsFeatured = false,
@@ -1706,7 +1703,7 @@ namespace test.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3905),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(2108),
                             Description = "Индивидуальные занятия",
                             IsAdvanced = true,
                             IsFeatured = false,
@@ -1839,7 +1836,7 @@ namespace test.Migrations
                             Id = 1,
                             AvailableSeats = 30,
                             CategoryId = 2,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3498),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1661),
                             Currency = 0,
                             Description = "Майя Порожняк расскажет вам про один из самых романтических дебютов в Шахматной Истории, о северном гамбите, дебют, где белые жертвуют две пешки ради развития сверхмощной инициативы.",
                             Duration = 120,
@@ -1860,7 +1857,7 @@ namespace test.Migrations
                             Id = 2,
                             AvailableSeats = 30,
                             CategoryId = 2,
-                            CreatedDate = new DateTime(2025, 7, 17, 8, 56, 45, 13, DateTimeKind.Utc).AddTicks(3526),
+                            CreatedDate = new DateTime(2025, 7, 17, 8, 46, 56, 843, DateTimeKind.Utc).AddTicks(1687),
                             Currency = 0,
                             Description = "Роль шахмат в развитии интуиции и творческого мышления учащихся",
                             Duration = 120,
@@ -2017,12 +2014,6 @@ namespace test.Migrations
 
             modelBuilder.Entity("CG.Domain.ApplicationUser", b =>
                 {
-                    b.HasOne("CG.Domain.Entities.UserFiles", "AvatarFile")
-                        .WithMany()
-                        .HasForeignKey("AvatarFilesId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("User_AvatarFiles_FK");
-
                     b.HasOne("CG.Domain.Entities.LichessUsers", "LichessUsers")
                         .WithMany()
                         .HasForeignKey("LichessUserId");
@@ -2030,12 +2021,6 @@ namespace test.Migrations
                     b.HasOne("CG.Domain.Entities.Perfs", "Perfs")
                         .WithMany()
                         .HasForeignKey("PerfsId");
-
-                    b.HasOne("CG.Domain.Entities.UserFiles", "PreviewTrainerPhotoFile")
-                        .WithMany()
-                        .HasForeignKey("PreviewTrainerPhotoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("User_PreviewTrainerPhotoFile_FK");
 
                     b.HasOne("CG.Domain.Entities.StudentsTrainers", null)
                         .WithMany("Students")
@@ -2045,21 +2030,9 @@ namespace test.Migrations
                         .WithMany("Trainers")
                         .HasForeignKey("TrainerId");
 
-                    b.HasOne("CG.Domain.Entities.UserFiles", "TrainerPhotoFile")
-                        .WithMany()
-                        .HasForeignKey("TrainerPhotoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("User_TrainerPhotoFile_FK");
-
-                    b.Navigation("AvatarFile");
-
                     b.Navigation("LichessUsers");
 
                     b.Navigation("Perfs");
-
-                    b.Navigation("PreviewTrainerPhotoFile");
-
-                    b.Navigation("TrainerPhotoFile");
                 });
 
             modelBuilder.Entity("CG.Domain.ApplicationUserRole", b =>

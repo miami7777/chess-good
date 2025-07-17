@@ -8,8 +8,9 @@ namespace CG.Service.Interfaces
     {
         Task<ApplicationUser> CalculateRatingAsync(GameState game);
         Task<int> GetRatingAsync(GameState game);
-        (string,string) GetAvatarAsync(List<Player> gamePlayers);
-        Task<int> GetRatingByTypeAsync(Type_Game type);
+        (int,int,string,string) GetAvatarAndFlagAsync(List<Player> gamePlayers);
+        Task<int> GetKfPlayer(GameState game, string userName);
+        Task<int> GetRatingByTypeAsync(Type_Game type);        
         Task<int> GetRatingByTypeAndUserAsync(Type_Game type,string username);
     }
 }

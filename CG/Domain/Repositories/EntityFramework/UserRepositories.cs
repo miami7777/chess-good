@@ -68,7 +68,7 @@ namespace CG.Domain.Repositories.EntityFramework
 
         public async Task<ApplicationUser?> GetUserByNameAsync(string name)
         {
-           return await _context.Users.Include(x => x.Courses).Include(x => x.Webinars).Include(x => x.Perfs).ThenInclude(x => x.Blitz).Include(x => x.Perfs).ThenInclude(x => x.Bullet).Include(x => x.Perfs).ThenInclude(x => x.Rapid).Include(x => x.Perfs).ThenInclude(x => x.Classical)
+           return await _context.Users.Include(x => x.Courses).Include(x => x.Webinars).Include(x => x.AvatarFile).Include(x => x.Perfs).ThenInclude(x => x.Blitz).Include(x => x.Perfs).ThenInclude(x => x.Bullet).Include(x => x.Perfs).ThenInclude(x => x.Rapid).Include(x => x.Perfs).ThenInclude(x => x.Classical)
                 .Include(x => x.Perfs).ThenInclude(x => x.BlitzInc).Include(x => x.Perfs).ThenInclude(x => x.BulletInc).Include(x => x.Perfs).ThenInclude(x => x.RapidInc).Include(x => x.Perfs).ThenInclude(x => x.ClassicalInc)
                 .Include(x => x.UserRoles).ThenInclude(x => x.Role).FirstOrDefaultAsync(u => u.UserName == name);
         }
@@ -91,7 +91,7 @@ namespace CG.Domain.Repositories.EntityFramework
         }
 
         public async Task CreateUserPerfsAsync(ApplicationUser user, LichessAccountDto? lichessAccountDto = null)
-        { 
+        {
             var UserPerfs = new Entities.Perfs
             {
                 Id = 0,
@@ -99,41 +99,50 @@ namespace CG.Domain.Repositories.EntityFramework
                 {
                     Games = lichessAccountDto != null && (user.Perfs?.Blitz?.Games == null || user.Perfs?.Blitz?.Games == 0) ? lichessAccountDto.Perfs?.Blitz.Games ?? 0 : 0,
                     Rating = lichessAccountDto != null && (user.Perfs?.Blitz?.Games == null || user.Perfs?.Blitz?.Games == 0) ? lichessAccountDto.Perfs?.Blitz.Rating ?? 1500 : 1500,
+                    RD = lichessAccountDto != null && (user.Perfs?.Blitz?.Games == null || user.Perfs?.Blitz?.Games == 0) ? lichessAccountDto.Perfs?.Blitz.RD ?? 350 : 350,
+                     
                 },
                 BlitzInc = new Entities.PerfsStatistics()
                 {
                     Games = lichessAccountDto != null && (user.Perfs?.BlitzInc?.Games == null || user.Perfs?.BlitzInc?.Games == 0) ? lichessAccountDto.Perfs?.Blitz.Games ?? 0 : 0,
                     Rating = lichessAccountDto != null && (user.Perfs?.BlitzInc?.Games == null || user.Perfs?.BlitzInc?.Games == 0) ? lichessAccountDto.Perfs?.Blitz.Rating ?? 1500 : 1500,
+                    RD = lichessAccountDto != null && (user.Perfs?.BlitzInc?.Games == null || user.Perfs?.BlitzInc?.Games == 0) ? lichessAccountDto.Perfs?.Blitz.RD ?? 350 : 350,
                 },
                 Rapid = new Entities.PerfsStatistics()
                 {
                     Games = lichessAccountDto != null && (user.Perfs?.Rapid?.Games == null || user.Perfs?.Rapid?.Games == 0) ? lichessAccountDto.Perfs?.Rapid.Games ?? 0 : 0,
                     Rating = lichessAccountDto != null && (user.Perfs?.Rapid?.Games == null || user.Perfs?.Rapid?.Games == 0) ? lichessAccountDto.Perfs?.Rapid.Rating ?? 1500 : 1500,
+                    RD = lichessAccountDto != null && (user.Perfs?.Rapid?.Games == null || user.Perfs?.Rapid?.Games == 0) ? lichessAccountDto.Perfs?.Rapid.RD ?? 350 : 350,
                 },
                 RapidInc = new Entities.PerfsStatistics()
                 {
                     Games = lichessAccountDto != null && (user.Perfs?.RapidInc?.Games == null || user.Perfs?.RapidInc?.Games == 0) ? lichessAccountDto.Perfs?.Rapid.Games ?? 0 : 0,
                     Rating = lichessAccountDto != null && (user.Perfs?.RapidInc?.Games == null || user.Perfs?.RapidInc?.Games == 0) ? lichessAccountDto.Perfs?.Rapid.Rating ?? 1500 : 1500,
+                    RD = lichessAccountDto != null && (user.Perfs?.RapidInc?.Games == null || user.Perfs?.RapidInc?.Games == 0) ? lichessAccountDto.Perfs?.Rapid.RD ?? 350 : 350,
                 },
                 Bullet = new Entities.PerfsStatistics()
                 {
                     Games = lichessAccountDto != null && (user.Perfs?.Bullet?.Games == null || user.Perfs?.Bullet?.Games == 0) ? lichessAccountDto.Perfs?.Bullet.Games ?? 0 : 0,
                     Rating = lichessAccountDto != null && (user.Perfs?.Bullet?.Games == null || user.Perfs?.Bullet?.Games == 0) ? lichessAccountDto.Perfs?.Bullet.Rating ?? 1500 : 1500,
+                    RD = lichessAccountDto != null && (user.Perfs?.Bullet?.Games == null || user.Perfs?.Bullet?.Games == 0) ? lichessAccountDto.Perfs?.Bullet.RD ?? 350 : 350,
                 },
                 BulletInc = new Entities.PerfsStatistics()
                 {
                     Games = lichessAccountDto != null && (user.Perfs?.BulletInc?.Games == null || user.Perfs?.BulletInc?.Games == 0) ? lichessAccountDto.Perfs?.Bullet.Games ?? 0 : 0,
                     Rating = lichessAccountDto != null && (user.Perfs?.BulletInc?.Games == null || user.Perfs?.BulletInc?.Games == 0) ? lichessAccountDto.Perfs?.Bullet.Rating ?? 1500 : 1500,
+                    RD = lichessAccountDto != null && (user.Perfs?.BulletInc?.Games == null || user.Perfs?.BulletInc?.Games == 0) ? lichessAccountDto.Perfs?.Bullet.RD ?? 350 : 350,
                 },
                 Classical = new Entities.PerfsStatistics()
                 {
                     Games = lichessAccountDto != null && (user.Perfs?.Classical?.Games == null || user.Perfs?.Classical?.Games == 0) ? lichessAccountDto.Perfs?.Classical.Games ?? 0 : 0,
                     Rating = lichessAccountDto != null && (user.Perfs?.Classical?.Games == null || user.Perfs?.Classical?.Games == 0) ? lichessAccountDto.Perfs?.Classical.Rating ?? 1500 : 1500,
+                    RD = lichessAccountDto != null && (user.Perfs?.Classical?.Games == null || user.Perfs?.Classical?.Games == 0) ? lichessAccountDto.Perfs?.Classical.RD ?? 350 : 350,
                 },
                 ClassicalInc = new Entities.PerfsStatistics()
                 {
                     Games = lichessAccountDto != null && (user.Perfs?.ClassicalInc?.Games == null || user.Perfs?.ClassicalInc?.Games == 0) ? lichessAccountDto.Perfs?.Classical.Games ?? 0 : 0,
                     Rating = lichessAccountDto != null && (user.Perfs?.ClassicalInc?.Games == null || user.Perfs?.ClassicalInc?.Games == 0) ? lichessAccountDto.Perfs?.Classical.Rating ?? 1500 : 1500,
+                    RD = lichessAccountDto != null && (user.Perfs?.ClassicalInc?.Games == null || user.Perfs?.ClassicalInc?.Games == 0) ? lichessAccountDto.Perfs?.Classical.RD ?? 350 : 350,
                 }
             };
             
@@ -176,6 +185,89 @@ namespace CG.Domain.Repositories.EntityFramework
             _context.Entry(user).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
 
             await _context.SaveChangesAsync();
+        }
+        public async Task UpdateUserPerfsAsync(ApplicationUser user)
+        {
+            if (user.LichessUsers != null)
+            {
+                if (user.Perfs.Bullet.Games == 0)
+                {
+                    user.Perfs.Bullet.Games = user.LichessUsers.Perfs.Bullet.Games;
+                    user.Perfs.Bullet.Rating = user.LichessUsers.Perfs.Bullet.Rating;
+                    user.Perfs.Bullet.RD = user.LichessUsers.Perfs.Bullet.RD;
+                }
+                if (user.Perfs.BulletInc.Games == 0)
+                {
+                    user.Perfs.BulletInc.Games = user.LichessUsers.Perfs.Bullet.Games;
+                    user.Perfs.BulletInc.Rating = user.LichessUsers.Perfs.Bullet.Rating;
+                    user.Perfs.BulletInc.RD = user.LichessUsers.Perfs.Bullet.RD;
+                }
+                if (user.Perfs.Blitz.Games  == 0)
+                {
+                   user.Perfs.Blitz.Games = user.LichessUsers.Perfs.Blitz.Games;
+                    user.Perfs.Blitz.Rating = user.LichessUsers.Perfs.Blitz.Rating;
+                    user.Perfs.Blitz.RD = user.LichessUsers.Perfs.Blitz.RD;
+                }
+                if (user.Perfs.BlitzInc.Games == 0)
+                {
+                    user.Perfs.BlitzInc.Games = user.LichessUsers.Perfs.Blitz.Games;
+                    user.Perfs.BlitzInc.Rating = user.LichessUsers.Perfs.Blitz.Rating;
+                    user.Perfs.BlitzInc.RD = user.LichessUsers.Perfs.Blitz.RD;
+                }
+                if (user.Perfs.Rapid.Games == 0)
+                {
+                    user.Perfs.Rapid.Games = user.LichessUsers.Perfs.Rapid.Games;
+                    user.Perfs.Rapid.Rating = user.LichessUsers.Perfs.Rapid.Rating;
+                    user.Perfs.Rapid.RD = user.LichessUsers.Perfs.Rapid.RD;
+                }
+                if (user.Perfs.RapidInc.Games == 0)
+                {
+                    user.Perfs.RapidInc.Games = user.LichessUsers.Perfs.Rapid.Games;
+                    user.Perfs.RapidInc.Rating = user.LichessUsers.Perfs.Rapid.Rating;
+                    user.Perfs.RapidInc.RD = user.LichessUsers.Perfs.Rapid.RD;
+                }
+                if (user.Perfs.Classical.Games == 0)
+                {
+                    user.Perfs.Classical.Games = user.LichessUsers.Perfs.Classical.Games;
+                    user.Perfs.Classical.Rating = user.LichessUsers.Perfs.Classical.Rating;
+                    user.Perfs.Classical.RD = user.LichessUsers.Perfs.Classical.RD;
+                }
+                if (user.Perfs.ClassicalInc.Games == 0)
+                {
+                    user.Perfs.ClassicalInc.Games = user.LichessUsers.Perfs.Classical.Games;
+                    user.Perfs.ClassicalInc.Rating = user.LichessUsers.Perfs.Classical.Rating;
+                    user.Perfs.ClassicalInc.RD = user.LichessUsers.Perfs.Classical.RD;
+                }
+                
+                    _context.Entry(user.Perfs.Blitz).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                
+                
+                    _context.Entry(user.Perfs.BlitzInc).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                
+               
+                    _context.Entry(user.Perfs.Rapid).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+               
+                
+                    _context.Entry(user.Perfs.RapidInc).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                
+                
+                    _context.Entry(user.Perfs.Bullet).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                
+                
+                    _context.Entry(user.Perfs.BulletInc).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                
+                
+                    _context.Entry(user.Perfs.Classical).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                
+                
+                    _context.Entry(user.Perfs.ClassicalInc).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                
+                _context.Entry(user.Perfs).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+                _context.Entry(user).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+                await _context.SaveChangesAsync();
+            } 
         }
     }
 }

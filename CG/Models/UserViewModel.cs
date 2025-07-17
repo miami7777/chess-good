@@ -35,6 +35,12 @@ namespace CG.Models
         public LichessUsers? LichessData { get; set; }
         public int PerfsId { get; set; }
         public Perfs Perfs { get; set; }
+        public int? AvatarFilesId { get; set; }
+        public UserFiles? AvatarFile { get; set; }
+        public int? TrainerPhotoId { get; set; }
+        public UserFiles? TrainerPhotoFile { get; set; }
+        public int? PreviewTrainerPhotoId { get; set; }
+        public UserFiles? PreviewTrainerPhotoFile { get; set; }
 
     }
 }

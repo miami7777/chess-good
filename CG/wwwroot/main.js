@@ -10,16 +10,23 @@ const pieces = document.getElementsByClassName("piece");
 const piecesImages = document.getElementsByTagName("img");
 const chessBoard = document.querySelector(".chessBoard");
 let allowMoment = false;
+let allowLeave = true;
+let allowPremove = true;
 let isOpponentWhite = false;
 let selectedLevel = 1;
 let pgn = "";
 let clockWhite = 180;
 let clockBlack = 180;
+let player_r1;
+let player_r2;
+let kf1;
+let kf2;
 process_move = false;
 let add_sec = 0;
 let isRatingGame = true;
 var touchText="";
 let touchLegal = [];
+let premove = "";
 setupBoardSquares();
 setupPieces();
 fillBoardSquaresArray();
@@ -34,6 +41,9 @@ if (infoBoard.length > 0) {
 
 const startingPosition = chessBoard.innerHTML;
 let currentPosition = generateFEN(boardSquaresArray);
+let viewedFen = currentPosition;
+let viewedIndex = 0;
+positionArray.push(currentPosition);
 let currentBoard = chessBoard.innerHTML;
 let pieceMoving = document.createElement("div");
 pieceMoving.id = "pieceMoving";
@@ -175,7 +185,7 @@ function deepCopyArray(array) {
     })
     return arrayCopy;
 }
-function setupBoardSquares() {
+function setupBoardSquares() {    
     for (i = 0; i < boardSquares.length; i++) {
         boardSquares[i].addEventListener("dragover", allowDrop);       
         boardSquares[i].addEventListener("drop", drop);  
@@ -191,46 +201,54 @@ function setupBoardSquares() {
                 const pieceColor = piece.getAttribute("color");
                 const pieceType = piece.classList[1];
                 const pieceId = piece.id;
+                let isOpponentTurn = (isOpponentWhite && isWhiteTurn) || (!isOpponentWhite && !isWhiteTurn);
                 if ((isWhiteTurn && pieceColor == "white") || (!isWhiteTurn && pieceColor == "black")) {
                     const startingSquareId = piece.parentNode.id;
 
                     touchText = piece.id + "|" + startingSquareId;
                     const pieceObject = { pieceColor: pieceColor, pieceType: pieceType, pieceId: pieceId }
-                    let legalSquares = getPossibleMoves(startingSquareId, pieceObject, boardSquaresArray);
-                    let legalSquaresJson = JSON.stringify(legalSquares);
-                    touchLegal = legalSquaresJson;
+                    if (!isOpponentTurn) {
+                        let legalSquares = getPossibleMoves(startingSquareId, pieceObject, boardSquaresArray);
+                        let legalSquaresJson = JSON.stringify(legalSquares);
+                        touchLegal = legalSquaresJson;
+                    }
                     // Получаем первое касание (touch)
                     var touch = ev.targetTouches[0];
-                   
+
                     // Получаем начальные координаты элемента
                     var offsetX = touch.clientX;
-                    var offsetY = touch.clientY;                 
+                    var offsetY = touch.clientY;
                     let m = document.getElementById(piece.id);
                     let myMP = m.appendChild(pieceMoving);
                     pieceMoving.style.left = touch.clientX - offsetX + 'px';
-                    pieceMoving.style.top = touch.clientY - offsetY + 'px';                    
+                    pieceMoving.style.top = touch.clientY - offsetY + 'px';
                     var imgMoving = document.createElement("img");
                     imgMoving.src = "../../piece/" + pieceColor.charAt(0).toUpperCase() + pieceColor.slice(1).toString() + "-" + pieceType.charAt(0).toUpperCase() + pieceType.slice(1).toString() + ".png";
-                    pieceMoving.appendChild(imgMoving);                    
-                    
+                    pieceMoving.appendChild(imgMoving);
+
                     function moveElement(event) {
                         event.preventDefault();
-                        var touch = event.changedTouches[0];                          
-                                                                                               
+                        var touch = event.changedTouches[0];
+
 
                         pieceMoving.style.left = touch.clientX - offsetX + 'px';
                         pieceMoving.style.top = touch.clientY - offsetY + 'px';
                     }
                 }
+                else if (isOpponentTurn && allowPremove) {
+                    const startingSquareId = piece.parentNode.id;
+                    touchText = piece.id + "|" + startingSquareId;
+                }
                 function stopMoving(ev) {
-                    if (!allowMoment) return;
+                    if (!allowMoment && !allowPremove) return;
                     var touch = ev.targetTouches[0];
                     
-                    let isOpponentTurn = (isOpponentWhite && isWhiteTurn) || (!isOpponentWhite && !isWhiteTurn);
-                    if (isOpponentTurn) return;
+                    let isOpponentTurn = (isOpponentWhite && isWhiteTurn) || (!isOpponentWhite && !isWhiteTurn);                    
                     ev.preventDefault();
-                    imgMoving.remove();
-                    pieceMoving.remove();
+                    if (!isOpponentTurn) {
+                        imgMoving.remove();
+                        pieceMoving.remove();
+                    }                   
                     var endTarget = document.elementFromPoint(
                         ev.changedTouches[0].clientX,
                         ev.changedTouches[0].clientY
@@ -243,10 +261,18 @@ function setupBoardSquares() {
 
                     let data = touchText;
                     touchText = "";
-                    let [pieceId, startingSquareId] = data.split("|");                   
-                    displayMove(startingSquareId, destinationSquareId);
-                    movableElement.removeEventListener('touchmove', moveElement);
-                    movableElement.removeEventListener('touchend', stopMoving);
+                    let [pieceId, startingSquareId] = data.split("|");
+                    if (isOpponentTurn) {
+                        premove = startingSquareId + "|" + destinationSquareId;
+                        displayPremove(startingSquareId, destinationSquareId);
+                        return;
+                    }
+                    else {
+                        displayMove(startingSquareId, destinationSquareId);
+
+                        movableElement.removeEventListener('touchmove', moveElement);
+                        movableElement.removeEventListener('touchend', stopMoving);
+                    }
                 }
                 movableElement.addEventListener('touchmove', moveElement);
                 movableElement.addEventListener('touchend', stopMoving);
@@ -257,6 +283,18 @@ function setupBoardSquares() {
         let column = String.fromCharCode(97 + (i % 8));
         let square = boardSquares[i];
         square.id = column + row;
+
+        boardSquares[i].addEventListener('contextmenu', function (event) {
+            event.preventDefault();           
+           let square = event.target;            
+            while (square.className.indexOf('square') == -1) {
+                square = square.offsetParent;                    
+            }            
+            if (getPremoveAtSquare(square.id)) {
+                document.querySelectorAll('.preMoveSquare').forEach((el) => { el.classList.remove('preMoveSquare') });
+                premove = "";
+                }            
+        });
     }
 }
 function setupPieces() {
@@ -272,8 +310,9 @@ function setupPieces() {
 function allowDrop(ev) {
     ev.preventDefault();
 }
-function drag(ev) {      
-    if (!allowMoment) return;
+function drag(ev) {
+   if (!allowMoment) return;
+    let isOpponentTurn = (isOpponentWhite && isWhiteTurn) || (!isOpponentWhite && !isWhiteTurn);
     const piece = ev.target;
     const pieceColor = piece.getAttribute("color");
     const pieceType = piece.classList[1];
@@ -282,23 +321,32 @@ function drag(ev) {
         const startingSquareId = piece.parentNode.id;
         ev.dataTransfer.setData("text", piece.id + "|" + startingSquareId);
         const pieceObject = { pieceColor: pieceColor, pieceType: pieceType, pieceId: pieceId }
-        let legalSquares = getPossibleMoves(startingSquareId, pieceObject, boardSquaresArray);
-        let legalSquaresJson = JSON.stringify(legalSquares);        
-        ev.dataTransfer.setData("application/json", legalSquaresJson);
-    }    
+        if (!isOpponentTurn) {
+            let legalSquares = getPossibleMoves(startingSquareId, pieceObject, boardSquaresArray);
+            let legalSquaresJson = JSON.stringify(legalSquares);
+            ev.dataTransfer.setData("application/json", legalSquaresJson);
+        }
+    }
+    else if (isOpponentTurn && allowPremove) {
+        const startingSquareId = piece.parentNode.id;
+        ev.dataTransfer.setData("text", piece.id + "|" + startingSquareId);
+    }
 }
-function drop(ev) {  
-   
-    if (!allowMoment) return;
-    let isOpponentTurn = (isOpponentWhite && isWhiteTurn) || (!isOpponentWhite && !isWhiteTurn);    
-    if (isOpponentTurn) return;
-    ev.preventDefault();
-    
+function drop(ev) {
+    if (!allowMoment && !allowPremove) return;    
+    let isOpponentTurn = (isOpponentWhite && isWhiteTurn) || (!isOpponentWhite && !isWhiteTurn);
+    ev.preventDefault();       
     const destinationSquare = ev.currentTarget;
     let destinationSquareId = destinationSquare.id;    
     let data = ev.dataTransfer.getData("text");    
     let [pieceId, startingSquareId] = data.split("|");
-    displayMove(startingSquareId, destinationSquareId);  
+    if (isOpponentTurn) {
+        premove = startingSquareId + "|" + destinationSquareId;
+        displayPremove(startingSquareId, destinationSquareId);
+        return;
+    }    
+    displayMove(startingSquareId, destinationSquareId);
+    
 }
 function touchDrop(ev) {   
     if (!allowMoment) return;
@@ -310,9 +358,14 @@ function touchDrop(ev) {
     let data = touchText;
     touchText = "";      
     let [pieceId, startingSquareId] = data.split("|");
+    if (isOpponentTurn) {
+        premove = startingSquareId + "|" + destinationSquareId;
+        displayPremove(startingSquareId, destinationSquareId);
+        return;
+    }    
     displayMove(startingSquareId, destinationSquareId);
 }
-function performEnPassant(piece, pieceColor, startingSquareId, destinationSquareId) {    
+function performEnPassant(piece, pieceColor, startingSquareId, destinationSquareId, boardSquaresArray) {
     let file = destinationSquareId[0];
     let rank = parseInt(destinationSquareId[1]);
     rank += (pieceColor === "white") ? -1 : 1;
@@ -326,7 +379,9 @@ function performEnPassant(piece, pieceColor, startingSquareId, destinationSquare
     squareBehind.pieceType = "blank";
     squareBehind.pieceId = "blank";
     const destinationSquare = document.getElementById(destinationSquareId);
-    destinationSquare.appendChild(piece);
+    if (viewedIndex == 0 || moves.length - 1 <= viewedIndex) {
+        destinationSquare.appendChild(piece);
+    }
     isWhiteTurn = !isWhiteTurn;
     updatePGN(startingSquareId, destinationSquareId, isWhiteTurn);
     updateBoardSquaresArray(startingSquareId, destinationSquareId, boardSquaresArray);
@@ -365,7 +420,7 @@ function performCastling(piece, pieceColor, startingSquareId, destinationSquareI
     const destinationSquare = document.getElementById(destinationSquareId);
     destinationSquare.appendChild(piece);
     isWhiteTurn = !isWhiteTurn;
-    updatePGN(startingSquareId, destinationSquareId, isWhiteTurn);
+    updatePGN(startingSquareId, destinationSquareId, isWhiteTurn, moves.length);
     updateBoardSquaresArray(startingSquareId, destinationSquareId, boardSquaresArray);
     let captured = false;
     makeMove(startingSquareId, destinationSquareId, "king", pieceColor, captured);
@@ -725,12 +780,15 @@ function checkPawnForwardMoves(startingSquareId, pieceColor, boardSquaresArray) 
     return legalSquares;
 }
 function getPieceAtSquare(squareId, boardSquaresArray) {
-    let currentSquare = boardSquaresArray.find((element) => element.squareId === squareId);    
+    let currentSquare = boardSquaresArray.find((element) => element.squareId === squareId); 
     const color = currentSquare.pieceColor;
     const pieceType = currentSquare.pieceType;
     const pieceId = currentSquare.pieceId;
     return { pieceColor: color, pieceType: pieceType, pieceId: pieceId };
 
+}
+function getPremoveAtSquare(squareId) {
+   return document.getElementById(squareId).classList.contains('preMoveSquare'); 
 }
 function isMoveValidAgainstCheck(legalSquares, startingSquareId, pieceColor, pieceType) {
     let kingSquare = isWhiteTurn ? getKingLastMove("white") : getKingLastMove("black");   
@@ -882,31 +940,54 @@ function getSquareColor(squareId) {
     return squareColor;
 }
 function checkForEndGame() {
-    checkForCheckMateAndStaleMate();
+    
+    if (viewedIndex > 0 && moves.length - 1 > viewedIndex) {
+        positionArray.push(game.fen);
+            return;
+    }
+    checkForCheckMateAndStaleMate();    
     currentPosition = generateFEN(boardSquaresArray);
     sendFen(currentPosition);
     sendPgn(pgn);
+   
     positionArray.push(currentPosition);
+    
     let threeFoldRepetition = isThreefoldRepetition();
     let insuficientMaterial = hasInsufficientMaterial(currentPosition);
-    let fiftyMovesRuleCount = currentPosition.split(" ")[4];
+    let fiftyMovesRuleCount = positionArray[moves.length - 1].split(" ")[4];
     let fiftyMovesRule = fiftyMovesRuleCount != 100 ? false : true;
     let isDraw = threeFoldRepetition || insuficientMaterial || fiftyMovesRule;
     if (isDraw) {
-        if (!isRatingGame) {
+        if (allowMoment && !isRatingGame) {
             hubConnection.invoke("Process", { type: "SaveRating", gameState: game, result: "1/2-1/2" })
                 .catch(function (err) {
                     return console.error(err.toString());
                 });
         }
         clearInterval(intervalClock);
+        block_info.style.display = "flex";        
+        game.result = "1/2-1/2";
         showAlert("Ничья","1/2-1/2");
     }
 }
-resignButton.addEventListener("click", () => {    
-    sendResign(player2.innerText);    
-    
-})
+if (document.getElementById('resignButton')) {
+    resignButton.addEventListener("click", () => {
+        sendResign(player2.innerText);
+
+    })
+}
+if (document.getElementById('drawButton')) {
+    drawButton.addEventListener("click", () => {
+        sendDraw("Вы предложили ничью!", false);
+
+    })
+}
+if (document.getElementById('cancelButton')) {
+    cancelButton.addEventListener("click", () => {
+        sendCancel();
+
+    })
+}
 function checkForCheckMateAndStaleMate() {
     let kingSquare = isWhiteTurn ? getKingLastMove("white") : getKingLastMove("black");
     let pieceColor = isWhiteTurn ? "white" : "black";
@@ -916,17 +997,20 @@ function checkForCheckMateAndStaleMate() {
     if (possibleMoves.length > 0) return;
     let message = "";
     let res = "";
+    let color = "";
     if (kingIsCheck) {
         isWhiteTurn ? (message = "Черные победили!") : (message = "Белые победили!");
         res = !isWhiteTurn ? "1-0" : "0-1";
+        color = !isWhiteTurn ? "white" : "black";
     }
     else {
         message = "Ничья";
         res = "1/2-1/2";
     }
     clearInterval(intervalClock);
-    if (!isRatingGame) {
-        hubConnection.invoke("Process", { type: "SaveRating", gameState: game, result: res })
+    game.result = res;
+    if (allowMoment && !isRatingGame) {
+        hubConnection.invoke("Process", { type: "SaveRating", gameState: game, result: res })             
             .catch(function (err) {
                 return console.error(err.toString());
             });
@@ -944,26 +1028,105 @@ function getAllPossibleMoves(squaresArray, color) {
         return legalSquares;
     });
 }
-function showAlert(message,res) {
+function showAlert(message, res) {
+    
     const alert = document.getElementById("alert");
-    const result = document.getElementById("result");
+    const result = document.getElementById("result");   
     alert.innerHTML = message;
     alert.style.display = "block";
-    result.innerHTML = res;
-    result.style.display = "block";
-    let color = "";
-    if (res == "1-0") {
-        color = "white"
-    } 
-    if (res == "0-1") {
-        color = "black"
-    } 
-    stopPlayTik('audioTik');
+    result.innerHTML = res != undefined ? res : "";
+    result.style.display = "block";   
+    //stopPlayTik('audioTik'); 
+    allowMoment = false;
+}
+function showDraw(message,isRes,res) {
+    const alert = document.getElementById("action-alert");
+    const result = document.getElementById("action-result");
+    let ActionContainer = document.createElement("div");
+    let SvgAcceptContainer = document.createElement("div");
+    ActionContainer.classList.add("actionGame");
+    ActionContainer.classList.add("d-flex");
+    SvgAcceptContainer.classList.add("actions"); 
+    SvgAcceptContainer.innerHTML = "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g><path fill=\"none\" d=\"M0 0h24v24H0z\" /><path d=\"M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-.997-4L6.76 11.757l1.414-1.414 2.829 2.829 5.656-5.657 1.415 1.414L11.003 16z\" /></g></svg >";
+    SvgAcceptContainer.addEventListener('click', acceptDraw, false); 
+    let SvgCancelContainer = document.createElement("div");   
+    SvgCancelContainer.classList.add("actions"); 
+    SvgCancelContainer.innerHTML = "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM8.96963 8.96965C9.26252 8.67676 9.73739 8.67676 10.0303 8.96965L12 10.9393L13.9696 8.96967C14.2625 8.67678 14.7374 8.67678 15.0303 8.96967C15.3232 9.26256 15.3232 9.73744 15.0303 10.0303L13.0606 12L15.0303 13.9696C15.3232 14.2625 15.3232 14.7374 15.0303 15.0303C14.7374 15.3232 14.2625 15.3232 13.9696 15.0303L12 13.0607L10.0303 15.0303C9.73742 15.3232 9.26254 15.3232 8.96965 15.0303C8.67676 14.7374 8.67676 14.2625 8.96965 13.9697L10.9393 12L8.96963 10.0303C8.67673 9.73742 8.67673 9.26254 8.96963 8.96965Z\" fill=\"#1C274C\" /></svg> ";
+    SvgCancelContainer.addEventListener('click', cancelDraw, false);
+    ActionContainer.appendChild(SvgAcceptContainer);
+    ActionContainer.appendChild(SvgCancelContainer);
+    alert.innerHTML = message;
+    alert.style.display = "block";
+    result.innerHTML = res != undefined ? res : "";
+    result.style.display = "block";    
+    if (isRes) {
+        alert.appendChild(ActionContainer);       
+    }
+    if (res == undefined) {        
+        return;
+    }        
+    allowMoment = false;
+}
+function showDisconnect(message,res) {
+    const alert = document.getElementById("action-alert");   
+    let ActionContainer = document.createElement("div");
+    let SvgAcceptContainer = document.createElement("div");    
+    ActionContainer.classList.add("actionGame");
+    ActionContainer.classList.add("d-flex");
+    SvgAcceptContainer.classList.add("actions");
+    let updInterval = 20;
+    SvgAcceptContainer.innerText = updInterval;  
+    ActionContainer.appendChild(SvgAcceptContainer);   
+    alert.innerHTML = message;
+    alert.appendChild(ActionContainer);
+    alert.style.display = "block";
+    
+    const updateCounterDisconnect = () => {
+        if (updInterval > 0) {
+            SvgAcceptContainer.innerHTML = "<div>"+updInterval+"</div>Обьявить победу! <svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g><path fill=\"none\" d=\"M0 0h24v24H0z\" /><path d=\"M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-.997-4L6.76 11.757l1.414-1.414 2.829 2.829 5.656-5.657 1.415 1.414L11.003 16z\" /></g></svg >";
+           
+            updInterval--;
+        }
+        else {
+            clearInterval(intervalAccept);
+            SvgAcceptContainer.innerText = ""; 
+            SvgAcceptContainer.innerHTML = "Обьявить победу! <svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g><path fill=\"none\" d=\"M0 0h24v24H0z\" /><path d=\"M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-.997-4L6.76 11.757l1.414-1.414 2.829 2.829 5.656-5.657 1.415 1.414L11.003 16z\" /></g></svg >";
+            SvgAcceptContainer.addEventListener('click', () => acceptDisconnectResult(res));
+        }
+    };
+    updateCounterDisconnect();
+    intervalAccept = setInterval(updateCounterDisconnect, 1000);    
+}
+function acceptDisconnectResult(res) {
+    
     if (!allowMoment) return;
-    if (!isRatingGame) {
-        updateChangeRating(color);
+    document.getElementById("alert").innerHTML = isWhiteTurn ? (message = "Черные победили!") : (message = "Белые победили!");;
+    result.innerHTML = res != undefined ? res : "";
+    result.style.display = "block";    
+    if (res == undefined) {
+        return;
     }
     allowMoment = false;
+    clearInterval(intervalClock);
+    clearInterval(intervalAccept);
+}
+function acceptDraw() {
+    if (!allowMoment) return;
+    clearInterval(intervalClock);
+    block_info.style.display = "flex";    
+    showAlert("Ничья по договоренности!", "1/2 - 1/2");
+    hubConnection.invoke("Process", { type: "AcceptDraw", gameState: game })
+        .catch(function (err) {
+            return console.error(err.toString());
+        });
+}
+function cancelDraw() {
+    document.getElementById("action-alert").innerHTML = "";
+    document.getElementById("action-alert").style.display = "none";
+    hubConnection.invoke("Process", { type: "CancelDraw", gameState: game })
+        .catch(function (err) {
+            return console.error(err.toString());
+        });
 }
 function getKingLastMove(color) {   
     let kingLastMove = moves.findLast(element => element.pieceType === "king" && element.pieceColor === color);    
@@ -1056,7 +1219,7 @@ function displayPromotionChoices(pieceId, pieceColor, startingSquareId, destinat
         });
     }
 }
-function performPromotion(pieceId, pieceType, pieceColor, startingSquareId, destinationSquareId, captured) {
+function performPromotion(pieceId, pieceType, pieceColor, startingSquareId, destinationSquareId, captured,boardSquaresArray) {
     clearPromotionOptions();   
     promotionPiece = pieceType;
     piece = createChessPiece(pieceType, pieceColor, "piece");
@@ -1082,11 +1245,11 @@ function performPromotion(pieceId, pieceType, pieceColor, startingSquareId, dest
     updatePGN(startingSquareId, destinationSquareId, isWhiteTurn, pieceType);
             updateBoardSquaresArray(startingSquareId, destinationSquareId, boardSquaresArray, pieceType);
             makeMove(startingSquareId, destinationSquareId, pieceType, pieceColor, captured, pieceType);
-            checkForEndGame();
+    checkForEndGame();
             return;
 }
 function createChessPiece(pieceType, color, pieceClass) {
-    let pieceName = "https://chess-good.ru/piece/" + color.charAt(0).toUpperCase() + color.slice(1) + "-" + pieceType.charAt(0).toUpperCase() + pieceType.slice(1) + ".png";
+    let pieceName = "/piece/" + color.charAt(0).toUpperCase() + color.slice(1) + "-" + pieceType.charAt(0).toUpperCase() + pieceType.slice(1) + ".png";
     let pieceDiv = document.createElement("div");
     pieceDiv.className = `${pieceClass} ${pieceType}`;
     pieceDiv.setAttribute("color", color);
@@ -1206,37 +1369,39 @@ function displayEval(lines, evaluations, scoreString, whiteTurn = true, moveNumb
     for (let i = 0; i < lines.length; i++) {
         let eval = document.getElementById("eval" + (i + 1));
         let line = document.getElementById("line" + (i + 1));
-        eval.innerHTML = evaluations[i];
-        line.innerHTML = convertToStockfishToStandardNotation(lines[i],moveNumber,whiteTurn);
-        document.getElementById("eval").innerHTML = evaluations[0];
-        if (Math.abs(evaluations[0] < 0.5)) {
-            document.getElementById("evalText").innerHTML = "Equal";
-        }
-        if (evaluations[0] < 1 && evaluations[0] >= 0.5) {
-            document.getElementById("evalText").innerHTML = "У белых немного лучше";
-        }
-        if (evaluations[0] > -1 && evaluations[0] <= 0.5) {
-            document.getElementById("evalText").innerHTML = "У черных немного лучше";
-        }
-        if (evaluations[0] < 2 && evaluations[0] >= 1) {
-            document.getElementById("evalText").innerHTML = "У белых намного лучше";
-        }
-        if (evaluations[0] > -2 && evaluations[0] <= 1) {
-            document.getElementById("evalText").innerHTML = "У черных намного лучше";
-        }
-        if (evaluations[0] > 2) {
-            document.getElementById("evalText").innerHTML = "Белые выигрывают";
-        }
-        if (evaluations[0] < -2) {
-            document.getElementById("evalText").innerHTML = "Черные выигрывают";
-        }
-        if (evaluations[0].toString().includes("#")) {
-            const mateInMoves = evaluations[0].slice(1);
-            const isWhiteWinning = (parseInt(scoreString) > 0 && isWhiteTurn) || (parseInt(scoreString) < 0 && !isWhiteTurn);
-            const winningColor = isWhiteWinning ? "White" : "Black";
-            document.getElementById("evalText").innerHTML = `${winningColor} могут поставить мат в ${mateInMoves} ходов`;
-            blackBarHeight = isWhiteWinning ? 0 : 100;
-            blackBar.style.height = blackBarHeight + "%";
+        if (eval && line) {
+            eval.innerHTML = evaluations[i];
+            line.innerHTML = convertToStockfishToStandardNotation(lines[i], moveNumber, whiteTurn);
+            document.getElementById("eval").innerHTML = evaluations[0];
+            if (Math.abs(evaluations[0] < 0.5)) {
+                document.getElementById("evalText").innerHTML = "Равенство";
+            }
+            if (evaluations[0] < 1 && evaluations[0] >= 0.5) {
+                document.getElementById("evalText").innerHTML = "У белых немного лучше";
+            }
+            if (evaluations[0] > -1 && evaluations[0] <= 0.5) {
+                document.getElementById("evalText").innerHTML = "У черных немного лучше";
+            }
+            if (evaluations[0] < 2 && evaluations[0] >= 1) {
+                document.getElementById("evalText").innerHTML = "У белых намного лучше";
+            }
+            if (evaluations[0] > -2 && evaluations[0] <= 1) {
+                document.getElementById("evalText").innerHTML = "У черных намного лучше";
+            }
+            if (evaluations[0] > 2) {
+                document.getElementById("evalText").innerHTML = "Белые выигрывают";
+            }
+            if (evaluations[0] < -2) {
+                document.getElementById("evalText").innerHTML = "Черные выигрывают";
+            }
+            if (evaluations[0].toString().includes("#")) {
+                const mateInMoves = evaluations[0].slice(1);
+                const isWhiteWinning = (parseInt(scoreString) > 0 && isWhiteTurn) || (parseInt(scoreString) < 0 && !isWhiteTurn);
+                const winningColor = isWhiteWinning ? "Белые" : "Черные";
+                document.getElementById("evalText").innerHTML = `${winningColor} могут поставить мат в ${mateInMoves} ходов`;
+                blackBarHeight = isWhiteWinning ? 0 : 100;
+                blackBar.style.height = blackBarHeight + "%";
+            }
         }
     }    
 }
@@ -1316,9 +1481,19 @@ function convertToStockfishToStandardNotation(stockfishMoves, moveNumber, whiteT
     return standardMoves.trim();
 }
 function convertToStandardNotation(move) {
-    let standardMove = "";    
-    let boardSquaresArayCopy = deepCopyArray(boardSquaresArray);
-           
+    let standardMove = "";
+    let boardDisplay = boardSquaresArray;
+
+    if (viewedIndex > 0 && moves.length - 1 > viewedIndex) {
+        let currentFen = positionArray[moves.length];
+        boardDisplay = getPositionFEN(currentFen);
+        let parts = currentFen.split(" ");
+        let squarePassant = parts[3];        
+        if (squarePassant != "-")
+            enPassantSquare = parts[3];
+    }    
+    let boardSquaresArayCopy = deepCopyArray(boardDisplay);    
+    
         let from = move.substring(0, 2);
         let to = move.substring(2, 4);
         let promotion = move.length > 4 ? move.charAt(4) : null;
@@ -1392,8 +1567,17 @@ function getKingSquare(color, squareArray) {
     return kingSquare ? kingSquare.squareId : null;
 }
 function displayObserverMove(startingSquareId, destinationSquareId, promotedTo = "blank") {
-    
-    const pieceObject = getPieceAtSquare(startingSquareId, boardSquaresArray);   
+    let boardDisplay = boardSquaresArray;
+
+    if (viewedIndex > 0 && moves.length - 1 > viewedIndex) {
+        let currentFen = positionArray[moves.length];
+        boardDisplay = getPositionFEN(currentFen);
+        let parts = currentFen.split(" ");
+        let squarePassant = parts[3];        
+        if (squarePassant != "-")
+            enPassantSquare = parts[3];
+    }
+    const pieceObject = getPieceAtSquare(startingSquareId, boardDisplay);   
     const piece = document.getElementById(pieceObject.pieceId);
     if (!piece) return;
    
@@ -1401,21 +1585,21 @@ function displayObserverMove(startingSquareId, destinationSquareId, promotedTo =
     const pieceColor = pieceObject.pieceColor;
     const pieceType = pieceObject.pieceType;
     let destinationSquare = document.getElementById(destinationSquareId);
-    let squareContent = getPieceAtSquare(destinationSquareId, boardSquaresArray)
+    let squareContent = getPieceAtSquare(destinationSquareId, boardDisplay)
     if (squareContent.pieceColor == "blank") {
         let isCheck = false;
         if (pieceType == "king") {
-            isCheck = IsKingInCheck(startingSquareId, pieceColor, boardSquaresArray);
+            isCheck = IsKingInCheck(startingSquareId, pieceColor, boardDisplay);
         }
         if (pieceType == "king" && !kingHasMoved(pieceColor) && castlingSquares.includes(destinationSquareId) && !isCheck) {
-            performCastling(piece, pieceColor, startingSquareId, destinationSquareId, boardSquaresArray);            
+            performCastling(piece, pieceColor, startingSquareId, destinationSquareId, boardDisplay);            
             return;
         }
         if (pieceType == "king" && !kingHasMoved(pieceColor) && castlingSquares.includes(destinationSquareId) && isCheck) {
             return;
         }
         if (pieceType == "pawn" && enPassantSquare == destinationSquareId) {
-            performEnPassant(piece, pieceColor, startingSquareId, destinationSquareId);            
+            performEnPassant(piece, pieceColor, startingSquareId, destinationSquareId, boardDisplay);            
             return;
         }
         enPassantSquare = "blank";
@@ -1429,10 +1613,12 @@ function displayObserverMove(startingSquareId, destinationSquareId, promotedTo =
                 destinationSquare.removeChild(children[i]);
             }
         }
-        destinationSquare.appendChild(piece);               
+        if (viewedIndex == 0 || moves.length - 1 <= viewedIndex) {
+            destinationSquare.appendChild(piece);
+        }
         isWhiteTurn = !isWhiteTurn;
         updatePGN(startingSquareId, destinationSquareId, isWhiteTurn);
-        updateBoardSquaresArray(startingSquareId, destinationSquareId, boardSquaresArray);
+        updateBoardSquaresArray(startingSquareId, destinationSquareId, boardDisplay);
         let captured = false;
         makeMove(startingSquareId, destinationSquareId, pieceType, pieceColor, captured);        
         checkForEndGame();
@@ -1452,7 +1638,7 @@ function displayObserverMove(startingSquareId, destinationSquareId, promotedTo =
         destinationSquare.appendChild(piece);
         isWhiteTurn = !isWhiteTurn;
         updatePGN(startingSquareId, destinationSquareId, isWhiteTurn);
-        updateBoardSquaresArray(startingSquareId, destinationSquareId, boardSquaresArray);
+        updateBoardSquaresArray(startingSquareId, destinationSquareId, boardDisplay);
         let captured = true;
         makeMove(startingSquareId, destinationSquareId, pieceType, pieceColor, captured);      
         checkForEndGame();
@@ -1460,28 +1646,39 @@ function displayObserverMove(startingSquareId, destinationSquareId, promotedTo =
     }
 }
 function displayMove(startingSquareId, destinationSquareId, promotedTo = "blank") {    
-    const pieceObject = getPieceAtSquare(startingSquareId, boardSquaresArray);
+    let boardDisplay = boardSquaresArray;
+     
+    if (viewedIndex > 0  && moves.length - 1 > viewedIndex) {        
+        let currentFen = positionArray[moves.length-1];        
+        boardDisplay = getPositionFEN(currentFen);
+        let parts = currentFen.split(" ");
+        let squarePassant = parts[3];        
+        if (squarePassant != "-")
+            enPassantSquare = parts[3];
+    }
+    const pieceObject = getPieceAtSquare(startingSquareId, boardDisplay);    
     const piece = document.getElementById(pieceObject.pieceId);
     const pieceId = pieceObject.pieceId;
     const pieceColor = pieceObject.pieceColor;
     const pieceType = pieceObject.pieceType;
     let destinationSquare = document.getElementById(destinationSquareId);
-    let legalSquares = getPossibleMoves(startingSquareId, pieceObject, boardSquaresArray);
+    let legalSquares = getPossibleMoves(startingSquareId, pieceObject, boardDisplay);
 
-    legalSquares = isMoveValidAgainstCheck(legalSquares, startingSquareId, pieceColor, pieceType);    
+    legalSquares = isMoveValidAgainstCheck(legalSquares, startingSquareId, pieceColor, pieceType);
+   
     if (pieceType == "king") {
-        let isCheck = IsKingInCheck(destinationSquareId, pieceColor, boardSquaresArray);
+        let isCheck = IsKingInCheck(destinationSquareId, pieceColor, boardDisplay);
         if (isCheck) return;
 
     }
-    let squareContent = getPieceAtSquare(destinationSquareId, boardSquaresArray)
+    let squareContent = getPieceAtSquare(destinationSquareId, boardDisplay)
     if (squareContent.pieceColor == "blank" && legalSquares.includes(destinationSquareId)) {
         let isCheck = false;
         if (pieceType == "king") {
-            isCheck = IsKingInCheck(startingSquareId, pieceColor, boardSquaresArray);
+            isCheck = IsKingInCheck(startingSquareId, pieceColor, boardDisplay);
         }
         if (pieceType == "king" && !kingHasMoved(pieceColor) && castlingSquares.includes(destinationSquareId) && !isCheck) {
-            performCastling(piece, pieceColor, startingSquareId, destinationSquareId, boardSquaresArray);
+            performCastling(piece, pieceColor, startingSquareId, destinationSquareId, boardDisplay);
             sendMove(startingSquareId, destinationSquareId);
             return;
         }
@@ -1489,7 +1686,7 @@ function displayMove(startingSquareId, destinationSquareId, promotedTo = "blank"
             return;
         }
         if (pieceType == "pawn" && enPassantSquare == destinationSquareId) {
-            performEnPassant(piece, pieceColor, startingSquareId, destinationSquareId); 
+            performEnPassant(piece, pieceColor, startingSquareId, destinationSquareId, boardDisplay);
             sendMove(startingSquareId, destinationSquareId);
             return;
         }
@@ -1501,13 +1698,17 @@ function displayMove(startingSquareId, destinationSquareId, promotedTo = "blank"
                 updateBoardSquaresOpacity(startingSquareId);
             return;
         }
-        destinationSquare.appendChild(piece);
-        let startingSquare = document.getElementById(startingSquareId);
-        startingSquare.classList.add("lastMoveSquare");
-        destinationSquare.classList.add("lastMoveSquare");
-        isWhiteTurn = !isWhiteTurn;        
+        if (viewedIndex == 0 || moves.length - 1 <= viewedIndex) {
+            destinationSquare.appendChild(piece);
+            let startingSquare = document.getElementById(startingSquareId);
+            startingSquare.classList.add("lastMoveSquare");
+            destinationSquare.classList.add("lastMoveSquare");
+        }
+        isWhiteTurn = !isWhiteTurn;
         updatePGN(startingSquareId, destinationSquareId, isWhiteTurn);
-        updateBoardSquaresArray(startingSquareId, destinationSquareId, boardSquaresArray);
+        if (viewedIndex == 0 || moves.length - 1 <= viewedIndex) {
+            updateBoardSquaresArray(startingSquareId, destinationSquareId, boardDisplay);
+        }
         let captured = false;
         makeMove(startingSquareId, destinationSquareId, pieceType, pieceColor, captured);        
         sendMove(startingSquareId, destinationSquareId);
@@ -1528,94 +1729,86 @@ function displayMove(startingSquareId, destinationSquareId, promotedTo = "blank"
                 destinationSquare.removeChild(children[i]);
             }
         }        
-        destinationSquare.appendChild(piece);
+        if (viewedIndex == 0 || moves.length - 1 <= viewedIndex) {
+            destinationSquare.appendChild(piece);
+        }
         isWhiteTurn = !isWhiteTurn;         
         updatePGN(startingSquareId, destinationSquareId, isWhiteTurn);
-        updateBoardSquaresArray(startingSquareId, destinationSquareId, boardSquaresArray);
+        if (viewedIndex == 0 || moves.length - 1 <= viewedIndex) {
+            updateBoardSquaresArray(startingSquareId, destinationSquareId, boardDisplay);
+        }
         let captured = true;
         makeMove(startingSquareId, destinationSquareId, pieceType, pieceColor, captured);
         sendMove(startingSquareId, destinationSquareId);
-        checkForEndGame();
+        checkForEndGame(boardDisplay);
         return;
     }
 }
-function displayCurrentMove(startingSquareId, destinationSquareId, promotedTo = "blank") {
-    const pieceObject = getPieceAtSquare(startingSquareId, boardSquaresArray);
+function displayPremove(startingSquareId, destinationSquareId, promotedTo = "blank") {
+    let boardDisplay = boardSquaresArray;
+
+    if (viewedIndex > 0 && moves.length - 1 > viewedIndex) {
+        let currentFen = positionArray[moves.length - 1];
+        boardDisplay = getPositionFEN(currentFen);
+        let parts = currentFen.split(" ");
+        let squarePassant = parts[3];
+        if (squarePassant != "-")
+            enPassantSquare = parts[3];
+    }    
+    const pieceObject = getPieceAtSquare(startingSquareId, boardDisplay);
+    
     const piece = document.getElementById(pieceObject.pieceId);
     const pieceId = pieceObject.pieceId;
     const pieceColor = pieceObject.pieceColor;
     const pieceType = pieceObject.pieceType;
     let destinationSquare = document.getElementById(destinationSquareId);
-    let legalSquares = getPossibleMoves(startingSquareId, pieceObject, boardSquaresArray);
 
-    legalSquares = isMoveValidAgainstCheck(legalSquares, startingSquareId, pieceColor, pieceType);
     if (pieceType == "king") {
-        let isCheck = IsKingInCheck(destinationSquareId, pieceColor, boardSquaresArray);
+        let isCheck = IsKingInCheck(destinationSquareId, pieceColor, boardDisplay);
         if (isCheck) return;
 
     }
-    let squareContent = getPieceAtSquare(destinationSquareId, boardSquaresArray)
-    if (squareContent.pieceColor == "blank" && legalSquares.includes(destinationSquareId)) {
+    let squareContent = getPieceAtSquare(destinationSquareId, boardDisplay)
+    if (squareContent.pieceColor == "blank") {
         let isCheck = false;
         if (pieceType == "king") {
-            isCheck = IsKingInCheck(startingSquareId, pieceColor, boardSquaresArray);
+            isCheck = IsKingInCheck(startingSquareId, pieceColor, boardDisplay);
         }
         if (pieceType == "king" && !kingHasMoved(pieceColor) && castlingSquares.includes(destinationSquareId) && !isCheck) {
-            performCastling(piece, pieceColor, startingSquareId, destinationSquareId, boardSquaresArray);
-            sendCurrentMove(startingSquareId, destinationSquareId);
+            performCastling(piece, pieceColor, startingSquareId, destinationSquareId, boardDisplay);           
             return;
         }
         if (pieceType == "king" && !kingHasMoved(pieceColor) && castlingSquares.includes(destinationSquareId) && isCheck) {
             return;
         }
         if (pieceType == "pawn" && enPassantSquare == destinationSquareId) {
-            performEnPassant(piece, pieceColor, startingSquareId, destinationSquareId);
-            sendCurrentMove(startingSquareId, destinationSquareId);
+            performEnPassant(piece, pieceColor, startingSquareId, destinationSquareId, boardDisplay);           
             return;
         }
         enPassantSquare = "blank";
-        if (pieceType == "pawn" && (destinationSquareId.charAt(1) == "8" || destinationSquareId.charAt(1) == "1")) {
-            allowMoment = false;
-            displayPromotionChoices(pieceId, pieceColor, startingSquareId, destinationSquareId, false, promotedTo);
-            if (promotedTo == "blank")
-                updateBoardSquaresOpacity(startingSquareId);
+        if (pieceType == "pawn" && (destinationSquareId.charAt(1) == "8" || destinationSquareId.charAt(1) == "1")) {           
+            displayPromotionChoices(pieceId, pieceColor, startingSquareId, destinationSquareId, false, promotedTo);            
             return;
         }
-        destinationSquare.appendChild(piece);
-        let startingSquare = document.getElementById(startingSquareId);
-        startingSquare.classList.add("lastMoveSquare");
-        destinationSquare.classList.add("lastMoveSquare");
-        isWhiteTurn = !isWhiteTurn;
-        updatePGN(startingSquareId, destinationSquareId, isWhiteTurn);
-        updateBoardSquaresArray(startingSquareId, destinationSquareId, boardSquaresArray);
-        let captured = false;
-        makeMove(startingSquareId, destinationSquareId, pieceType, pieceColor, captured);
-        sendCurrentMove(startingSquareId, destinationSquareId);
-        checkForEndGame();
+        if (viewedIndex == 0 || moves.length - 1 <= viewedIndex) {
+            document.querySelectorAll('.preMoveSquare').forEach((el) => { el.classList.remove('preMoveSquare') });            
+            destinationSquare.classList.add("preMoveSquare");
+            let startingSquare = document.getElementById(startingSquareId);
+            startingSquare.classList.add("preMoveSquare");            
+        }  
         return;
     }
-    if ((squareContent.pieceColor != "blank") && (legalSquares.includes(destinationSquareId))) {
-        if (pieceType == "pawn" && (destinationSquareId.charAt(1) == "8" || destinationSquareId.charAt(1) == "1")) {
-            allowMoment = false;
-            displayPromotionChoices(pieceId, pieceColor, startingSquareId, destinationSquareId, true, promotedTo);
-            if (promotedTo === "blank")
-                updateBoardSquaresOpacity(startingSquareId);
+    if (squareContent.pieceColor != "blank") {
+        if (pieceType == "pawn" && (destinationSquareId.charAt(1) == "8" || destinationSquareId.charAt(1) == "1")) {           
+            displayPromotionChoices(pieceId, pieceColor, startingSquareId, destinationSquareId, true, promotedTo);            
             return;
-        }
-        let children = destinationSquare.children;
-        for (let i = 0; i < children.length; i++) {
-            if (!children[i].classList.contains("coordinate")) {
-                destinationSquare.removeChild(children[i]);
-            }
-        }
-        destinationSquare.appendChild(piece);
-        isWhiteTurn = !isWhiteTurn;
-        updatePGN(startingSquareId, destinationSquareId, isWhiteTurn);
-        updateBoardSquaresArray(startingSquareId, destinationSquareId, boardSquaresArray);
-        let captured = true;
-        makeMove(startingSquareId, destinationSquareId, pieceType, pieceColor, captured);
-        sendCurrentMove(startingSquareId, destinationSquareId);
-        checkForEndGame();
+        }        
+        if (viewedIndex == 0 || moves.length - 1 <= viewedIndex) {
+            document.querySelectorAll('.preMoveSquare').forEach((el) => { el.classList.remove('preMoveSquare') });            
+            destinationSquare.classList.add("preMoveSquare");
+            let startingSquare = document.getElementById(startingSquareId);
+            startingSquare.classList.add("preMoveSquare");
+        }        
         return;
     }
 }
@@ -1624,38 +1817,53 @@ function updatePGN(startingSquareId, destinationSquareId, whiteTurn, promotedTo 
     let standardMove = convertToStandardNotation(move);    
     let moveNumber = moves.length / 2 + 1;
     if (whiteTurn) {
-        let newMove = createMoveElement(standardMove, "playerMove");
+        let newMove = createMoveElement(standardMove, "playerMove", moves.length);
         pgnContainer.appendChild(newMove);
         pgn += " " + standardMove;
     }
     else {
-        let number = createMoveElement(moveNumber, "moveNumber");
-        let newMove = createMoveElement(standardMove, "playerMove");
+        let number = createMoveElement(moveNumber, "moveNumber",moves.length);
+        let newMove = createMoveElement(standardMove, "playerMove", moves.length);
         pgnContainer.appendChild(number);
         pgnContainer.appendChild(newMove);
         pgn += " " + moveNumber + "." + standardMove;
     }
     pgnContainer.scrollTop = pgnContainer.scrollHeight;
 }
-function createMoveElement(standardMove, elementClass) {
+function createMoveElement(standardMove, elementClass,moveNumber) {    
     let playerMove = document.createElement("div");
+    //let moveNumber = moves.length;
     playerMove.classList.add(elementClass);
+    if (elementClass == "playerMove") {
+        playerMove.id = moveNumber;
+        playerMove.addEventListener("click", () => {
+            viewedIndex = parseInt(playerMove.id) + 1;
+            highlightMove(viewedIndex);
+            updatePosition();
+            (viewedIndex != positionArray.length - 1) ? allowMoment = false : allowMoment = true;
+        })
+    }
     playerMove.innerHTML = standardMove;
     return playerMove;
 }
-function recreateHTMLFromPGN(pgn) {
+function recreateHTMLFromPGN(pgn, movesLen) {    
     pgnContainer.innerHTML = "";
     let moveArray = pgn.trim().split(/\s+/);
     let moveNumber = 1;    
     for (let i = 0; i < moveArray.length; i++) {
+        if (movesLen == undefined)
+            movesLen = moves.length;
+        else {
+            movesLen = i;
+        }
         if (moveArray[i].includes(".")) {
-            let number = createMoveElement(moveNumber, "moveNumber");
-            let newMove = createMoveElement(moveArray[i].split(".")[1], "playerMove");
+            let number = createMoveElement(moveNumber, "moveNumber", movesLen);
+            let newMove = createMoveElement(moveArray[i].split(".")[1], "playerMove", movesLen);
             pgnContainer.appendChild(number);
             pgnContainer.appendChild(newMove);            
             moveNumber++;
         } else {
-            let newMove = createMoveElement(moveArray[i], "playerMove");
+            let newMove = createMoveElement(moveArray[i], "playerMove", movesLen);
             pgnContainer.appendChild(newMove);
         }        
     }
@@ -1726,8 +1934,7 @@ function initDrag(e) {
     startWidth = parseInt(document.defaultView.getComputedStyle(elBoard).width, 10);
     startHeight = parseInt(document.defaultView.getComputedStyle(elBoard).height, 10);
     startWidthCB = parseInt(document.defaultView.getComputedStyle(elchessBoard).width, 10);
-    startHeightCB = parseInt(document.defaultView.getComputedStyle(elchessBoard).height, 10);   
-    
+    startHeightCB = parseInt(document.defaultView.getComputedStyle(elchessBoard).height, 10);    
     document.documentElement.addEventListener('mousemove', doDrag, false);
     document.documentElement.addEventListener('mouseup', stopDrag, false);
 }
@@ -1745,7 +1952,16 @@ function doDrag(e) {
     elBoard.style.width = (startWidth + e.clientX - startX) + 'px';
     elBoard.style.height = (startHeight + e.clientY - startY) + 'px';
     elchessBoard.style.width = (startWidthCB + e.clientX - startX) + 'px';
-    elchessBoard.style.height = (startHeightCB + e.clientY - startY) + 'px';    
+    elchessBoard.style.height = (startHeightCB + e.clientY - startY) + 'px';
+    document.querySelectorAll('.chess_title').forEach(el => {
+        el.style.fontSize = e.clientX < startX ? "14px" : "16px";
+    });
+    document.querySelectorAll('.ch').forEach(el => {
+        el.style.fontSize = e.clientX < startX ? "25px" : "30px";
+    });
+    document.querySelectorAll('.player').forEach(el => {
+        el.style.fontSize = e.clientX < startX ? "16px" : "18px";
+    });    
 }
 function stopDrag(e) {
     document.documentElement.removeEventListener('mousemove', doDrag, false);
@@ -1770,7 +1986,7 @@ function playTik(clockTik) {
     var sound = document.getElementById(clockTik);
     sound.volume = 0.5;
     sound.loop = true;
-    sound.play();
+    //sound.play();
 }
 function stopPlayTik(clockTik) {
     var sound = document.getElementById(clockTik);    
@@ -1801,4 +2017,66 @@ function addResizeInfoBtn(el) {
     resizeBtn.classList.add("resize");
     el.appendChild(resizeBtn);
     resizeBtn.addEventListener('mousedown', initDragPlayInfo, false);
+}
+stepBackward.addEventListener("click", () => {
+    moveBackward();
+});
+stepForward.addEventListener("click", () => {
+    moveForward();
+});
+fastBackward.addEventListener("click", () => {
+    moveToStart();
+});
+fastForward.addEventListener("click", () => {
+    moveToEnd();
+});
+function moveBackward() {
+    if (viewedIndex > 0) {
+        viewedIndex--;
+        viewedIndex > 0 ? highlightMove(viewedIndex) : {};
+        allowMoment = false;
+    }
+    updatePosition();
+}
+function moveForward() {
+    if (viewedIndex < positionArray.length - 1) {
+        viewedIndex++;
+        highlightMove(viewedIndex);
+        updatePosition();        
+    }
+    if (viewedIndex === positionArray.length - 1) {
+        allowMoment = true;
+    }
+}
+function moveToStart() {
+    if (viewedIndex >= 0) {
+        viewedIndex = 0;
+        highlightMove(1);
+        updatePosition();
+    }
+    allowMoment = false;
+}
+function moveToEnd() {
+    if (viewedIndex >= 0) {
+        viewedIndex = positionArray.length - 1;
+        updatePosition();
+    }
+    if (viewedIndex > 0) {
+        highlightMove(viewedIndex);
+        allowMoment = true;
+    }
+}
+function highlightMove(viewedIndex) {
+    let moveElement = document.getElementById(viewedIndex - 1);
+    document.querySelectorAll(".highlighted").forEach(element => {
+        element.classList.remove("highlighted");
+    });
+    moveElement.classList.add("highlighted");
+}
+function updatePosition() {    
+    viewedFen = positionArray[viewedIndex];    
+    if (viewedFen == undefined || viewedFen == "") {       
+        viewedFen = game.fen;
+    }
+    loadPositionFEN(viewedFen);
 }

@@ -16,6 +16,8 @@ using Org.BouncyCastle.Asn1.Cmp;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Duende.IdentityModel;
 using Microsoft.AspNetCore.Identity;
+using CG.Domain;
+using CG.Models.Lichess;
 
 
 namespace CG.Controllers.Auth;
@@ -167,7 +169,7 @@ public partial class AuthController
                 var userLichess = await _lichessIdentityServerHttpService.GetLichessAccountData(body.access_token);
                 var linkLichessUser = _userService.LinkLichessUser(userLichess,User.Identity.Name).Result;
                 if (linkLichessUser)
-                {
+                {                    
                     HttpContext.Response.Cookies.Append("lichess_access_token", body.access_token, new CookieOptions { HttpOnly = true, Secure = true });
                     return RedirectToAction("Profile","Home", new {area="adm"});
                 }

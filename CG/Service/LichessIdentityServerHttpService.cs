@@ -45,10 +45,10 @@ public class LichessIdentityServerHttpService : ILichessIdentityServerHttpServic
             new("grant_type", GrantType.AuthorizationCode),
             new("code", code),
             new("code_verifier", code_verifier),            
-            new("redirect_uri","https://chess-good.ru/test"),
+            new("redirect_uri",$"{BaseConfiguration.Url}/test"),
             
         };
-        var redUri = $"https://chess-good.ru/authorize{prefix}";
+        var redUri = $"{BaseConfiguration.Url}/authorize{prefix}";
         var par = "{" + $"\"client_id\":\"chess-good\",\"grant_type\":\"{GrantType.AuthorizationCode}\",\"code\":\"{code}\",\"code_verifier\":\"{code_verifier}\",\"redirect_uri\":\"{redUri}\"" + "}";
                
        
@@ -63,7 +63,7 @@ public class LichessIdentityServerHttpService : ILichessIdentityServerHttpServic
     {
         string code_chalendge = GenerateCodeChallenge(code_verifier);
         var uri = new Uri("https://lichess.org/oauth");
-        var redUri = $"https://chess-good.ru/authorize{prefix}";
+        var redUri = $"{BaseConfiguration.Url}/authorize{prefix}";
         var parameters = new Dictionary<string, string>
         {
             { "response_type", "code" },

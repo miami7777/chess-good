@@ -10,12 +10,13 @@ namespace CG.Domain
         public string? Name { get; set; }
         public string? Surname { get; set; }
         public string? Patronymic { get; set; }
-        public string GetFio() => Name + " " + Surname ;
+        public string GetFio() => Name + " " + Surname;
         public string? Avatar { get; set; }
+        public int? AvatarFilesId { get; set; }
         public DateTime? DismissDate { get; set; }
         public Sex Sex { get; set; }
         public DateTime DateBirthday { get; set; }
-        public string? Country {  get; set; }
+        public string? Country { get; set; }
         public string? Region { get; set; }
         public string? City { get; set; }
         public ChessTitle? ChessTitle { get; set; }
@@ -23,7 +24,9 @@ namespace CG.Domain
         public string? Trophy { get; set; }
         public string? Profile { get; set; }
         public string? TrainerPhoto { get; set; }
+        public int? TrainerPhotoId { get; set; }
         public string? PreviewTrainerPhoto { get; set; }
+        public int? PreviewTrainerPhotoId { get; set; }
         public DateTime? StartStudy { get; set; }
         public DateTime? EndStudy { get; set; }
         public int? YearReceiveTitle { get; set; }
@@ -32,11 +35,17 @@ namespace CG.Domain
         public string? ProfileLichess { get; set; }
         public string? LichessUserId { get; set; }
         public virtual ICollection<Course> Courses { get; set; } = new HashSet<Course>();
-        public virtual ICollection<Webinar> Webinars { get; set; } = new HashSet<Webinar>();        
+        public virtual ICollection<Webinar> Webinars { get; set; } = new HashSet<Webinar>();
         public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
         [ForeignKey("LichessUserId")]
-        public virtual LichessUsers? LichessUsers { get; set;}
+        public virtual LichessUsers? LichessUsers { get; set; }
         [ForeignKey("PerfsId")]
         public virtual Perfs Perfs { get; set; }
+        [ForeignKey("AvatarFilesId")]
+        public virtual UserFiles? AvatarFile { get; set; }
+        [ForeignKey("TrainerPhotoId")]
+        public virtual UserFiles? TrainerPhotoFile { get; set; }
+        [ForeignKey("PreviewTrainerPhotoId")]
+        public virtual UserFiles? PreviewTrainerPhotoFile { get; set; }
     }
 }

@@ -36,6 +36,7 @@ namespace CG.Domain
         public DbSet<Reviews> Reviews { get; set; }
         public DbSet<Orders> Orders { get; set; }
         public DbSet<CourseFiles> CourseFiles { get; set; }
+        public DbSet<UserFiles> UserFiles { get; set; }
         public DbSet<WebinarFiles> WebinarFiles { get; set; }
         public DbSet<StudentsTrainers> StudentsTrainers { get; set; }
         public DbSet<ProfileLichess> profileLichesses { get; set; }
@@ -724,6 +725,21 @@ namespace CG.Domain
                 Section = "Headers",
                 Value = "Шахматная школа"
             });
+            builder.Entity<ApplicationUser>(user => user
+                .HasOne(c => c.AvatarFile)
+                .WithMany()
+                .HasConstraintName("User_AvatarFiles_FK")
+                .OnDelete(DeleteBehavior.Restrict));
+            builder.Entity<ApplicationUser>(user => user
+                .HasOne(c => c.TrainerPhotoFile)
+                .WithMany()
+                .HasConstraintName("User_TrainerPhotoFile_FK")
+                .OnDelete(DeleteBehavior.Restrict));
+            builder.Entity<ApplicationUser>(user => user
+                .HasOne(c => c.PreviewTrainerPhotoFile)
+                .WithMany()
+                .HasConstraintName("User_PreviewTrainerPhotoFile_FK")
+                .OnDelete(DeleteBehavior.Restrict));
         }
     }
 }

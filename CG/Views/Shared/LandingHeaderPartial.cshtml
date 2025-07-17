@@ -7,7 +7,7 @@
     var culture = CultureInfo.CurrentCulture;
     var headers = ViewData["Headers"] != null ? (SettingsViewModel)ViewData["Headers"] : new SettingsViewModel();
     var user = ViewData["User"] != null ? (ApplicationUser)ViewData["User"] : null;
-    var avatar = user?.Avatar != null ? user?.Avatar : "default.jpg";
+    var avatarId = user?.AvatarFilesId ?? 0;
 }
 <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-baseline">
@@ -40,7 +40,16 @@
                         <h6 class="text-white" style="line-height:2.5; margin: 0 5px;max-width: 100px; overflow: hidden;">
                             @user.UserName
                         </h6>
-                        <img class="align-self-center rounded-circle mr-3" style="width:30px; height:30px;" alt="" src="~/assets/assets/img/avatar/@avatar">
+                        @{
+                            if (avatarId != 0)
+                            {
+                                <img class="align-self-center rounded-circle mr-3" style="width:30px; height:30px;" alt="" src="@(Url.Action("DownloadThumb", "Home" , new { id=avatarId }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))">
+                            }
+                            else
+                            {
+                                <img class="align-self-center rounded-circle mr-3" style="width:30px; height:30px;" alt="" src="~/assets/assets/img/avatar/default.jpg">                                
+                            }
+                        }                       
                     </div>
                 </a>                
             }

@@ -7,6 +7,7 @@
         public static string Email { get; set;}
         public static string City {  get; set;} 
         public static string Region { get; set;}
+        public static string Url { get; set;}
 
     }
 

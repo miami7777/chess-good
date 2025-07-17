@@ -6,11 +6,13 @@ namespace CG.Domain.Enum
     {
         [Description("Админ")]
         admin,
-        [Description("Преподаватель")]
-        trainer,
-        [Description("Студент")]
-        student,
+        [Description("Организатор")]
+        organizer,
         [Description("Пользователь")]
-        user
+        user,
+        [Description("Член клуба")]
+        member,
+        [Description("Спортсмен")]
+        sportsman
     }
 }

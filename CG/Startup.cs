@@ -52,6 +52,7 @@ public class Startup {
         services.AddTransient<ISettingsRepositories, SettingsRepositories>();
         services.AddTransient<ILessonsRepositories, LessonsRepositories>();
         services.AddTransient<ICourseFilesRepositories, CourseFilesRepositories>();
+        services.AddTransient<IUserFilesRepositories, UserFilesRepositories>();
         services.AddTransient<IWebinarFilesRepositories, WebinarFilesRepositories>();
         services.AddTransient<IStatusCoursesRepositories, StatusCoursesRepositories>();
         services.AddTransient<ILocalIdentityServerHttpService, LocalIdentityServerHttpService>();

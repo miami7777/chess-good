@@ -1,4 +1,5 @@
 ﻿using CG.Domain.Repositories.Abstract;
+using CG.Service.Interfaces;
 
 namespace CG.Domain
 {
@@ -19,14 +20,15 @@ namespace CG.Domain
         public IChaptersRepositories chaptersRepositories;
         public ICourseDetailsRepositories courseDetailsRepositories;
         public ILichessUsersRepositories lichessUsersRepositories;
-        public IClockTournamentsRepositories clockTournamentsRepositories;
+        public IClockTournamentsRepositories clockTournamentsRepositories;  
+        public IUserFilesRepositories userFilesRepositories;
 
         public DataManager(IServiceRepositories serviceRepositories, IWebinarRepositories webinarRepositories, ICourseRepositories courseRepositories,
             IUsersRepositories userRepositories, IStatusCoursesRepositories statusCoursesRepositories, ICategoryRepositories categoryRepositories, 
             ITariffsRepositories tariffRepositories, IReviewsRepositories reviewsRepositories, ISettingsRepositories settingsRepositories, 
             ILessonsRepositories lessonsRepositories, ICourseFilesRepositories courseFilesRepositories, IChaptersRepositories chaptersRepositories,
             ICourseDetailsRepositories courseDetailsRepositories, IWebinarFilesRepositories webinarFilesRepositories, ILichessUsersRepositories lichessUsersRepositories,
-            IClockTournamentsRepositories clockTournamentsRepositories)
+            IClockTournamentsRepositories clockTournamentsRepositories, IUserFilesRepositories userFilesRepositories)
         {
             this.serviceRepositories = serviceRepositories;
             this.webinarRepositories = webinarRepositories;
@@ -43,7 +45,8 @@ namespace CG.Domain
             this.courseDetailsRepositories = courseDetailsRepositories;
             this.webinarFilesRepositories = webinarFilesRepositories;
             this.lichessUsersRepositories = lichessUsersRepositories;
-            this.clockTournamentsRepositories = clockTournamentsRepositories;
+            this.clockTournamentsRepositories = clockTournamentsRepositories; 
+            this.userFilesRepositories = userFilesRepositories;
         }
     }
 }

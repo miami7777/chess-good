@@ -15,6 +15,7 @@
       ChessTitle.CategoryYoung1,
       ChessTitle.None
     };
+    var avatar = "default.jpg";    
 }
   <!-- Trainers Index Section -->
         @if (Model.Item2 == PrefixTypeBlock.Trainers)
@@ -24,19 +25,24 @@
             <div class="row gy-5">
                 @{
                     foreach (var item in Model.Item1)
-                    {
+                    {                        
+                        var avatarId = item.AvatarFilesId ?? 0;
                         <div class="col-lg-4 col-md-6 member" data-aos="fade-up" data-aos-delay="100">
                             <div class="member-img">
-                                <img src="~/assets/assets/img/team/@item.Profile" class="img-fluid" alt="">
-                                <div class="social">
-                                    <a href="#"><i class="bi bi-twitter-x"></i></a>
-                                    <a href="#"><i class="bi bi-facebook"></i></a>
-                                    <a href="#"><i class="bi bi-instagram"></i></a>
-                                    <a href="#"><i class="bi bi-linkedin"></i></a>
-                                </div>
+                                @{
+                                    if (avatarId != 0)
+                                    {
+                                        <img src="@(Url.Action("DownloadThumb", "Home", new { id = avatarId }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))" class="img-fluid" alt="">                                            
+                                        
+                                    }
+                                    else
+                                    {
+                                        <img src="~/assets/assets/img/team/@avatar" class="img-fluid" alt="">                                        
+                                    }
+                                }                            
                             </div>
                             <div class="member-info text-center">
-                                <h4>@item.GetFio()</h4>
+                                <h4>@item.UserName</h4>
                                 <span>@(item.ChessTitle.HasValue && !noTitul.Contains((ChessTitle)item.ChessTitle) ? item.ChessTitle : "")</span>
                                 <p>@($"{(item.ChessTitle.HasValue && !noTitul.Contains((ChessTitle)item.ChessTitle) ? EnumHelper.GetDescriptionEnum(item.ChessTitle) : (headers.settingsHeaders.TryGetValue("TrainersTitle", out string TrainersTitle) ? TrainersTitle : ""))} {item.Trophy}")</p>
                             </div>
@@ -58,21 +64,24 @@
                 @{
                     foreach (var item in Model.Item1)
                     {
+                        var avatarId = item.AvatarFilesId ?? 0;
+                        
                         <div class="col-lg-4 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="100">
                             <div class="member">
-                                <img src="~/assets/assets/img/trainers/@item.PreviewTrainerPhoto" class="img-fluid" alt="">
+                                @if (avatarId != 0)
+                                {
+                                    <img src="@(Url.Action("DownloadThumb", "Home", new { id = avatarId }, System.Configuration.ConfigurationManager.AppSettings["httpschema"]))" class="img-fluid" alt="">
+                                }
+                                else
+                                {
+                                    <img src="~/assets/assets/img/trainers/@avatar" class="img-fluid" alt="">
+                                }
                                 <div class="member-content">
-                                    <h4>@item.GetFio()</h4>
+                                    <h4>@item.UserName</h4>
                                     <span>@item.City</span>
                                     <p>
                                         @($"{(item.ChessTitle.HasValue && !noTitul.Contains((ChessTitle)item.ChessTitle) ? item.ChessTitle : "")} {(item.ChessTitle.HasValue && !noTitul.Contains((ChessTitle)item.ChessTitle) ? EnumHelper.GetDescriptionEnum(item.ChessTitle) : (headers.settingsHeaders.TryGetValue("TrainersTitle", out string TrainersTitle) ? TrainersTitle : ""))} {item.Trophy}")
-                                    </p>
-                                    <div class="social">
-                                        <a href=""><i class="bi bi-twitter-x"></i></a>
-                                        <a href=""><i class="bi bi-facebook"></i></a>
-                                        <a href=""><i class="bi bi-instagram"></i></a>
-                                        <a href=""><i class="bi bi-linkedin"></i></a>
-                                    </div>
+                                    </p>                                    
                                 </div>
                             </div>
                         </div><!-- End Team Member -->

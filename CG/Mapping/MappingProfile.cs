@@ -24,6 +24,8 @@ namespace CG.Mapping
                 .ForMember(dest => dest.ChessTitle, opt => opt.MapFrom(x => x.ChessTitle))
                 .ForMember(dest => dest.YearReceiveTitle, opt => opt.MapFrom(x => x.YearReceiveTitle))
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(x => x.Rating))
+                .ForMember(dest => dest.AvatarFilesId, opt => opt.MapFrom(x => x.AvatarFilesId))
+                .ForMember(dest => dest.AvatarFile,opt => opt.MapFrom(x => x.AvatarFile))
                 .ForMember(dest => dest.Age, opt => opt.Ignore())
                 .ForMember(dest => dest.Roles, opt => opt.Ignore())
                 .ForMember(dest => dest.CoursesCount, opt => opt.Ignore())
